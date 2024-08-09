@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// в какой-то момент мне стало просто похуй
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Post {
+  id          String          @id @default(uuid())
+  name        String          @unique
+  title       String
+  author      String          @default("Berlkot")
+  content     String?
+  description String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  visibility  Int             @default(-1) // -1 admin 0 public 1 sub only
+  tags        TagsOnPost[]
+  images      ImagesInPosts[]
+}
+
+model Image {
+  id               String          @id @default(uuid())
+  path             String          @unique
+  author           String          @default("Berlkot")
+  title            String?
+  alt              String?
+  width            Int
+  height           Int
+  contentWarning   String?
+  copyright        String?
+  smallDescription String?
+  largeDescription String?
+  creationDate     DateTime        @default(now())
+  inGallery        Boolean         @default(false)
+  visibility       Int             @default(-1) // -1 admin 0 public 1 sub only
+  maturity         Int             @default(0) // 0 sfw 1 questionable 2 nsfw
+  tags             TagsOnImage[]
+  posts            ImagesInPosts[]
+}
+
+model ImagesInPosts {
+  imageId String
+  postId  String
+  Post    Post   @relation(fields: [postId], references: [id])
+  Image   Image  @relation(fields: [imageId], references: [id])
+
+  @@id([imageId, postId])
+}
+
+model ImageTag {
+  id     String        @id @default(uuid())
+  name   String        @unique
+  images TagsOnImage[]
+}
+
+model PostTag {
+  id    String       @id @default(uuid())
+  name  String       @unique
+  posts TagsOnPost[]
+}
+
+model TagsOnImage {
+  tag     ImageTag @relation(fields: [tagId], references: [name])
+  image   Image    @relation(fields: [imageId], references: [id])
+  tagId   String
+  imageId String
+
+  @@id([tagId, imageId])
+}
+
+model TagsOnPost {
+  postTagId String
+  postId    String
+  Post      Post    @relation(fields: [postId], references: [id])
+  PostTag   PostTag @relation(fields: [postTagId], references: [name])
+
+  @@id([postId, postTagId])
+}
