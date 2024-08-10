@@ -5,8 +5,8 @@
 <h1>Gallery</h1>
 
 {#each data.images as image}
-	<a href={image.path}>
-		<img src={image.path} alt={image.alt} width={image.width} height={image.height} />
+    <a href='/gallery/{image.name}'>
+        <img src='/image/{image.name}' alt={image.alt} width={image.width} height={image.height} />
 	</a>
 {/each}
 
