@@ -11,57 +11,63 @@ datasource db {
 }
 
 model Post {
-  id          String          @id @default(uuid())
-  name        String          @unique
+  id          String    @id @default(uuid())
+  thumbnail   Asset?    @relation("thumbnail")
+  name        String    @unique
   title       String
-  author      String          @default("Berlkot")
+  author      String    @default("Berlkot")
   content     String?
   description String?
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  visibility  Int             @default(-1) // -1 admin 0 public 1 sub only
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  visibility  Int       @default(-1) // -1 admin 0 public 1 sub only
   tags        PostTag[]
-  images      ImagesInPosts[]
+  assets      Asset[]
 }
 
-model Image {
-  id               String          @id @default(uuid())
-  name             String          @unique
-  path             String
-  author           String          @default("Berlkot")
+model Asset {
+  id               String           @id @default(uuid())
+  name             String           @unique
+  basename         String           @unique
+  path             String           @unique
+  author           String           @default("Berlkot")
   title            String?
   alt              String?
+  type             Int              @default(0) // 0 static 1 animated 2 video
   width            Int
   height           Int
   contentWarning   String?
   copyright        String?
   smallDescription String?
   largeDescription String?
-  creationDate     DateTime        @default(now())
-  inGallery        Boolean         @default(false)
-  visibility       Int             @default(-1) // -1 admin 0 public 1 sub only
-  maturity         Int             @default(0) // 0 sfw 1 questionable 2 nsfw
-  tags             ImageTag[]
-  posts            ImagesInPosts[]
+  creationDate     DateTime         @default(now())
+  inGallery        Boolean          @default(false)
+  visibility       Int              @default(-1) // -1 admin 0 public 1 sub only
+  maturity         Int              @default(0) // 0 sfw 1 questionable 2 nsfw
+  tags             AssetTag[]
+  posts            Post[]
+  thumbnailImages  ThumbnailImage[]
+  thumbnailIn      Post?            @relation("thumbnail", fields: [thumbnailInId], references: [id])
+  thumbnailInId    String           @unique
 }
 
-model ImagesInPosts {
-  imageId String
-  postId  String
-  Post    Post   @relation(fields: [postId], references: [id])
-  Image   Image  @relation(fields: [imageId], references: [id])
-
-  @@id([imageId, postId])
+model ThumbnailImage {
+  id      String @id @default(uuid())
+  asset   Asset  @relation(fields: [assetId], references: [id])
+  assetId String
+  path    String
+  width   Int
+  height  Int
 }
 
-model ImageTag {
-  id     String        @id @default(uuid())
-  name   String        @unique
-  images Image[]
+model AssetTag {
+  id     String  @id @default(uuid())
+  name   String  @unique
+  assets Asset[]
 }
 
 model PostTag {
-  id    String       @id @default(uuid())
-  name  String       @unique
+  id    String @id @default(uuid())
+  name  String @unique
   posts Post[]
 }

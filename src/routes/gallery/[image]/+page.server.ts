@@ -9,6 +9,7 @@ export async function load({ params, locals }: RequestEvent) {
 			where: { inGallery: true, name: params.image },
 			select: {
 				name: true,
+				basename: true,
 				height: true,
 				width: true,
 				title: true,
@@ -25,9 +26,9 @@ export async function load({ params, locals }: RequestEvent) {
 		if (!locals.admin) {
 			q.where.visibility = 0;
 		}
-		const image = await prisma.image.findFirstOrThrow(q);
-		image.largeDescription = image.largeDescription ? await renderMarkdown(image.largeDescription) : 'No description provided';
-		return image;
+		const asset = await prisma.asset.findFirstOrThrow(q);
+		asset.largeDescription = asset.largeDescription ? await renderMarkdown(asset.largeDescription) : 'No description provided';
+		return asset;
 	} catch {
 		throw error(404, "Gallery image not found");
 	}

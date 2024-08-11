@@ -6,6 +6,7 @@ export async function load({ params, locals }: RequestEvent) {
 		where: { inGallery: true },
 		select: {
 			name: true,
+			basename: true,
 			height: true,
 			width: true,
 			title: true,
@@ -18,6 +19,6 @@ export async function load({ params, locals }: RequestEvent) {
 	if (!locals.admin) {
 		q.where.visibility = 0;
 	}
-	const images = await prisma.image.findMany(q);
-	return { images: images };
+	const asset = await prisma.asset.findMany(q);
+	return { images: asset };
 }

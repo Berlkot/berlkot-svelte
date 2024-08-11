@@ -1,4 +1,5 @@
-<script>
+<script lang="ts">
+
 	export let data;
 </script>
 
@@ -6,7 +7,7 @@
 
 {#each data.images as image}
     <a href='/gallery/{image.name}'>
-        <img src='/image/{image.name}' alt={image.alt} width={image.width} height={image.height} />
+        <img src='/image/{image.basename}' alt={image.alt} width={image.width} height={image.height} />
 	</a>
 {/each}
 
