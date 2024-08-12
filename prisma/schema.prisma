@@ -48,7 +48,7 @@ model Asset {
   posts            Post[]
   thumbnailImages  ThumbnailImage[]
   thumbnailIn      Post?            @relation("thumbnail", fields: [thumbnailInId], references: [id])
-  thumbnailInId    String           @unique
+  thumbnailInId    String?          @unique
 }
 
 model ThumbnailImage {

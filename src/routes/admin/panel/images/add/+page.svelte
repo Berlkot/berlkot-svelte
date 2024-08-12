@@ -4,6 +4,10 @@
 		<input name="file" type="file" required />
 	</label>
 	<label>
+		Name
+		<input name="name" type="text" required />
+	</label>
+	<label>
 		Author
 		<input name="author" type="text" value="Berlkot" />
 	</label>
@@ -62,8 +66,8 @@
 		Maturity
 		<select name="maturity">
 			<option value="0" selected>sfw</option>
-			<option value="1">public</option>
-			<option value="2">for subs</option>
+			<option value="1">questionable</option>
+			<option value="2">nsfw</option>
 		</select>
 	</label>
 	<button type="submit">Add</button>

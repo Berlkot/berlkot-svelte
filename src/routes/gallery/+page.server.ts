@@ -11,9 +11,10 @@ export async function load({ params, locals }: RequestEvent) {
 			width: true,
 			title: true,
 			alt: true,
+			type: true,
 			contentWarning: true,
 			maturity: true,
-      tags: { select: {name: true} },
+      tags: { select: {name: true} }
 		}
 	};
 	if (!locals.admin) {

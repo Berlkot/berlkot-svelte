@@ -7,14 +7,9 @@
 
 {#each data.images as image}
     <a href='/gallery/{image.name}'>
-        <img src='/image/{image.basename}' alt={image.alt} width={image.width} height={image.height} />
+        {#if image.type === 1}
+            animated
+        {/if}
+        <img src='/thumbnail/{image.basename}?w=270&h=270' alt={image.alt} width=270 height=270 />
 	</a>
 {/each}
-
-<style>
-	img {
-		width: 300px;
-		height: auto;
-		object-fit: contain;
-	}
-</style>

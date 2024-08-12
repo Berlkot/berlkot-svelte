@@ -4,9 +4,6 @@
       year: "numeric",
       month: "short",
       day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      hour12: false
     };
 </script>
 
@@ -25,7 +22,7 @@
 
 <style>
 	img {
-		width: 300px;
+		width: 1000px;
 		height: auto;
 		object-fit: contain;
 	}
