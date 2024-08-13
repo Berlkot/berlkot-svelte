@@ -6,7 +6,7 @@ const renderer = new marked.Renderer();
 
 renderer.image = function (href, title, text) {
 	const [url, width, height] = href.split('?');
-	return `<img src="/${url}" alt="${text}" width="${width}" height="${height}" title="${title}">`;
+	return `<img class="blog_img" src="/${url}" alt="${text}" width="${width}" height="${height}" title="${title}">`;
 };
 
 renderer.paragraph = function (text) {

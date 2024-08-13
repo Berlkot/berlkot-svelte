@@ -1,4 +1,12 @@
+<script lang="ts">
+	import type { ActionData } from './$types';
+	
+	export let form: ActionData;
+</script>
+
 <form method="POST" enctype="multipart/form-data">
+    {#if form?.missing}<p class="error">File or name not found</p>{/if}
+	{#if form?.invalid}<p class="error">Invalid form</p>{/if}
 	<label>
 		File
 		<input name="file" type="file" required />
@@ -58,8 +66,8 @@
 		Visibility
 		<select name="visibility" >
 			<option value="-1" selected>admin</option>
-			<option value="1">public</option>
-			<option value="2">for subs</option>
+			<option value="0">public</option>
+			<option value="1">for subs</option>
 		</select>
 	</label>
 	<label>
