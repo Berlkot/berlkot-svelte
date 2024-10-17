@@ -1,13 +1,24 @@
 <script lang="ts">
 	export let data;
+ let options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    };
 </script>
 
 <svelte:head>
 	<title>{data.title}</title>
+	<meta name="author" content={data.author} />
 </svelte:head>
-<h1>blogpost</h1>
-
-<!--We trust ourself or hacked-->
-<!--eslint-disable-next-line svelte/no-at-html-tags-->
-<article>{@html data.content}</article>
-
+<section>
+	<!--We trust ourself or hacked-->
+	<!--eslint-disable svelte/no-at-html-tags-->
+	<article>
+		<header>
+			<h1>{data.title}</h1>
+			<time datetime={data.createdAt.toString()}>{new Intl.DateTimeFormat(undefined, options).format(data.createdAt)}</time>
+		</header>
+		<section>{@html data.content}</section>
+	</article>
+</section>

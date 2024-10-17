@@ -5,7 +5,7 @@ import { error, type RequestEvent } from '@sveltejs/kit';
 const return_string = 'Blogpost not found!';
 
 export async function load({ params, locals }: RequestEvent) {
-	try {
+	// try {
     const q = { where: { name: params.post } }
     if (!locals.admin){
       q.where.visibility = 0
@@ -13,7 +13,7 @@ export async function load({ params, locals }: RequestEvent) {
 		const post = await prisma.post.findUniqueOrThrow(q);
 		post.content = post.content ? await renderMarkdown(post.content) : "Blogpost is empty";
 		return post;
-	} catch {
-		throw error(404, return_string);
-	}
+	// } catch {
+	// 	throw error(404, return_string);
+	// }
 }

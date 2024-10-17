@@ -3,8 +3,8 @@ import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
 import prisma from '$lib/server/prisma';
 import { generateThumbnail, getDimensions, normalizeMedia } from '$lib/server/image-tools';
-import { unlink } from 'fs/promises';
-import { basename, extname } from 'path';
+import { extname } from 'path';
+import { mkdir } from 'fs/promises';
 
 export const actions = {
   default: async ({ request }: RequestEvent) => {
@@ -17,19 +17,16 @@ export const actions = {
     if (!name) {
       return fail(400, {missing: true})
     }
-    const path = `data/images/${name + extname(file.name)}`
+    await mkdir(`data/images/${name}`)
+    const path = `data/images/${name}/${name + extname(file.name)}`
     await Bun.write(path, file)
     const out_path = await normalizeMedia(path)
     if (!out_path) {
-      unlink(path)
       return fail(422)
     }
-    unlink(path)
     const size = await getDimensions(out_path)
     const q = {
-      name: String(name), 
-      basename: basename(out_path), 
-      path: out_path,
+      name: String(name),
       width: size.width,
       height: size.height
     }
@@ -79,7 +76,8 @@ export const actions = {
     }
     await prisma.asset.create({ data: q })
     if (q.inGallery) {
-      generateThumbnail(out_path, `data/thumbnails/${q.name}.avif`, 270, 270)
+      generateThumbnail(out_path, `data/images/${q.name}/${q.name}.jpeg`, 270, 270)
     }
+    return { success: true };
   }
 }

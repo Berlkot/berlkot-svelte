@@ -1,32 +1,48 @@
 <script lang="ts">
-
 	export let data;
 </script>
 
 <h1>Gallery</h1>
 <section>
-{#each data.images as image}
-    <a href='/gallery/{image.name}'>
-        {#if image.maturity > 0}
-            <div class="readcted">redacted</div>
-        {:else}
-            <img src='/image/{image.basename}?w=270&h=270' alt={image.alt} width=270 height=270 />
-        {/if}
-        
-	</a>
-{/each}
+	{#each data.images as image}
+		<div>
+			<a href="/gallery/{image.name}">
+				{#if image.maturity > 0}
+					<div class="readcted">redacted</div>
+				{:else}
+					<img
+						src="/image/{image.name}.jpeg?w=270&h=270"
+						alt={image.alt}
+						width="270"
+						height="270"
+					/>
+				{/if}
+			</a>
+		</div>
+	{/each}
 </section>
 
 <style>
-    .readcted {
-        width: 270px;
-        height: 270px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: grey;
-    }
-    section {
-        display: flex;
-    }
+	a {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	.readcted {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: grey;
+	}
+	section {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+	}
+	img {
+		object-fit: cover;
+		min-height: 100%;
+		width: 100%;
+	}
 </style>

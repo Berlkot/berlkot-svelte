@@ -6,7 +6,6 @@ export async function load({ params, locals }: RequestEvent) {
 		where: { inGallery: true },
 		select: {
 			name: true,
-			basename: true,
 			height: true,
 			width: true,
 			title: true,

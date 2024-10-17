@@ -3,12 +3,14 @@
 </script>
 
 <div class="decorBanner">
-	test
+	cool image
+	
 	{layers_img}
 </div>
 
 <style>
 	.decorBanner {
+	height: 140px;
 		background-color: bisque;
 	}
 </style>

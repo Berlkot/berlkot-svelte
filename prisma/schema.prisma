@@ -28,8 +28,6 @@ model Post {
 model Asset {
   id               String           @id @default(uuid())
   name             String           @unique
-  basename         String           @unique
-  path             String           @unique
   author           String           @default("Berlkot")
   title            String?
   alt              String?
@@ -46,18 +44,8 @@ model Asset {
   maturity         Int              @default(0) // 0 sfw 1 questionable 2 nsfw
   tags             AssetTag[]
   posts            Post[]
-  thumbnailImages  ThumbnailImage[]
   thumbnailIn      Post?            @relation("thumbnail", fields: [thumbnailInId], references: [id])
   thumbnailInId    String?          @unique
-}
-
-model ThumbnailImage {
-  id      String @id @default(uuid())
-  asset   Asset  @relation(fields: [assetId], references: [id])
-  assetId String
-  path    String
-  width   Int
-  height  Int
 }
 
 model AssetTag {
