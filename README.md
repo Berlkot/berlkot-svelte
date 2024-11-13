@@ -6,7 +6,7 @@
 ```bash
 bun install
 ```
-2. Create .env file and place `DATABASE_URL=""` (project uses sqlite) and `ADMIN_SECRET=""` varaibles
+2. Create .env file and set `DATABASE_URL=""` (project uses sqlite) and `ADMIN_SECRET=""` varaibles
 ## Running dev
 ```bash
 bun run dev
