@@ -1,5 +1,4 @@
 import { basename, extname, dirname } from 'path';
-import prisma from './prisma';
 import sharp from 'sharp';
 import { unlink } from 'fs/promises';
 
@@ -37,7 +36,7 @@ export async function generateThumbnail(img_path: string, save_path: string, wid
     }
   const x = Math.round((fWidth - width) / 2)
   const y = Math.round((fHeight - height) / 2)
-	await Bun.$`ffmpeg -v error -i "${img_path}" -vf "scale=${fWidth}:${fHeight}:flags=lanczos,crop=${width}:${height}:${x}:${y},format=yuva420p10le" -frames:v 1 -c:v "${out_path}"`;
+	await Bun.$`ffmpeg -v error -i "${img_path}" -vf "scale=${fWidth}:${fHeight}:flags=lanczos,crop=${width}:${height}:${x}:${y},format=yuva420p" -frames:v 1 "${out_path}"`;
 }
 
 export async function normalizeMedia(img_path: string) {
@@ -46,14 +45,14 @@ export async function normalizeMedia(img_path: string) {
 		const [format, type] = file.type.split('/');
 		const thingNoext = `${dirname(img_path)}/${basename(img_path, extname(img_path))}`;
 		if (format === 'image') {
-		  if (type === 'jpeg') {
-		      return `${thingNoext}.jpeg`
+		  if (type === 'webp') {
+		      return `${thingNoext}.webp`
 				}
   
-      const sharpStream = sharp(img_path, { pages: -1 }).jpeg({ mozjpeg: true });
-			await sharpStream.toFile(`${thingNoext}.jpeg`);
+      const sharpStream = sharp(img_path, { pages: -1 }).webp({ effort: 6 });
+			await sharpStream.toFile(`${thingNoext}.webp`);
 			unlink(img_path)
-			return `${thingNoext}.jpeg`
+			return `${thingNoext}.webp`
 		} else if (format === 'video') {
 			await Bun.$`ffmpeg -v error -i "${img_path}" -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k -movflags +faststart "${thingNoext}.mp4"`;
 			return `${thingNoext}.mp4`

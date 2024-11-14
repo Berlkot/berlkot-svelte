@@ -76,7 +76,7 @@ export const actions = {
     }
     await prisma.asset.create({ data: q })
     if (q.inGallery) {
-      generateThumbnail(out_path, `data/images/${q.name}/${q.name}.jpeg`, 270, 270)
+      generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270)
     }
     return { success: true };
   }

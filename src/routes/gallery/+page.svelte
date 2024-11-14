@@ -11,7 +11,7 @@
 					<div class="readcted">redacted</div>
 				{:else}
 					<img
-						src="/image/{image.name}.jpeg?w=270&h=270"
+						src="/image/{image.name}.webp?w=270&h=270"
 						alt={image.alt}
 						width="270"
 						height="270"
