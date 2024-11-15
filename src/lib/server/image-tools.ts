@@ -2,16 +2,14 @@ import { basename, extname, dirname } from 'path';
 import sharp from 'sharp';
 import { unlink } from 'fs/promises';
 
-// ill never use ffmpeg ever again
 
 export async function getDimensions(img_path: string) {
-	const metadata = await sharp(img_path).metadata();
-	if (!metadata.width || !metadata.height) {
-	  throw Error("Something bad happened")
-	}
+	const data = (
+		await Bun.$`ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0:s=x ${img_path}`.text()
+	).split('x');
 	return {
-		width: metadata.width,
-		height: metadata.height
+		width: Number(data[0]),
+		height: Number(data[1])
 	};
 }
 
