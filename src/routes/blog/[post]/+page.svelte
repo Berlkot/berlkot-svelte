@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let data;
+	let { data } = $props();
  let options: Intl.DateTimeFormatOptions = {
       year: "numeric",
       month: "short",

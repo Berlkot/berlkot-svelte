@@ -1,5 +1,10 @@
 <script lang="ts">
 	import Banner from '$lib/banner.svelte';
+	interface Props {
+		children?: import('svelte').Snippet;
+	}
+
+	let { children }: Props = $props();
 </script>
 
 <Banner />
@@ -14,7 +19,7 @@
 		</nav>
 	</header>
 	<main>
-		<slot></slot>
+		{@render children?.()}
 	</main>
 </div>
 <footer>
