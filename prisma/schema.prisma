@@ -31,7 +31,7 @@ model Asset {
   author           String           @default("Berlkot")
   title            String?
   alt              String?
-  type             Int              @default(0) // 0 static 1 animated 2 video
+  type             Int              @default(0) // 0 image 1 video
   width            Int
   height           Int
   contentWarning   String?

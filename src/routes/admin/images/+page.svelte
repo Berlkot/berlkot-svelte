@@ -77,8 +77,7 @@
 	<button autofocus onclick={() => {dialog.close();image = undefined}}>X</button>
 </div>
 	<form method="POST" enctype="multipart/form-data" action="?/{ modalType }">
-		{#if form?.missing}<p class="error">File or name not found</p>{/if}
-		{#if form?.invalid}<p class="error">Invalid form</p>{/if}
+		{#if form?.message}<p class="error">{form?.message}</p>{/if}
 		<label>
 			File
 			<input name="file" type="file" required={modalType == 'edit' ? false : true} />
@@ -102,9 +101,8 @@
 		<label>
 			Type
 			<select name="type">
-				<option value="0" selected={image ? image.type == 0 : true}>static</option>
-				<option value="1" selected={image ? image.type == 1 : false}>animated</option>
-				<option value="2" selected={image ? image.type == 2 : false}>video</option>
+				<option value="0" selected={image ? image.type == 0 : true}>picture</option>
+				<option value="1" selected={image ? image.type == 1 : false}>video</option>
 			</select>
 		</label>
 		<label>

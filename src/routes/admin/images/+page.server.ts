@@ -1,62 +1,33 @@
-import type { ActionFailure, RequestEvent } from '@sveltejs/kit';
+import type { RequestEvent } from '@sveltejs/kit';
 import type { Actions } from './$types';
-import { fail, isActionFailure } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import prisma from '$lib/server/prisma';
 import { generateThumbnail, getDimensions, normalizeMedia } from '$lib/server/image-tools';
 import { extname } from 'path';
 import { mkdir } from 'fs/promises';
-import type { Asset, Prisma } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { rm } from 'fs/promises';
+import { Validator, type FieldConfig } from '$lib/form-validator';
 
 
-
-async function validateFields(q: Asset, data: FormData): Promise<Asset | ActionFailure<{invalid: boolean}>> {
-  if (data.get("title")) q.title = data.get("title") as string
-  if (data.get("alt")) q.alt = data.get("alt") as string
-  if (data.get("author")) q.author = data.get("author") as string
-  if (data.get("contentWarning")) q.contentWarning = data.get("contentWarning") as string
-  if (data.get("copyright")) q.copyright = data.get("copyright") as string
-  if (data.get("smallDescription")) q.smallDescription = data.get("smallDescription") as string
-  if (data.get("largeDescription")) q.largeDescription = data.get("largeDescription") as string
-  const creationDate = data.get("creationDate")
-  if (creationDate && !isNaN(Date.parse(creationDate.toString())) ) {
-    q.creationDate = new Date(Date.parse(creationDate.toString()))
-  } else if (creationDate) {
-    return fail(400, {invalid: true})
-  }
-  const inGallery = data.get("inGallery")
-  if (inGallery && (inGallery.toString() === "false" || inGallery.toString() === "true")) {
-    q.inGallery = inGallery === "true"
-  }
-  const type = data.get("type")
-  if (type) {
-    const p_type = parseInt(type.toString())
-    if (!isNaN(p_type) && p_type > -1){
-      q.type = p_type
-    } else {
-      return fail(400, {invalid: true})
-    }
-  }
-  const visibility = data.get("visibility")
-  if (visibility) {
-    const p_visibility = parseInt(visibility.toString())
-    if (!isNaN(p_visibility) && p_visibility > -2){
-      q.visibility = p_visibility
-    } else {
-      return fail(400, {invalid: true})
-    }
-  }
-  const maturity = data.get("maturity")
-  if (maturity) {
-    const p_maturity = parseInt(maturity.toString())
-    if (!isNaN(p_maturity) && p_maturity > -1){
-      q.maturity = p_maturity
-    } else {
-      return fail(400, {invalid: true})
-    }
-  }
-  return q
+const validatorConfig: { [key: string]: FieldConfig } = {
+  "file": ['file'],
+  "name": ['string', 'reqired'],
+  "title": ['string'],
+  "alt": ['string'],
+  "author": ['string'],
+  "contentWarning": ['string'],
+  "copyright": ['string'],
+  "smallDescription": ['string'],
+  "largeDescription": ['string'],
+  "creationDate": ['date'],
+  "inGallery": ['bool'],
+  "type": ['int', 'range:0:2'],
+  "visibility": ['int', 'range:-1:2'],
+  "maturity": ['int', 'range:0:3']
 }
+const validatorConfigWithFile = {...validatorConfig}
+validatorConfigWithFile.file.push('reqired')
 
 export async function load() {
   return {images: await prisma.asset.findMany()};
@@ -64,20 +35,14 @@ export async function load() {
 
 export const actions = {
   edit: async ({ request }: RequestEvent) => {
-    const data = await request.formData()
-    const file = data.get("file")
-    const name = data.get("name")
-    if (!name) {
-      return fail(400, {missing: true})
+    const validator = new Validator(validatorConfig)
+    const data = validator.parseData(await request.formData())
+    if (!data) {
+      return fail(400, validator.status)
     }
-    let q: Prisma.AssetUpdateInput = {
-      name: String(name),
-    }
-    const out = await validateFields(q, data)
-    if (isActionFailure(out)) {
-      return out
-    } else {
-      q = out
+    const {file, name, ...rest} = data
+    const q: Prisma.AssetUpdateInput = {
+      name: String(name), ...rest
     }
     if ((file as File).name) {
       await rm(`data/images/${name}`, {force: true, recursive: true})
@@ -91,44 +56,37 @@ export const actions = {
       const size = await getDimensions(out_path)
       q.width = size.width
       q.height = size.height
-      if (q.inGallery) {
-        await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270)
-      }
+      await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270)
     }
     await prisma.asset.update({where: {name: String(name)}, data: q})
   },
   create: async ({ request }: RequestEvent) => {
-    const data = await request.formData()
-    const file = data.get("file")
-    const name = data.get("name")
-    if (!file) {
-      return fail(400, {missing: true})
+    const validator = new Validator(validatorConfigWithFile)
+    const data = validator.parseData(await request.formData())
+    if (!data) {
+      return fail(400, validator.status)
     }
-    if (!name) {
-      return fail(400, {missing: true})
+    const {file, name, ...rest} = data
+    try {
+      await mkdir(`data/images/${name}`)
+    } catch {
+      return fail(400, {message: "Image already exists"})
     }
-    await mkdir(`data/images/${name}`)
+    
     const path = `data/images/${name}/${name + extname((file as File).name)}`
-    await Bun.write(path, file)
+    await Bun.write(path, file as File)
     const out_path = await normalizeMedia(path)
     if (!out_path) {
-      return fail(422)
+      return fail(422, {message: "Failed to proccess media"})
     }
     const size = await getDimensions(out_path)
-    let q: Prisma.AssetCreateInput = {
+    const q: Prisma.AssetCreateInput = {
       name: String(name),
       width: size.width,
-      height: size.height
+      height: size.height,
+      ...rest
     }
-    const out = await validateFields(q, data)
-    if (isActionFailure(out)) {
-      return out
-    } else {
-      q = out
-    }
-    if (q.inGallery) {
-      await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270)
-    }
+    await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270)
     await prisma.asset.create({ data: q })
   },
   delete: async ({ request }: RequestEvent) => {
