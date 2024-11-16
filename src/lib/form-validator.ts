@@ -3,7 +3,7 @@ type Modifier = 'reqired' | string;
 export type FieldConfig = [FieldType, ...Array<Modifier>];
 export class Validator {
 	private config;
-	public status: { message: string} = { message: ''};
+	public status: { message: string } = { message: '' };
 	constructor(config: { [key: string]: FieldConfig }) {
 		this.config = config;
 	}
@@ -21,8 +21,10 @@ export class Validator {
 			}
 			if (f_type === 'file') {
 				out[key] = value;
-			} else
-			if ((f_type === 'bool' && value.toString() === 'false') || value.toString() === 'true') {
+			} else if (
+				(f_type === 'bool' && value.toString() === 'false') ||
+				value.toString() === 'true'
+			) {
 				out[key] = value === 'true';
 			} else if (f_type === 'date' && !isNaN(Date.parse(value.toString()))) {
 				out[key] = new Date(Date.parse(value.toString()));
@@ -51,7 +53,7 @@ export class Validator {
 				for (const val of params) {
 					if (val.startsWith('range')) {
 						const range = val.split(':');
-                        
+
 						if (int_val >= parseInt(range[1]) && int_val < parseInt(range[2])) {
 							out[key] = int_val;
 							continue outer;
