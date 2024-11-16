@@ -58,7 +58,8 @@ export const actions = {
 			q.height = size.height;
 			await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270);
 		}
-		await prisma.asset.update({ where: { name: String(name) }, data: q });
+		return await prisma.asset.update({ where: { name: String(name) }, data: q });
+
 	},
 	create: async ({ request }: RequestEvent) => {
 		const validator = new Validator(validatorConfigWithFile);
@@ -87,7 +88,7 @@ export const actions = {
 			...rest
 		};
 		await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270);
-		await prisma.asset.create({ data: q });
+		return await prisma.asset.create({ data: q });
 	},
 	delete: async ({ request }: RequestEvent) => {
 		const data = await request.formData();

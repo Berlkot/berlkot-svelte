@@ -2,6 +2,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
+	import Toasts from '$lib/toasts.svelte';
 
 	interface Props {
 		data: PageData;
@@ -26,13 +27,17 @@
 		}
 		
 	}
+	function getRandomInt(max: number) {
+  		return Math.floor(Math.random() * max);
+	}
 </script>
 
+<Toasts/>
 <section>
 	{#each images as image}
-		<div class="imageContainer">
+		<div class="imageContainer" data-image={image.name}>
 			<div>
-				<a href="/gallery/{image.name}">
+				<a href="/image/{image.name}.webp">
 					<img
 						src="/image/{image.name}.webp?w=270&h=270"
 						alt={image.alt}
@@ -76,7 +81,32 @@
 	<!-- svelte-ignore a11y_autofocus -->
 	<button autofocus onclick={() => {dialog.close();image = undefined}}>X</button>
 </div>
-	<form method="POST" enctype="multipart/form-data" action="?/{ modalType }">
+	<form method="POST" enctype="multipart/form-data" action="?/{ modalType }"   	use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+		// `formElement` is this `<form>` element
+		// `formData` is its `FormData` object that's about to be submitted
+		// `action` is the URL to which the form is posted
+		// calling `cancel()` will prevent the submission
+		// `submitter` is the `HTMLElement` that caused the form to be submitted
+
+		return async ({ result, update }) => {
+			//console.log(result)
+			if (result.type === 'success') {
+				if (modalType == 'create') {
+					images = [...images, result.data]
+					image = undefined
+				}
+				else {
+					Object.assign(image, result.data)
+					const imageel = document.querySelector(`[data-image="${image.name}"] img`)
+					imageel.src = `/image/${image.name}.webp?w=270&h=270&${getRandomInt(1000)}`
+					//console.log(image)
+				}
+			}
+			// `result` is an `ActionResult` object
+			// `update` is a function which triggers the default logic that would be triggered if this callback wasn't set
+			
+		};
+	}}>
 		{#if form?.message}<p class="error">{form?.message}</p>{/if}
 		<label>
 			File
