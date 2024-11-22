@@ -1,12 +1,16 @@
 <script lang="ts">
-	import type { ActionData } from "./$types";
+	import type { ActionData, PageData } from './$types';
 
 	interface Props {
+		data: PageData;
 		form: ActionData;
 	}
-
-	let { form }: Props = $props();
+	let { form, data }: Props = $props();
 </script>
+
+{#each data.posts as post}
+    <a href="/blog/{post.name}">{post.title}</a>
+{/each}
 
 {#if form?.success}
 	<p>Successfully created!</p>

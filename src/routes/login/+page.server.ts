@@ -2,7 +2,7 @@ import { ADMIN_SECRET } from '$env/static/private';
 import { fail, redirect, type RequestEvent } from '@sveltejs/kit';
 
 export const actions = {
-	default: async ({ request, cookies, setHeaders }: RequestEvent) => {
+	default: async ({ request, cookies }: RequestEvent) => {
 		const data = await request.formData();
 		const token = data.get('token');
 		if (token && token === ADMIN_SECRET) {

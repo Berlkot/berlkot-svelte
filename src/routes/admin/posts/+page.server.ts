@@ -2,8 +2,13 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
 import prisma from '$lib/server/prisma';
 
+
+export async function load() {
+  return {posts: await prisma.post.findMany()};
+}
+
 export const actions = {
-  default: async ({ request }: RequestEvent) => {
+  create: async ({ request }: RequestEvent) => {
     const data = await request.formData()
     const name = data.get("name")
     const title = data.get("title")
