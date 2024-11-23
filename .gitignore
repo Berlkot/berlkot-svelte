@@ -10,7 +10,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 dev.db
 data/*.*
-data/images/*
+data/assets/*
 data/thumbnails/*
 static/*
 prisma/script.ts

@@ -45,9 +45,9 @@ export const actions = {
 			...rest
 		};
 		if ((file as File).name) {
-			await rm(`data/images/${name}`, { force: true, recursive: true });
-			await mkdir(`data/images/${name}`);
-			const path = `data/images/${name}/${name + extname((file as File).name)}`;
+			await rm(`data/assets/${name}`, { force: true, recursive: true });
+			await mkdir(`data/assets/${name}`);
+			const path = `data/assets/${name}/${name + extname((file as File).name)}`;
 			await Bun.write(path, file as File);
 			const out_path = await normalizeMedia(path);
 			if (!out_path) {
@@ -57,7 +57,7 @@ export const actions = {
 			q.width = size.width;
 			q.height = size.height;
 			try {
-				await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270);
+				await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 270, 270);
 			} catch {
 				return fail(422, { message: 'Failed to proccess media' });
 			}
@@ -74,12 +74,12 @@ export const actions = {
 		}
 		const { file, name, ...rest } = data;
 		try {
-			await mkdir(`data/images/${name}`);
+			await mkdir(`data/assets/${name}`);
 		} catch {
 			return fail(400, { message: 'Image already exists' });
 		}
 
-		const path = `data/images/${name}/${name + extname((file as File).name)}`;
+		const path = `data/assets/${name}/${name + extname((file as File).name)}`;
 		await Bun.write(path, file as File);
 		const out_path = await normalizeMedia(path);
 		if (!out_path) {
@@ -93,7 +93,7 @@ export const actions = {
 			...rest
 		};
 		try {
-		await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270);
+		await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 270, 270);
 	} catch {
 		return fail(422, { message: 'Failed to proccess media' });
 	}
@@ -103,6 +103,6 @@ export const actions = {
 		const data = await request.formData();
 		const name = data.get('name') as string;
 		await prisma.asset.delete({ where: { name: name } });
-		await rm(`data/images/${name}`, { force: true, recursive: true });
+		await rm(`data/assets/${name}`, { force: true, recursive: true });
 	}
 } satisfies Actions;

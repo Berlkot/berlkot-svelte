@@ -15,9 +15,9 @@ export async function GET({ params, locals, url }: RequestEvent) {
 		await prisma.asset.findFirstOrThrow(q);
 		let file
 		if (width && height) {
-		  file = Bun.file(`data/images/${name}/${width}_${height}_${params.name}`);
+		  file = Bun.file(`data/assets/${name}/${width}_${height}_${params.name}`);
 		} else {
-		  file = Bun.file(`data/images/${name}/${params.name}`);
+		  file = Bun.file(`data/assets/${name}/${params.name}`);
 		}
 		
 	//   161 |

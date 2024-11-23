@@ -18,7 +18,7 @@ renderer.paragraph = function (text) {
 async function walkTokens(token) {
 	if (token.type === 'image' && path.basename(token.href) === token.href) {
 		const img_name = token.href;
-		const img_path = `data/images/${basename(token.href, extname(token.href))}/${token.href}`;
+		const img_path = `data/assets/${basename(token.href, extname(token.href))}/${token.href}`;
 		// renderer is not async so ... stings. what the fuck
 		// don't put / here. For some unknown reason it gets stripped
 		try {
