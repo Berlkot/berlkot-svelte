@@ -8,9 +8,12 @@ export async function load({ params, locals }: RequestEvent) {
 	try {
 		const q: Prisma.AssetFindFirstArgs = {
 			where: { inGallery: true, name: params.name },
+			include: {
+				tags: true
+			}
 		};
 		if (!locals.admin) {
-			q.where.visibility = 0;
+			q.where!.visibility = 0;
 		}
 		const asset = await prisma.asset.findFirstOrThrow(q);
 		asset.largeDescription = asset.largeDescription ? await renderMarkdown(asset.largeDescription) : 'No description provided';

@@ -1,16 +1,17 @@
 import prisma from '$lib/server/prisma';
+import type { Prisma } from '@prisma/client';
 import { error, type RequestEvent } from '@sveltejs/kit';
 import { basename, extname } from 'path';
 
 export async function GET({ params, locals, url }: RequestEvent) {
   // and this prevents any sort of path injection because NaN equals to false lol 
-	const width = parseInt(url.searchParams.get('w'));
-	const height = parseInt(url.searchParams.get('h'));
-	const name = basename(params.name, extname(params.name))
+	const width = parseInt(url.searchParams.get('w') as string);
+	const height = parseInt(url.searchParams.get('h') as string);
+	const name = basename(params.name as string, extname(params.name as string))
 	try {
-		const q = { where: { name: name } };
+		const q: Prisma.AssetFindFirstArgs = { where: { name: name } };
 		if (!locals.admin) {
-			q.where.visibility = 0;
+			q.where!.visibility = 0;
 		}
 		await prisma.asset.findFirstOrThrow(q);
 		let file

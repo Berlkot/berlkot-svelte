@@ -35,7 +35,6 @@
 	function closeModal() {
 		dialog.style.display = 'none';
 		document.getElementsByClassName('backdrop')[0].style.display = 'none';
-		dialog.getElementsByTagName('form')[0].reset();
 	}
 </script>
 
@@ -44,7 +43,7 @@
 	{#each images as image}
 		<div class="imageContainer" data-image={image.name}>
 			<div>
-				<a href="/asset/{image.name}.{image.type == 1 ? ".mp4" : ".webp"}">
+				<a href="/asset/{image.name}{image.type == 1 ? ".mp4" : ".webp"}">
 					<img
 						src="/asset/{image.name}.webp?w=270&h=270"
 						alt={image.alt}
@@ -265,6 +264,7 @@
 	#modal form {
 		padding: 15px;
 		overflow: scroll;
+		scrollbar-color: var(--color-accent) var(--color-accent);
 
 	}
 	h2 {
@@ -280,4 +280,9 @@
 		justify-content: space-between;
 		align-items: center;
 	}
+	section {
+		display: flex;
+		justify-content: space-evenly;
+	}
+
 </style>

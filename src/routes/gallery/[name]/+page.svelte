@@ -13,7 +13,8 @@
 <p>{new Intl.DateTimeFormat(undefined, options).format(data.creationDate)}</p>
 {#if data.type == 1} 
 
-  <video controls src="/asset/{data.name}.mp4"></video>
+  <!-- svelte-ignore a11y_media_has_caption -->
+  <video controls loop src="/asset/{data.name}.mp4"></video>
 {:else}
   <img src="/asset/{data.name}.webp" alt={data.alt} width={data.width} height={data.height} />
 {/if}
@@ -21,8 +22,9 @@
 <!--eslint-disable-next-line svelte/no-at-html-tags-->
 <div>{@html data.largeDescription}</div>
 <p>By {data.author}</p>
-{#each data.tags as tag}
-    <p>{tag.name}</p>
+<!-- eslint doesnt know that prisma has related queries-->
+{#each (data as any).tags as tag}
+    <p><b>{tag.name}</b></p>
 {/each}
 
 <style>
@@ -31,4 +33,5 @@
 		height: auto;
 		object-fit: contain;
 	}
+  
 </style>
