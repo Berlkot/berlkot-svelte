@@ -6,7 +6,7 @@
   let { type = "error", dismissible = true, children, dismiss } = $props();
   </script>
   
-  <article class={type} role="alert" transition:fade>
+  <div class="alert {type}" role="alert" transition:fade>
     {#if type === "success"}
     ✓
     {:else if type === "error"}
@@ -24,10 +24,10 @@
         X
       </button>
     {/if}
-  </article>
+    </div>
   
   <style>
-    article {
+    .alert {
       color: white;
       padding: 0.75rem 1.5rem;
       border-radius: 0.2rem;
@@ -46,7 +46,7 @@
       background: SkyBlue;
     }
     .text {
-      margin-left: 1rem;
+      padding: 1rem;
     }
     button {
       color: white;

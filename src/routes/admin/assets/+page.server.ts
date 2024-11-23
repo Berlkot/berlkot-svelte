@@ -51,12 +51,17 @@ export const actions = {
 			await Bun.write(path, file as File);
 			const out_path = await normalizeMedia(path);
 			if (!out_path) {
-				return fail(422);
+				return fail(422, { message: 'Failed to proccess media' });
 			}
 			const size = await getDimensions(out_path);
 			q.width = size.width;
 			q.height = size.height;
-			await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270);
+			try {
+				await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270);
+			} catch {
+				return fail(422, { message: 'Failed to proccess media' });
+			}
+			
 		}
 		return await prisma.asset.update({ where: { name: String(name) }, data: q });
 
@@ -87,7 +92,11 @@ export const actions = {
 			height: size.height,
 			...rest
 		};
+		try {
 		await generateThumbnail(out_path, `data/images/${q.name}/${q.name}.webp`, 270, 270);
+	} catch {
+		return fail(422, { message: 'Failed to proccess media' });
+	}
 		return await prisma.asset.create({ data: q });
 	},
 	delete: async ({ request }: RequestEvent) => {

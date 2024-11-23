@@ -6,7 +6,7 @@ export async function GET({ params, locals, url }: RequestEvent) {
   // and this prevents any sort of path injection because NaN equals to false lol 
 	const width = parseInt(url.searchParams.get('w'));
 	const height = parseInt(url.searchParams.get('h'));
-	const name = basename(params.image, extname(params.image))
+	const name = basename(params.name, extname(params.name))
 	try {
 		const q = { where: { name: name } };
 		if (!locals.admin) {
@@ -15,9 +15,9 @@ export async function GET({ params, locals, url }: RequestEvent) {
 		await prisma.asset.findFirstOrThrow(q);
 		let file
 		if (width && height) {
-		  file = Bun.file(`data/images/${name}/${width}_${height}_${params.image}`);
+		  file = Bun.file(`data/images/${name}/${width}_${height}_${params.name}`);
 		} else {
-		  file = Bun.file(`data/images/${name}/${params.image}`);
+		  file = Bun.file(`data/images/${name}/${params.name}`);
 		}
 		
 	//   161 |
