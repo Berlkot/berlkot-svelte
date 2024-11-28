@@ -46,7 +46,7 @@
       background: SkyBlue;
     }
     .text {
-      padding: 1rem;
+      padding: 0 1rem;
     }
     button {
       color: white;

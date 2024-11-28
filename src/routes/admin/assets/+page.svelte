@@ -92,7 +92,9 @@
 			enctype="multipart/form-data"
 			action="?/{modalType}"
 			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+				submitter.disabled = true
 				return async ({ result, update }) => {
+					submitter.disabled = false
 					if (result.type === 'success') {
 						if (modalType == 'create') {
 							images = [...images, result.data as Asset];
