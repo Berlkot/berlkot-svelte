@@ -3,8 +3,9 @@
 	import { page } from '$app/stores';
 	import AssetPage from './[name]/+page.svelte';
 	import Modal from '$lib/Modal.svelte';
-	let dialog = $state();
+	let modal = $state<Modal>();
 	let { data } = $props();
+	$effect(() => {$page.state.selected ? modal?.openModal() : ""})
 </script>
 
 <h1>Gallery</h1>
@@ -55,29 +56,22 @@
 {#if $page.state.selected}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div
-		id="modal"
-		role="alert"
-		bind:this={dialog}
-		onclick={(e) => {
-			if (e.target === dialog) {
-				history.back();
-			}
-		}}
-	>
-		<button
-			class="close"
-			autofocus
-			onclick={() => {
-				history.back();
-			}}>X</button
-		>
-		<div class:data>
-			<AssetPage data={$page.state.selected} />
-		</div>
-	</div>
-	<div class="backdrop"></div>
+	<Modal bind:this={modal} onclose={() => history.back()}>
+		
+			<!-- svelte-ignore a11y_autofocus -->
+			<button
+				class="close"
+				autofocus
+				onclick={() => {
+					modal?.closeModal();
+				}}>X</button
+			>
+			<div class="data">
+				<AssetPage data={$page.state.selected} />
+			</div>
+	</Modal>
 {/if}
+
 
 <style>
 	a {
@@ -102,33 +96,15 @@
 		min-height: 100%;
 		width: 100%;
 	}
-	#modal {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		background-color: var(--bg-color);
-		transform: translate(-50%, -50%);
-		border: 2px outset var(--color-accent);
-		width: 50%;
-		height: 80%;
-		z-index: 4;
-		overflow: scroll;
-	}
-	#modal .close {
-		position: sticky;
-		top: 0;
-	}
 
-	.backdrop {
-		position: fixed;
+	.close {
+		position: absolute;
 		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(0, 0, 0, 0.5);
-		z-index: 3;
 	}
-	.data :global(*) {
+	.data {
 		max-width: 100%;
 	}
+	button {
+    background-color: rgba(0, 0, 0, 0.541);
+  }
 </style>

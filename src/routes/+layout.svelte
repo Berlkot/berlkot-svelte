@@ -1,12 +1,13 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import Toasts from '$lib/toasts.svelte';
 	interface Props {
 		children?: Snippet;
 	}
 
 	let { children }: Props = $props();
 </script>
-
+<Toasts />
 <div class="wrapper">
 	<header>
 		<nav>
