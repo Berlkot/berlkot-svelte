@@ -3,9 +3,12 @@
 	import { page } from '$app/stores';
 	import AssetPage from './[name]/+page.svelte';
 	import Modal from '$lib/Modal.svelte';
+	import { onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
 	let modal = $state<Modal>();
 	let { data } = $props();
 	$effect(() => {$page.state.selected ? modal?.openModal() : ""})
+
 </script>
 
 <h1>Gallery</h1>
@@ -54,21 +57,23 @@
 	{/each}
 </section>
 {#if $page.state.selected}
+
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<Modal bind:this={modal} onclose={() => history.back()}>
-		
+	<Modal bind:this={modal} onclose={()=>history.back()} preventDefault={true}>
+		<div in:fly={{ y:-400 }} out:fly={{ y: -400 }} >
 			<!-- svelte-ignore a11y_autofocus -->
 			<button
 				class="close"
 				autofocus
 				onclick={() => {
-					modal?.closeModal();
+					history.back();
 				}}>X</button
 			>
 			<div class="data">
 				<AssetPage data={$page.state.selected} />
 			</div>
+		</div>
 	</Modal>
 {/if}
 
@@ -79,6 +84,7 @@
 		width: 100%;
 		height: 100%;
 	}
+	
 	.readcted {
 		width: 100%;
 		height: 100%;

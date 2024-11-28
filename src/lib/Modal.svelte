@@ -1,11 +1,14 @@
 <script>
-	let {onclose= ()=>{}, children} = $props();
+	let {onclose= ()=>{}, children, preventDefault=false} = $props();
 
 	let modal = $state();
 	
 	export function closeModal() {
-		modal.style.display = 'none';
 		onclose();
+		if (preventDefault) return;
+		modal.style.display = 'none';
+		
+		
 	}
 	export function openModal() {
 		modal.style.display = 'block';
