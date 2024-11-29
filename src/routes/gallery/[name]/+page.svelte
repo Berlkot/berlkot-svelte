@@ -36,7 +36,7 @@
 	img {
 		height: auto;
 		object-fit: contain;
-    max-height: 89vh;
+    max-height: 80vh;
 	}
   .image-content {
     padding: 20px;

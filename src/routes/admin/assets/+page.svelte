@@ -3,7 +3,7 @@
 	import type { ActionData, PageData } from './$types';
 	
 	import type { Asset } from '@prisma/client';
-	import { addToast } from '$lib/toastStore';
+	import { addToast } from '$lib/stores/toastStore';
 	import Modal from '$lib/Modal.svelte';
 
 	interface Props {
@@ -92,9 +92,9 @@
 			enctype="multipart/form-data"
 			action="?/{modalType}"
 			use:enhance={({ formElement, formData, action, cancel, submitter }) => {
-				submitter.disabled = true
+				(submitter as HTMLButtonElement).disabled = true
 				return async ({ result, update }) => {
-					submitter.disabled = false
+					(submitter as HTMLButtonElement).disabled = false
 					if (result.type === 'success') {
 						if (modalType == 'create') {
 							images = [...images, result.data as Asset];
@@ -225,12 +225,12 @@
 		border-bottom: 2px solid var(--color-accent);
 		background-color: var(--bg-color);
 		justify-content: space-between;
-		width: 70%;
+		width: 80%;
 		border-radius: 5px 5px 0 0;
 	}
 	.form-container form {
 		background-color: var(--bg-color);
-		width: 70%;
+		width: 80%;
 		padding: 20px;
 		border-radius: 0 0 5px 5px;
 	}
@@ -248,6 +248,7 @@
 	section {
 		display: flex;
 		justify-content: space-evenly;
+		flex-wrap: wrap;
 	}
 	.form-container .submit {
 		margin-top: 20px;

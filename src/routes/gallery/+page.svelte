@@ -3,18 +3,29 @@
 	import { page } from '$app/stores';
 	import AssetPage from './[name]/+page.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { onMount } from 'svelte';
-	import { fly } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
 	let modal = $state<Modal>();
 	let { data } = $props();
 	$effect(() => {$page.state.selected ? modal?.openModal() : ""})
 
 </script>
 
+<svelte:head>
+	<title>Berlkot gallery</title>
+</svelte:head>
 <h1>Gallery</h1>
+<form action="">
+	<select name="tags" id="" multiple>
+		{#each data.tags as tag}
+			<option value={tag.name}>{tag.name}</option>
+		{/each}
+	</select>
+	<input type="text" name="search" id="">
+	<button type="submit">Search</button>
+</form>
 <section>
 	{#each data.images as image}
-		<div>
+		<div class="image-card">
 			<a
 				href="/gallery/{image.name}"
 				onclick={async (e) => {
@@ -43,7 +54,7 @@
 				}}
 			>
 				{#if image.maturity > 0}
-					<div class="readcted">redacted</div>
+					redacted
 				{:else}
 					<img
 						src="/asset/{image.name}.webp?w=270&h=270"
@@ -61,7 +72,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<Modal bind:this={modal} onclose={()=>history.back()} preventDefault={true}>
-		<div in:fly={{ y:-400 }} out:fly={{ y: -400 }} >
+		<div in:scale={{ start: 0.0, duration: 300}} out:fade={{ duration: 100 }} >
 			<!-- svelte-ignore a11y_autofocus -->
 			<button
 				class="close"
@@ -83,19 +94,26 @@
 		display: block;
 		width: 100%;
 		height: 100%;
+		text-align: center;
+  		align-content: center;
 	}
 	
-	.readcted {
+	section {
+		display: grid;
+		gap: 8px;
+		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+		grid-template-rows: repeat(auto-fill, minmax(210px, 1fr));
+	}
+	.image-card {
+		aspect-ratio: 1/1;
 		width: 100%;
 		height: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		background-color: grey;
-	}
-	section {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+		border-radius: 4px;
+		overflow: hidden;
 	}
 	img {
 		object-fit: cover;
@@ -106,11 +124,12 @@
 	.close {
 		position: absolute;
 		top: 0;
+		background-color: rgba(0, 0, 0, 0.541);
+		border-radius: 3px;
+		padding: 8px 10px;
+		margin: 2px;
 	}
 	.data {
 		max-width: 100%;
 	}
-	button {
-    background-color: rgba(0, 0, 0, 0.541);
-  }
 </style>
