@@ -1,36 +1,26 @@
 <script>
-	let {onclose= ()=>{}, children, preventDefault=false} = $props();
-
+	let { onclose = () => {}, children } = $props();
 	let modal = $state();
-	
-	export function closeModal() {
-		onclose();
-		if (preventDefault) return;
-		modal.style.display = 'none';
-		
-		
-	}
-	export function openModal() {
-		modal.style.display = 'block';
-	}
 </script>
-
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<div class="modal" role="dialog"
+<div
+	class="modal"
+	role="dialog"
 	bind:this={modal}
-	onclick={(e) => { if (e.target === modal) closeModal() }}
+	onclick={(e) => {
+		if (e.target === modal) onclose();
+	}}
 >
-<div class="wrapper">
-	{@render children?.()}
-</div>
-	
+	<div class="wrapper">
+		{@render children?.()}
+	</div>
 </div>
 
 <style>
 	.modal {
-		display: none;
+		display: block;
 		position: fixed;
 		top: 0;
 		left: 0;

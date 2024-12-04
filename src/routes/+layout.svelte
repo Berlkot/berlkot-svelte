@@ -7,6 +7,7 @@
 
 	let { children }: Props = $props();
 </script>
+
 <Toasts />
 <div class="wrapper">
 	<header>
@@ -30,10 +31,10 @@
 
 <style>
 	nav {
-	display: flex;
-	justify-content: space-evenly;
+		display: flex;
+		justify-content: space-evenly;
 	}
 	nav a {
-	   padding: 10px;
+		padding: 10px;
 	}
 </style>

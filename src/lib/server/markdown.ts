@@ -1,12 +1,13 @@
 import { getDimensions } from '$lib/server/image-tools';
 import { marked } from 'marked';
-import path, { basename , extname } from 'path';
+import path, { basename, extname } from 'path';
 
 const renderer = new marked.Renderer();
 
 renderer.image = function (href, title, text) {
 	const [url, width, height] = href.split('?');
-	if (!width || !height) return `<img class="blog_img" src="/${url}" alt="${text}" title="${title}">`;
+	if (!width || !height)
+		return `<img class="blog_img" src="/${url}" alt="${text}" title="${title}">`;
 	return `<img class="blog_img" src="/${url}" alt="${text}" width="${width}" height="${height}" title="${title}">`;
 };
 
@@ -24,7 +25,7 @@ async function walkTokens(token) {
 		try {
 			const { width, height } = await getDimensions(img_path);
 			token.href = `image/${img_name}?${width}?${height}`;
-		} catch (error) {
+		} catch {
 			token.href = `image/${img_name}?${0}?${0}`;
 		}
 	}

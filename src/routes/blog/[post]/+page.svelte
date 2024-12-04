@@ -1,10 +1,10 @@
 <script lang="ts">
 	let { data } = $props();
- let options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    };
+	let options: Intl.DateTimeFormatOptions = {
+		year: 'numeric',
+		month: 'short',
+		day: 'numeric'
+	};
 </script>
 
 <svelte:head>
@@ -17,7 +17,9 @@
 	<article>
 		<header>
 			<h1>{data.title}</h1>
-			<time datetime={data.createdAt.toString()}>{new Intl.DateTimeFormat(undefined, options).format(data.createdAt)}</time>
+			<time datetime={data.createdAt.toString()}
+				>{new Intl.DateTimeFormat(undefined, options).format(data.createdAt)}</time
+			>
 		</header>
 		<section>{@html data.content}</section>
 	</article>

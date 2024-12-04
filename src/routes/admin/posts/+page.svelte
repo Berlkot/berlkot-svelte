@@ -9,15 +9,11 @@
 </script>
 
 {#each data.posts as post}
-    <a href="/blog/{post.name}">{post.title}</a>
+	<a href="/blog/{post.name}">{post.title}</a>
 {/each}
 
-{#if form?.success}
-	<p>Successfully created!</p>
-{/if}
 <form method="POST">
-    {#if form?.missing}<p class="error">Name or title not found</p>{/if}
-	{#if form?.invalid}<p class="error">Invalid form</p>{/if}
+	{#if form?.message}<p class="error">{form?.message}</p>{/if}
 	<label>
 		Name
 		<input name="name" type="text" required />
@@ -44,7 +40,7 @@
 	</label>
 	<label>
 		Visibility
-		<select name="visibility" >
+		<select name="visibility">
 			<option value="-1" selected>admin</option>
 			<option value="0">public</option>
 			<option value="1">for subs</option>
@@ -54,7 +50,7 @@
 </form>
 
 <style>
-    label {
-      display: block;
-    }
+	label {
+		display: block;
+	}
 </style>

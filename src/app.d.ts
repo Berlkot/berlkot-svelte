@@ -4,7 +4,7 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			admin: boolean
+			admin: boolean;
 		}
 		// interface PageData {}
 		// interface PageState {}

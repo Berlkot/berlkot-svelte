@@ -3,9 +3,7 @@ import sharp from 'sharp';
 import { unlink } from 'fs/promises';
 
 export async function getDimensions(img_path: string) {
-	const data = (
-		await Bun.$`identify -format "%wx%h" ${img_path}[0]`.text()
-	).split('x');
+	const data = (await Bun.$`identify -format "%wx%h" ${img_path}[0]`.text()).split('x');
 	return {
 		width: Number(data[0]),
 		height: Number(data[1])

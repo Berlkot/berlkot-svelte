@@ -13,7 +13,7 @@ export async function load({ params, locals }: RequestEvent) {
 			type: true,
 			contentWarning: true,
 			maturity: true,
-      tags: { select: {name: true} }
+			tags: { select: { name: true } }
 		}
 	};
 	if (!locals.admin) {

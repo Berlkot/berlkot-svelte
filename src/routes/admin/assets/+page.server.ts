@@ -61,10 +61,8 @@ export const actions = {
 			} catch {
 				return fail(422, { message: 'Failed to proccess media' });
 			}
-			
 		}
 		return await prisma.asset.update({ where: { name: String(name) }, data: q });
-
 	},
 	create: async ({ request }: RequestEvent) => {
 		const validator = new Validator(validatorConfigWithFile);
@@ -93,10 +91,10 @@ export const actions = {
 			...rest
 		};
 		try {
-		await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 270, 270);
-	} catch {
-		return fail(422, { message: 'Failed to proccess media' });
-	}
+			await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 270, 270);
+		} catch {
+			return fail(422, { message: 'Failed to proccess media' });
+		}
 		return await prisma.asset.create({ data: q });
 	},
 	delete: async ({ request }: RequestEvent) => {

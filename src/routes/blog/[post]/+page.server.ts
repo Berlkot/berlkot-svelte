@@ -7,14 +7,14 @@ const return_string = 'Blogpost not found!';
 
 export async function load({ params, locals }: RequestEvent) {
 	try {
-    const q: Prisma.PostFindUniqueArgs = { where: { name: params.post } }
-    if (!locals.admin){
-      q.where.visibility = 0
-    }
+		const q: Prisma.PostFindUniqueArgs = { where: { name: params.post } };
+		if (!locals.admin) {
+			q.where.visibility = 0;
+		}
 		const post = await prisma.post.findUniqueOrThrow(q);
-		post.content = post.content ? await renderMarkdown(post.content) : "Blogpost is empty";
+		post.content = post.content ? await renderMarkdown(post.content) : 'Blogpost is empty';
 		return post;
 	} catch {
-	 	throw error(404, return_string);
+		throw error(404, return_string);
 	}
 }

@@ -4,10 +4,20 @@
 	import AssetPage from './[name]/+page.svelte';
 	import Modal from '$lib/Modal.svelte';
 	import { fade, scale } from 'svelte/transition';
-	let modal = $state<Modal>();
+	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
+	let confirm = $state(false);
 	let { data } = $props();
-	$effect(() => {$page.state.selected ? modal?.openModal() : ""})
+	let href = $state<string>('');
+	async function navigate() {
+		const result = await preloadData(href);
 
+		if (result.type === 'loaded' && result.status === 200) {
+			pushState(href, { selected: result.data });
+		} else {
+			// something bad happened! try navigating
+			goto(href);
+		}
+	}
 </script>
 
 <svelte:head>
@@ -20,9 +30,21 @@
 			<option value={tag.name}>{tag.name}</option>
 		{/each}
 	</select>
-	<input type="text" name="search" id="">
+	<input type="text" name="search" id="" />
 	<button type="submit">Search</button>
 </form>
+{#if confirm}
+	<ConfirmDialog
+		text="This image contains 18+ content, do you want to proceed?"
+		confirmText="Yes, I am"
+		rejectText="No, Take me back!"
+		onreject={() => (confirm = false)}
+		onconfirm={async () => {
+			confirm = false;
+			await navigate();
+		}}
+	/>
+{/if}
 <section>
 	{#each data.images as image}
 		<div class="image-card">
@@ -34,22 +56,17 @@
 						e.metaKey ||
 						e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
 						// should also consider clicking with a mouse scroll wheel
-					)
+					) {
 						return;
-					// prevent navigation
+					}
+
+					href = e.currentTarget.href;
 					e.preventDefault();
-
-					const { href } = e.currentTarget;
-
-					// run `load` functions (or rather, get the result of the `load` functions
-					// that are already running because of `data-sveltekit-preload-data`)
-					const result = await preloadData(href);
-
-					if (result.type === 'loaded' && result.status === 200) {
-						pushState(href, { selected: result.data });
+					if (image.maturity > 0) {
+						confirm = true;
 					} else {
-						// something bad happened! try navigating
-						goto(href);
+						const result = await preloadData(href);
+						await navigate();
 					}
 				}}
 			>
@@ -68,11 +85,10 @@
 	{/each}
 </section>
 {#if $page.state.selected}
-
 	<!-- svelte-ignore a11y_click_events_have_key_events -->
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<Modal bind:this={modal} onclose={()=>history.back()} preventDefault={true}>
-		<div in:scale={{ start: 0.0, duration: 300}} out:fade={{ duration: 100 }} >
+	<Modal onclose={() => history.back()}>
+		<div in:scale={{ start: 0.0, duration: 300 }} out:fade={{ duration: 100 }}>
 			<!-- svelte-ignore a11y_autofocus -->
 			<button
 				class="close"
@@ -88,16 +104,15 @@
 	</Modal>
 {/if}
 
-
 <style>
 	a {
 		display: block;
 		width: 100%;
 		height: 100%;
 		text-align: center;
-  		align-content: center;
+		align-content: center;
 	}
-	
+
 	section {
 		display: grid;
 		gap: 8px;
