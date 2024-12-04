@@ -8,8 +8,10 @@ import { mkdir } from 'fs/promises';
 import type { Prisma } from '@prisma/client';
 import { rm } from 'fs/promises';
 import { Validator, type FieldConfig } from '$lib/form-validator';
+import { rename } from 'fs';
 
 const validatorConfig: { [key: string]: FieldConfig } = {
+	id: ['string', 'reqired'],
 	file: ['file'],
 	name: ['string', 'reqired'],
 	title: ['string'],
@@ -27,6 +29,7 @@ const validatorConfig: { [key: string]: FieldConfig } = {
 };
 const validatorConfigWithFile = { ...validatorConfig };
 validatorConfigWithFile.file.push('reqired');
+delete validatorConfigWithFile.id;
 
 export async function load() {
 	return { images: await prisma.asset.findMany() };
@@ -44,6 +47,11 @@ export const actions = {
 			name: String(name),
 			...rest
 		};
+		const prev = await prisma.asset.findUnique({ where: { id: String(data.id) } });
+		if (prev!.name !== name) {
+		rename(`data/assets/${prev!.name}`, `data/assets/${name}`, () => {});
+		await Bun.$`rename ${prev!.name} ${name} data/assets/${name}/*`
+		}
 		if ((file as File).name) {
 			await rm(`data/assets/${name}`, { force: true, recursive: true });
 			await mkdir(`data/assets/${name}`);
@@ -62,7 +70,7 @@ export const actions = {
 				return fail(422, { message: 'Failed to proccess media' });
 			}
 		}
-		return await prisma.asset.update({ where: { name: String(name) }, data: q });
+		return await prisma.asset.update({ where: { id: String(data.id) }, data: q });
 	},
 	create: async ({ request }: RequestEvent) => {
 		const validator = new Validator(validatorConfigWithFile);

@@ -19,7 +19,7 @@
 	}
 </script>
 
-<div class="imageContainer" data-image={image.name}>
+<div class="imageContainer" data-image={image.id}>
 	<div>
 		<a href="/asset/{image.name}{image.type == 1 ? '.mp4' : '.webp'}">
 			<img src="/asset/{image.name}.webp?w=270&h=270" alt={image.alt} width="270" height="270" />
@@ -83,7 +83,7 @@
 						if (result.type === 'success') {
 							Object.assign(image, result.data as Asset);
 							const imageel = document.querySelector(
-								`[data-image="${image.name}"] img`
+								`[data-image="${image.id}"] img`
 							) as HTMLImageElement;
 							imageel.src = `/asset/${image.name}.webp?w=270&h=270&${getRandomInt(1000)}`;
 							addToast({
@@ -92,16 +92,23 @@
 								timeout: 3000
 							});
 							showModal = false;
-						} else if (result.type === 'failure' || result.type === 'error') {
+						} else if (result.type === 'failure') {
 							addToast({
 								type: 'error',
-								message: result.data?.message | result.data?.error,
+								message: String(result.data?.message),
 								timeout: 3000
 							});
+						} else if (result.type === 'error') {
+							addToast({
+								type: 'error',
+								message: result.error.message,
+								timeout: 3000
+							})
 						}
 					};
 				}}
 			>
+				<input name="id" type="hidden" value={image.id} hidden/>
 				{#if form?.message}<p class="error">{form?.message}</p>{/if}
 				<label>
 					File

@@ -35,6 +35,9 @@ export async function normalizeMedia(img_path: string) {
 			unlink(img_path);
 			return `${thingNoext}.webp`;
 		} else if (format === 'video') {
+			if (type === 'mp4') {
+				return `${thingNoext}.mp4`;
+			}
 			await Bun.$`ffmpeg -v error -i "${img_path}" -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k -movflags +faststart "${thingNoext}.mp4"`;
 			unlink(img_path);
 			return `${thingNoext}.mp4`;
