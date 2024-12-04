@@ -25,6 +25,7 @@
 		top: 0;
 		left: 0;
 		width: 100%;
+		min-height: 100vh;
 		max-height: 100vh;
 		background-color: rgba(0, 0, 0, 0.5);
 		z-index: 3;

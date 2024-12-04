@@ -1,53 +1,40 @@
 <script lang="ts">
+	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
+	import Modal from '$lib/Modal.svelte';
+	import { addToast } from '$lib/stores/toastStore';
 	import type { ActionData, PageData } from './$types';
+	import PostContainer from './PostContainer.svelte';
 
 	interface Props {
 		data: PageData;
 		form: ActionData;
 	}
 	let { form, data }: Props = $props();
+	let posts = $state(data.posts);
+	let showModal = $state(false);
 </script>
 
-{#each data.posts as post}
-	<a href="/blog/{post.name}">{post.title}</a>
+{#each posts as post}
+	<PostContainer {post} onremove={() => (posts = posts.filter((p) => p.name != post.name))} />
 {/each}
+<button onclick={() => (showModal = true)}>Add</button>
 
-<form method="POST">
-	{#if form?.message}<p class="error">{form?.message}</p>{/if}
-	<label>
-		Name
-		<input name="name" type="text" required />
-	</label>
-	<label>
-		Author
-		<input name="author" type="text" value="Berlkot" />
-	</label>
-	<label>
-		Title
-		<input name="title" type="text" />
-	</label>
-	<label>
-		Description
-		<textarea name="description"></textarea>
-	</label>
-	<label>
-		Content
-		<textarea name="content" rows="30"></textarea>
-	</label>
-	<label>
-		Creation Date
-		<input name="createdAt" type="date" />
-	</label>
-	<label>
-		Visibility
-		<select name="visibility">
-			<option value="-1" selected>admin</option>
-			<option value="0">public</option>
-			<option value="1">for subs</option>
-		</select>
-	</label>
-	<button type="submit">Add</button>
-</form>
+{#if showModal}
+<Modal>
+	<form method="POST" action="?/create">
+		{#if form?.message}<p class="error">{form?.message}</p>{/if}
+		<label>
+			Name
+			<input name="name" type="text" required />
+		</label>
+		<label>
+			Title
+			<input name="title" type="text" required/>
+		</label>
+		<button type="submit">Add</button>
+	</form>
+</Modal>
+{/if}
 
 <style>
 	label {

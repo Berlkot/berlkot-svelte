@@ -9,6 +9,7 @@ export async function load() {
 }
 
 const validatorConfig: { [key: string]: FieldConfig } = {
+	id: ['string', 'reqired'],
 	name: ['string', 'reqired'],
 	title: ['string', 'reqired'],
 	author: ['string'],
@@ -35,7 +36,7 @@ export const actions = {
 			return fail(400, validator.status);
 		}
 		await prisma.post.update({
-			where: { name: String(data.name) },
+			where: { id: String(data.id) },
 			data: data as unknown as Prisma.PostUpdateInput
 		});
 		return { success: true };
