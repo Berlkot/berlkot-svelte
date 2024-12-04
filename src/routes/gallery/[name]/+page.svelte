@@ -53,4 +53,7 @@
 	h1 {
 		margin: 0;
 	}
+	video {
+		max-width: 100%;
+	}
 </style>
