@@ -5,6 +5,7 @@
 		month: 'short',
 		day: 'numeric'
 	};
+	import Zoom from './Zoom.svelte';
 </script>
 
 <svelte:head>
@@ -15,7 +16,9 @@
 		<!-- svelte-ignore a11y_media_has_caption -->
 		<video controls loop src="/asset/{data.name}.mp4"></video>
 	{:else}
+	<Zoom>
 		<img src="/asset/{data.name}.webp" alt={data.alt} width={data.width} height={data.height} />
+	</Zoom>
 	{/if}
 	<div class="image-content">
 		<h1>{data.title}</h1>
@@ -36,7 +39,8 @@
 	img {
 		height: auto;
 		object-fit: contain;
-		max-height: 80vh;
+		max-height: 70vh;
+		width: auto;
 	}
 	.image-content {
 		padding: 20px;

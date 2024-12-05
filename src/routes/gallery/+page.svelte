@@ -5,6 +5,7 @@
 	import Modal from '$lib/Modal.svelte';
 	import { fade, scale } from 'svelte/transition';
 	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
+	import { browser } from "$app/environment"
 	let confirm = $state(false);
 	let { data } = $props();
 	let href = $state<string>('');
@@ -18,12 +19,16 @@
 			goto(href);
 		}
 	}
+	let confirmedMatureContent = $state(false || (browser && localStorage.getItem('confirmedMatureContent') === 'true'));
 </script>
 
 <svelte:head>
 	<title>Berlkot gallery</title>
 </svelte:head>
 <h1>Gallery</h1>
+<!-- 
+// TODO: Implement filtering
+// goto('/gallery?maturity=' + maturity + '&ordering=' + ordering + '&tag=' + tags + '&text=' + text);
 <form action="">
 	<select name="tags" id="" multiple>
 		{#each data.tags as tag}
@@ -32,7 +37,7 @@
 	</select>
 	<input type="text" name="search" id="" />
 	<button type="submit">Search</button>
-</form>
+</form> -->
 {#if confirm}
 	<ConfirmDialog
 		text="This image contains 18+ content, do you want to proceed?"
@@ -40,6 +45,8 @@
 		rejectText="No, Take me back!"
 		onreject={() => (confirm = false)}
 		onconfirm={async () => {
+			confirmedMatureContent = true;
+			localStorage.setItem('confirmedMatureContent', 'true');
 			confirm = false;
 			await navigate();
 		}}
@@ -47,31 +54,33 @@
 {/if}
 <section>
 	{#each data.images as image}
-		<div class="image-card">
-			<a
-				href="/gallery/{image.name}"
-				onclick={async (e) => {
-					if (
-						e.shiftKey || // or the link is opened in a new window
-						e.metaKey ||
-						e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
-						// should also consider clicking with a mouse scroll wheel
-					) {
-						return;
-					}
+	<a
+	href="/gallery/{image.name}"
+	onclick={async (e) => {
+		if (
+			e.shiftKey || // or the link is opened in a new window
+			e.metaKey ||
+			e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
+			// should also consider clicking with a mouse scroll wheel
+		) {
+			return;
+		}
 
-					href = e.currentTarget.href;
-					e.preventDefault();
-					if (image.maturity > 0) {
-						confirm = true;
-					} else {
-						const result = await preloadData(href);
-						await navigate();
-					}
-				}}
-			>
-				{#if image.maturity > 0}
-					redacted
+		href = e.currentTarget.href;
+		e.preventDefault();
+		if (image.maturity > 0 && !confirmedMatureContent) {
+			confirm = true;
+		} else {
+			await navigate();
+		}
+	}}
+>
+		<div class="image-card">
+				{#if image.maturity > 0 && !confirmedMatureContent}
+				<div class="card-text">
+					<span>{image.maturity == 2 ? 'NSFW' : 'Questionable'}</span>
+					<span class="click-to-reveal">Click to reveal (18+)</span>
+				</div>
 				{:else}
 					<img
 						src="/asset/{image.name}.webp?w=270&h=270"
@@ -80,8 +89,13 @@
 						height="270"
 					/>
 				{/if}
-			</a>
+
+			<div class="title">
+				<p>{image.title || image.name}</p>
+			</div>
+
 		</div>
+	</a>
 	{/each}
 </section>
 {#if $page.state.selected}
@@ -105,14 +119,20 @@
 {/if}
 
 <style>
-	a {
-		display: block;
-		width: 100%;
-		height: 100%;
-		text-align: center;
-		align-content: center;
+	.click-to-reveal {
+		font-size: 1rem;
 	}
-
+	.card-text {
+		text-align: center;
+	}
+	span {
+		display: block;
+	}
+	a {
+		text-decoration: none;
+		color: inherit;
+		font-size: 1.6rem;
+	}
 	section {
 		display: grid;
 		gap: 8px;
@@ -129,7 +149,33 @@
 		background-color: grey;
 		border-radius: 4px;
 		overflow: hidden;
+		position: relative;
 	}
+	.image-card:hover p {
+		opacity: 1;
+	}
+
+	.image-card:hover .title {
+		opacity: 1;
+	}
+
+	.image-card p {
+		font-size: 2rem;
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+	}
+	.image-card .title {
+		opacity: 0;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: rgba(0, 0, 0, 0.541);
+		transition: opacity 0.2s ease-in-out;
+	}
+
 	img {
 		object-fit: cover;
 		min-height: 100%;
@@ -137,7 +183,7 @@
 	}
 
 	.close {
-		position: absolute;
+		position: fixed;
 		top: 0;
 		background-color: rgba(0, 0, 0, 0.541);
 		border-radius: 3px;
