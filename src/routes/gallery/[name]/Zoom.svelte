@@ -26,8 +26,6 @@
 	let zoom = $state(1.5);
 	let centerx: number = $state(0);
 	let centery: number = $state(0);
-	let testx = $state(0);
-	let testy = $state(0);
 	let translateX = $state(0);
 	let translateY = $state(0);
 	function wheel(e: WheelEvent & { currentTarget: EventTarget & HTMLDivElement }) {
@@ -73,10 +71,6 @@ function updateOffset(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElem
 <div onclick={async (e) => toggleZoom(e)}>
 	{@render children?.()}
 </div>
-<div class="test" style:top={`${centery}px`} style:left={`${centerx}px`}></div>
-<div class="test" style:top={`${testy}px`} style:left={`${testx}px`}></div>
-<!-- <div class="test" style:top={rect?.top + "px"} style:left={rect?.left + "px"} style:width={rect?.width + "px"} style:height={rect?.height + "px"}></div> -->
-
 
 {#if activated}
 	<!-- svelte-ignore a11y_click_events_have_key_events -->

@@ -24,9 +24,9 @@ async function walkTokens(token) {
 		// don't put / here. For some unknown reason it gets stripped
 		try {
 			const { width, height } = await getDimensions(img_path);
-			token.href = `image/${img_name}?${width}?${height}`;
+			token.href = `asset/${img_name}?${width}?${height}`;
 		} catch {
-			token.href = `image/${img_name}?${0}?${0}`;
+			token.href = `asset/${img_name}?${0}?${0}`;
 		}
 	}
 }

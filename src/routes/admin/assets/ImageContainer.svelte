@@ -5,6 +5,7 @@
 	import { addToast } from '$lib/stores/toastStore';
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
+	import Autocomplete from '$lib/Autocomplete.svelte';
 
 	interface Props {
 		image: Asset;
@@ -16,6 +17,18 @@
 	let showConfirm = $state(false);
 	function getRandomInt(max: number) {
 		return Math.floor(Math.random() * max);
+	}
+	async function searchTags(keyword: string) {
+		const url = "/api/autocomplete/asset";
+		const response = await fetch(url, {
+			method: "POST",	
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({ text: keyword })
+		})
+		const data = await response.json()
+		return data
 	}
 </script>
 
@@ -184,6 +197,12 @@
 						<option value="2" selected={image.maturity == 2}>nsfw</option>
 					</select>
 				</label>
+				<label>
+					Tags
+					<div class="tags">
+					<Autocomplete name="tags" optFunction={searchTags} key="name" defaultSelected={image.tags} multipule={true} delay={200} allowNew={true} />
+					</div>
+				</label>
 
 				<button class="submit" type="submit">Update</button>
 			</form>
@@ -192,6 +211,9 @@
 {/if}
 
 <style>
+	.tags {
+		width: 50%;
+	}
 	.wrapper {
 		display: flex;
 		justify-content: space-between;

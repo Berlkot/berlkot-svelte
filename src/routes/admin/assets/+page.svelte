@@ -6,6 +6,7 @@
 	import { addToast } from '$lib/stores/toastStore';
 	import Modal from '$lib/Modal.svelte';
 	import ImageContainer from './ImageContainer.svelte';
+	import Autocomplete from '$lib/Autocomplete.svelte';
 
 	interface Props {
 		data: PageData;
@@ -15,6 +16,18 @@
 	let { form, data }: Props = $props();
 	let images = $state(data.images);
 	let modalIsOpen = $state(false);
+	async function searchTags(keyword: string) {
+		const url = "/api/autocomplete/asset";
+		const response = await fetch(url, {
+			method: "POST",	
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({ text: keyword })
+		})
+		const data = await response.json()
+		return data
+	}
 </script>
 
 <section>
@@ -137,7 +150,12 @@
 						<option value="2">nsfw</option>
 					</select>
 				</label>
-
+				<label>
+					Tags
+				<div class="tags">
+					<Autocomplete name="tags" optFunction={searchTags} key="name" defaultSelected={[]} multipule={true} delay={200} allowNew={true}/>
+				</div>
+				</label>	
 				<button class="submit" type="submit">Add</button>
 			</form>
 		</div>
@@ -145,6 +163,10 @@
 {/if}
 
 <style>
+	.tags {
+		display: flex;
+		width: 50%;
+	}
 	.form-container {
 		display: flex;
 		flex-direction: column;
