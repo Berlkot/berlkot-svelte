@@ -12,6 +12,7 @@
 	<title>{data.title}</title>
 </svelte:head>
 <section>
+	<div class="full-view">
 	{#if data.type == 1}
 		<!-- svelte-ignore a11y_media_has_caption -->
 		<video controls loop src="/asset/{data.name}.mp4"></video>
@@ -20,6 +21,7 @@
 		<img src="/asset/{data.name}.webp" alt={data.alt} width={data.width} height={data.height} />
 	</Zoom>
 	{/if}
+</div>
 	<div class="image-content">
 		<h1>{data.title}</h1>
 		<p>{new Intl.DateTimeFormat(undefined, options).format(data.creationDate)}</p>

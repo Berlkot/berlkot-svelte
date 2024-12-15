@@ -28,5 +28,6 @@
 		justify-content: center;
 		flex-direction: column;
 		z-index: 1000;
+		pointer-events: none;
 	}
 </style>

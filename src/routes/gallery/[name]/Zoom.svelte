@@ -91,9 +91,6 @@ function updateOffset(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElem
 	div {
 		cursor: zoom-in;
 	}
-	div img {
-		opacity: 0;
-	}
 	.preview {
 		position: fixed;
 		top: 0;

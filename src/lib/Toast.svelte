@@ -31,6 +31,7 @@
 		align-items: center;
 		margin: 0 auto 0.5rem auto;
 		width: 20rem;
+		pointer-events: auto;
 	}
 	.error {
 		background: IndianRed;

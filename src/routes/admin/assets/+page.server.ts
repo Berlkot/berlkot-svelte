@@ -50,7 +50,7 @@ export const actions = {
 			...rest
 		};
 		const prev = await prisma.asset.findUnique({ where: { id: String(data.id) }, include: { tags: true } });
-		
+
 		if (stringTags) {
 			q.tags = {}
 			const toDisconnect = prev!.tags.filter((tag) => !stringTags.includes(tag.name)).map((tag) => ({ id: tag.id }));

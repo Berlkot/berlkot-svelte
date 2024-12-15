@@ -150,9 +150,17 @@
 		border-radius: 4px;
 		overflow: hidden;
 		position: relative;
+		transition: 0.2s filter linear;
+	}
+	.image-card:hover {
+		filter: var(--chromatic-aberration);
 	}
 	.image-card:hover p {
+		filter: var(--chromatic-aberration);
 		opacity: 1;
+	}
+	.image-card:hover img {
+		filter: blur(1px);
 	}
 
 	.image-card:hover .title {
@@ -172,7 +180,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: rgba(0, 0, 0, 0.541);
+		background-color: var(--color-shadow);
 		transition: opacity 0.2s ease-in-out;
 	}
 
@@ -180,12 +188,13 @@
 		object-fit: cover;
 		min-height: 100%;
 		width: 100%;
+		transition: 0.2s filter linear;
 	}
 
 	.close {
 		position: fixed;
 		top: 0;
-		background-color: rgba(0, 0, 0, 0.541);
+		background-color: var(--color-shadow);
 		border-radius: 3px;
 		padding: 8px 10px;
 		margin: 2px;
