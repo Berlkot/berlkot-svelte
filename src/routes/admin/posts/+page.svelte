@@ -1,7 +1,5 @@
 <script lang="ts">
-	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
 	import Modal from '$lib/Modal.svelte';
-	import { addToast } from '$lib/stores/toastStore';
 	import type { ActionData, PageData } from './$types';
 	import PostContainer from './PostContainer.svelte';
 

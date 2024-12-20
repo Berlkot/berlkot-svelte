@@ -1,11 +1,13 @@
 import { ADMIN_SECRET } from '$env/static/private';
-import { error } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
 export async function handle({ event, resolve }) {
 	if (event.cookies.get('auth') === ADMIN_SECRET) {
 		event.locals.admin = true;
 	} else if (event.url.pathname.startsWith('/admin')) {
-		throw error(404, 'Not found');
+		// this is deranged that i have to use fucking redirect here and cannot throw 404 
+		// sveltekit is a such great framework omg
+		redirect(301, '/login');
 	}
-	return await resolve(event);
+	return resolve(event);
 }

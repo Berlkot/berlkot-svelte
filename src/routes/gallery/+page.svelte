@@ -6,6 +6,7 @@
 	import { fade, scale } from 'svelte/transition';
 	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
 	import { browser } from "$app/environment"
+	import CloseImg from '$lib/assets/icons/close.svg'
 	let confirm = $state(false);
 	let { data } = $props();
 	let href = $state<string>('');
@@ -109,7 +110,9 @@
 				autofocus
 				onclick={() => {
 					history.back();
-				}}>X</button
+				}}>
+				<img src="{CloseImg}" alt="">
+				</button
 			>
 			<div class="data">
 				<AssetPage data={$page.state.selected} />
