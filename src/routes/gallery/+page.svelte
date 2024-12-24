@@ -123,9 +123,12 @@
 
 <style>
 	.click-to-reveal {
-		font-size: 1rem;
+		font: var(--p);
+		font-weight: bold;
 	}
 	.card-text {
+		font: var(--h3);
+		
 		text-align: center;
 	}
 	span {
@@ -138,7 +141,7 @@
 	}
 	section {
 		display: grid;
-		gap: 8px;
+		gap: 1.1rem;
 		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
 		grid-template-rows: repeat(auto-fill, minmax(210px, 1fr));
 	}
@@ -149,14 +152,70 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: grey;
+		background: repeating-linear-gradient(
+			-45deg, black 0px, #62498f 4px, rgba(0, 0, 0, 0) 8px);
 		border-radius: 4px;
-		overflow: hidden;
 		position: relative;
 		transition: 0.2s filter linear;
 	}
-	.image-card:hover {
+	@keyframes selection {
+		0% {
+			opacity: 1;
+			transform: scale(1.5);
+		}
+		10% {
+			opacity: 1;
+		}
+		15% {
+			opacity: 0;
+		}
+		30% {
+			opacity: 1;
+		}
+		40% {
+			opacity: 1;
+		}
+		45% {
+			opacity: 0;
+		}
+		55% {
+			transform: scale(1.5);
+		}
+		60% {
+			opacity: 1;
+		}
+		70% {
+			transform: scale(1);
+		}
+	}
+	.image-card::after, .image-card::before {
+		opacity: 0;
+		position: absolute;
+		content: "";
+		width: 30px;
+		height: 30px;
+		z-index: 1;
+		transition: opacity 0.2s ease-in-out;
 		filter: var(--chromatic-aberration);
+	}
+	.image-card::before {
+		top: 0;
+		left: 0;
+		border-left: 2px solid var(--color-text);
+		border-top: 2px solid var(--color-text);
+	}
+	.image-card::after {
+		right: 0;
+		bottom: 0;
+		border-bottom: 2px solid var(--color-text);
+		border-right: 2px solid var(--color-text);
+	}
+	.image-card:hover::before, .image-card:hover::after {
+		opacity: 1;
+		animation-name: selection;
+		animation-duration: 0.9s;
+		animation-timing-function: ease-in;
+		animation-iteration-count: 1;
 	}
 	.image-card:hover p {
 		filter: var(--chromatic-aberration);
@@ -171,7 +230,7 @@
 	}
 
 	.image-card p {
-		font-size: 2rem;
+		font: var(--h3);
 		opacity: 0;
 		transition: opacity 0.2s ease-in-out;
 	}

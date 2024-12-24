@@ -29,5 +29,6 @@
 		max-height: 100vh;
 		background-color: var(--color-shadow);
 		overflow: scroll;
+		z-index: 2;
 	}
 </style>

@@ -35,7 +35,7 @@
 		width: 100%;
 		height: 100vh;
 		background-color: var(--color-shadow);
-		z-index: 1;
+		z-index: 2;
 		overflow: scroll;
 	}
 	.flex-wr {
