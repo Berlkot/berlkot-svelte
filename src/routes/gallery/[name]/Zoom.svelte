@@ -80,6 +80,7 @@ function updateOffset(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElem
 			bind:this={viewport}
 			class="zoomable"
 			onwheel={(e) => wheel(e)}
+			onpointermove={(e) => onmousemove(e)}
 			onmousemove={(e) => onmousemove(e)}
 			style:transform={`translate(${translateX}px, ${translateY}px) scale(${zoom})`} style:transform-origin={`50% 50%`}>
 			{@render children?.()}
