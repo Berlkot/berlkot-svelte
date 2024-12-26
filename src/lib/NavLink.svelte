@@ -18,7 +18,7 @@
         color: #ff295f;
     }
     a {
-		font: var(--h4);
+		font: bold 1.9rem/1.6em var(--ff-display);
 		padding: 10px;
 		line-height: 1em;
         color: var(--color-accent);
