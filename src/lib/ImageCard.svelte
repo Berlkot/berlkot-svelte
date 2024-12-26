@@ -1,0 +1,245 @@
+<script lang="ts">
+    import { goto, preloadData, pushState } from '$app/navigation';
+    import { page } from '$app/stores';
+    import { browser } from "$app/environment"
+    import ConfirmDialog from '$lib/ConfirmDialog.svelte';
+    import CloseImg from '$lib/assets/icons/close.svg'
+    import Modal from '$lib/Modal.svelte';
+    import AssetPage from '$routes/gallery/[name]/+page.svelte';
+    import { fade, scale } from 'svelte/transition';
+    let { image } = $props();
+    let href = $state<string>('');
+    let confirm = $state(false);
+	async function navigate() {
+		const result = await preloadData(href);
+
+		if (result.type === 'loaded' && result.status === 200) {
+			pushState(href, { selected: result.data });
+		} else {
+			// something bad happened! try navigating
+			goto(href);
+		}
+	}
+	let confirmedMatureContent = $state(false || (browser && localStorage.getItem('confirmedMatureContent') === 'true'));
+</script>
+
+{#if confirm}
+	<ConfirmDialog
+		text="This image contains 18+ content, do you want to proceed?"
+		confirmText="Yes, I am"
+		rejectText="No, Take me back!"
+		onreject={() => (confirm = false)}
+		onconfirm={async () => {
+			confirmedMatureContent = true;
+			localStorage.setItem('confirmedMatureContent', 'true');
+			confirm = false;
+			await navigate();
+		}}
+	/>
+{/if}
+
+<a
+href="/gallery/{image.name}"
+onclick={async (e) => {
+    if (
+        e.shiftKey || // or the link is opened in a new window
+        e.metaKey ||
+        e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
+        // should also consider clicking with a mouse scroll wheel
+    ) {
+        return;
+    }
+
+    href = e.currentTarget.href;
+    e.preventDefault();
+    if (image.maturity > 0 && !confirmedMatureContent) {
+        confirm = true;
+    } else {
+        await navigate();
+    }
+}}
+>
+    <div class="image-card">
+            {#if image.maturity > 0 && !confirmedMatureContent}
+            <div class="card-text">
+                <span>{image.maturity == 2 ? 'NSFW' : 'Questionable'}</span>
+                <span class="click-to-reveal">Click to reveal (18+)</span>
+            </div>
+            {:else}
+                <img
+                    src="/asset/{image.name}.webp?w=270&h=270"
+                    alt={image.alt}
+                    width="270"
+                    height="270"
+                />
+            {/if}
+
+        <div class="title">
+            <p>{image.title || image.name}</p>
+        </div>
+
+    </div>
+</a>
+
+{#if $page.state.selected}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<Modal onclose={() => history.back()}>
+		<div in:scale={{ start: 0.0, duration: 300 }} out:fade={{ duration: 100 }}>
+			<!-- svelte-ignore a11y_autofocus -->
+			<button
+				class="close"
+				autofocus
+				onclick={() => {
+					history.back();
+				}}>
+				<img src="{CloseImg}" alt="">
+				</button
+			>
+			<div class="data">
+				<AssetPage data={$page.state.selected} />
+			</div>
+		</div>
+	</Modal>
+{/if}
+
+<style>
+	.click-to-reveal {
+		font: 1.6rem/1.2em var(--ff-paragraph);
+		font-weight: bold;
+	}
+	.card-text {
+		font: bold 2.25rem/1.2em var(--ff-display);
+		
+		text-align: center;
+	}
+	span {
+		display: block;
+	}
+	a {
+		text-decoration: none;
+		color: inherit;
+		font-size: 1.6rem;
+	}
+	.image-card {
+		aspect-ratio: 1/1;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: repeating-linear-gradient(
+			-45deg, black 0px, #62498f 4px, rgba(0, 0, 0, 0) 8px);
+		border-radius: 4px;
+		position: relative;
+		transition: 0.2s filter linear;
+	}
+	@keyframes selection {
+		0% {
+			opacity: 1;
+			transform: scale(1.5);
+		}
+		10% {
+			opacity: 1;
+		}
+		15% {
+			opacity: 0;
+		}
+		30% {
+			opacity: 1;
+		}
+		40% {
+			opacity: 1;
+		}
+		45% {
+			opacity: 0;
+		}
+		55% {
+			transform: scale(1.5);
+		}
+		60% {
+			opacity: 1;
+		}
+		70% {
+			transform: scale(1);
+		}
+	}
+	.image-card::after, .image-card::before {
+		opacity: 0;
+		position: absolute;
+		content: "";
+		width: 30px;
+		height: 30px;
+		z-index: 1;
+		transition: opacity 0.2s ease-in-out;
+		filter: var(--chromatic-aberration);
+	}
+	.image-card::before {
+		top: 0;
+		left: 0;
+		border-left: 2px solid var(--color-text);
+		border-top: 2px solid var(--color-text);
+	}
+	.image-card::after {
+		right: 0;
+		bottom: 0;
+		border-bottom: 2px solid var(--color-text);
+		border-right: 2px solid var(--color-text);
+	}
+	.image-card:hover::before, .image-card:hover::after {
+		opacity: 1;
+		animation-name: selection;
+		animation-duration: 0.9s;
+		animation-timing-function: ease-in;
+		animation-iteration-count: 1;
+	}
+	.image-card:hover p {
+		filter: var(--chromatic-aberration);
+		opacity: 1;
+	}
+	.image-card:hover img {
+		filter: blur(1px);
+	}
+
+	.image-card:hover .title {
+		opacity: 1;
+	}
+
+	.image-card p {
+		font: bold 2.25rem/1.2em var(--ff-display);
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+	}
+	.image-card .title {
+		opacity: 0;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background-color: var(--color-shadow);
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	img {
+		object-fit: cover;
+		min-height: 100%;
+		width: 100%;
+		transition: 0.2s filter linear;
+	}
+
+	.close {
+		display: flex;
+		position: fixed;
+		top: 0;
+		background-color: var(--color-shadow);
+		border-radius: 3px;
+		z-index: 2;
+		padding: 10px;
+		margin: 2px;
+	}
+	.data {
+		max-width: 100%;
+	}
+</style>
