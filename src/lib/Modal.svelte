@@ -25,8 +25,8 @@
 		top: 0;
 		left: 0;
 		width: 100%;
-		min-height: 100vh;
-		max-height: 100vh;
+		min-height: 100svh;
+		max-height: 100svh;
 		background-color: var(--color-shadow);
 		overflow: scroll;
 		z-index: 2;

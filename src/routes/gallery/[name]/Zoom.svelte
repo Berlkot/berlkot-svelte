@@ -38,15 +38,16 @@
 
 	}
 function onmousemove(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
+		e.preventDefault();
 		rect = viewport!.getBoundingClientRect();	
 		updateOffset(e)
 
 }
 function updateOffset(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElement; }) {
-	const signx = Math.sign(centerx - e.pageX);
-        const signy = Math.sign(centery - e.pageY);
-        let offsetx = Math.abs(centerx - e.pageX);
-        let offsety = Math.abs(centery - e.pageY);
+	const signx = Math.sign(centerx - e.clientX);
+        const signy = Math.sign(centery - e.clientY);
+        let offsetx = Math.abs(centerx - e.clientX);
+        let offsety = Math.abs(centery - e.clientY);
 		const maxOffsetX = (rect!.width / 4)
 		const maxOffsetY = (rect!.height / 4)
 
@@ -97,13 +98,15 @@ function updateOffset(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElem
 		top: 0;
 		left: 0;
 		width: 100%;
-		min-height: 100vh;
-		max-height: 100vh;
+		min-height: 100svh;
+		max-height: 100svh;
 		background-color: rgba(0, 0, 0, 0.5);
 		display: flex;
 		overflow: hidden;
 		align-items: center;
 		justify-content: center;
+		z-index: 2;
+		touch-action: none;
 	}
 	.zoomable {
 		display: flex;
