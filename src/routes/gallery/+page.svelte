@@ -22,14 +22,27 @@
 </form> -->
 
 <section>
+	<ul class="gallery">
 	{#each data.images as image}
+	<li>
 		<ImageCard {image} />
+	</li>
 	{/each}
+</ul>
 </section>
 
 
 <style>
-	section {
+	@media (max-width: 450px) {
+		ul.gallery {
+			grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+			grid-template-rows: repeat(auto-fill, minmax(160px, 1fr));
+		}
+	}
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
 		display: grid;
 		gap: 1.1rem;
 		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));

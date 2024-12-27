@@ -87,7 +87,7 @@
 <style>
 	.burger {
 		display: flex;
-		position: absolute;
+		position: fixed;
 		top: 2px;
 		right: 8px;
 		z-index: 1;
@@ -153,9 +153,10 @@
 	}
 	@media (max-width: 730px) {
 		main {
-			margin: 2.6rem 1rem 8rem 1rem;
+			margin: 2.6rem 2rem 8rem 2rem;
 		}
 		header {
+			height: 53px;
 			position: sticky;
 			top: 0;
 			left: 0;
@@ -168,6 +169,8 @@
 			display: none;
 		}
 		header nav {
+			width: 100vw;
+			position: fixed;
 			padding-top: 53px;
 			background-color: var(--bg-color);
 			text-align: center;

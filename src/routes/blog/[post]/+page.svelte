@@ -11,7 +11,7 @@
 	<title>{data.title}</title>
 	<meta name="author" content={data.author} />
 </svelte:head>
-<section>
+<section class="blog">
 	<!--We trust ourself or hacked-->
 	<!--eslint-disable svelte/no-at-html-tags-->
 	<article>
@@ -24,3 +24,13 @@
 		<section>{@html data.content}</section>
 	</article>
 </section>
+
+<style>
+	.blog {
+		max-width: 66ch;
+		margin: auto;
+	}
+	:global(main) {
+		margin: 2.6rem 1rem 8rem 1rem !important;
+	}
+</style>
