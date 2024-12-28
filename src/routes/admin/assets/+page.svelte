@@ -7,6 +7,7 @@
 	import Modal from '$lib/Modal.svelte';
 	import ImageContainer from './ImageContainer.svelte';
 	import Autocomplete from '$lib/Autocomplete.svelte';
+	import CloseImg from '$lib/assets/icons/close.svg'
 
 	interface Props {
 		data: PageData;
@@ -50,7 +51,15 @@
 			<div class="flex-wr">
 				<h2>Create new image</h2>
 				<!-- svelte-ignore a11y_autofocus -->
-				<button class="close" autofocus onclick={() => (modalIsOpen = false)}>X</button>
+				<button
+				class="close"
+				autofocus
+				onclick={() => {
+					modalIsOpen = false
+				}}>
+				<img src="{CloseImg}" alt="">
+				</button
+			>
 			</div>
 
 			<form
@@ -190,12 +199,6 @@
 		width: 80%;
 		padding: 20px;
 		border-radius: 0 0 5px 5px;
-	}
-	.close {
-		margin: 0;
-		padding: 8px;
-		height: min-content;
-		border: none;
 	}
 
 	section {

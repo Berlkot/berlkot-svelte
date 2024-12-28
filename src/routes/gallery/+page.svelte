@@ -33,19 +33,10 @@
 
 
 <style>
-	@media (max-width: 450px) {
+	@media (max-width: 712px) {
 		ul.gallery {
 			grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
 			grid-template-rows: repeat(auto-fill, minmax(160px, 1fr));
 		}
-	}
-	ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: grid;
-		gap: 1.1rem;
-		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-		grid-template-rows: repeat(auto-fill, minmax(210px, 1fr));
 	}
 </style>

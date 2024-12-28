@@ -7,7 +7,7 @@ const return_string = 'Blogpost not found!';
 
 export async function load({ params, locals }: RequestEvent) {
 	try {
-		const q: Prisma.PostFindUniqueArgs = { where: { name: params.post } };
+		const q: Prisma.PostFindUniqueArgs = { where: { name: params.post } , include: { tags: true, thumbnail: { select: { name: true} } }};
 		if (!locals.admin) {
 			q.where.visibility = 0;
 		}

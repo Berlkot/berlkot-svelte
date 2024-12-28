@@ -115,7 +115,7 @@
 				aria-controls="autocomplete-list"
 				aria-expanded={showDropdown}
 			/>
-			{#if !multipule}
+			{#if !multipule && selection.length > 0}
 				{selection[0][key as keyof (typeof selection)[0]]}
 			{/if}
 		</div>

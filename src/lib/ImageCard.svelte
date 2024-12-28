@@ -82,8 +82,6 @@ onclick={async (e) => {
 </a>
 
 {#if $page.state.selected}
-	<!-- svelte-ignore a11y_click_events_have_key_events -->
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<Modal onclose={() => history.back()}>
 		<div in:scale={{ start: 0.0, duration: 300 }} out:fade={{ duration: 100 }}>
 			<!-- svelte-ignore a11y_autofocus -->

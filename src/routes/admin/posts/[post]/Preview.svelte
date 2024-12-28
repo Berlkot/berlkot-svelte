@@ -7,13 +7,13 @@
 		day: 'numeric'
 	};
 	let content = $state('');
-	let renderedPost = $state(post);
+	let renderedPost = $state('')
 	$effect(() => {
 		fetch('/admin/posts/render', {
 			method: 'POST',
 			body: JSON.stringify({ content: post.content })
-		}).then((r) => r.json()).then((d) => (renderedPost.content = d.content));
+		}).then((r) => r.json()).then((d) => (renderedPost = d.content));
 	})
 </script>
 
-<PostPage data={renderedPost} />
+<PostPage data={{...post, content: renderedPost}} />

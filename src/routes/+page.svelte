@@ -31,6 +31,7 @@
 
 <style>
 	.more-btn {
+		font-family: var(--ff-display);
 		display: block;
 
 	}
@@ -41,15 +42,6 @@
 	}
 	.home-page {
 		margin-top: 300px;
-	}
-	.gallery {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: grid;
-		gap: 1.1rem;
-		grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-		grid-template-rows: repeat(auto-fill, minmax(210px, 1fr));
 	}
 	.hero-bg {
 		position: absolute;
