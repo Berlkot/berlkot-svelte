@@ -9,6 +9,7 @@ import type { Prisma } from '@prisma/client';
 import { rm } from 'fs/promises';
 import { Validator, type FieldConfig } from '$lib/form-validator';
 import { rename } from 'fs';
+import { readdir } from 'fs/promises';
 
 const validatorConfig: { [key: string]: FieldConfig } = {
 	id: ['string', 'reqired'],
@@ -66,6 +67,7 @@ export const actions = {
 		await Bun.$`rename ${prev!.name} ${name} data/assets/${name}/*`
 		}
 		if ((file as File).name) {
+			const thumbnails = (await readdir(`data/assets/${name}`, { withFileTypes: true})).filter((f) => f.name !== `${name}.webp` && f.name !== `${name}.mp4`);
 			await rm(`data/assets/${name}`, { force: true, recursive: true });
 			await mkdir(`data/assets/${name}`);
 			const path = `data/assets/${name}/${name + extname((file as File).name)}`;
@@ -78,7 +80,9 @@ export const actions = {
 			q.width = size.width;
 			q.height = size.height;
 			try {
-				await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 270, 270);
+				for (const thumbnail of thumbnails) {
+					await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, parseInt(thumbnail.name.split("_")[0]), parseInt(thumbnail.name.split("_")[1]));
+				} 
 			} catch {
 				return fail(422, { message: 'Failed to proccess media' });
 			}
@@ -125,6 +129,7 @@ export const actions = {
 			}
 		}
 		try {
+			// also checks if image type is supported by imagemagick
 			await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 270, 270);
 		} catch {
 			return fail(422, { message: 'Failed to proccess media' });
