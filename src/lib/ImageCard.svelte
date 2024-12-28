@@ -1,6 +1,6 @@
 <script lang="ts">
     import { goto, preloadData, pushState } from '$app/navigation';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import { browser } from "$app/environment"
     import ConfirmDialog from '$lib/ConfirmDialog.svelte';
     import CloseImg from '$lib/assets/icons/close.svg'
@@ -81,7 +81,7 @@ onclick={async (e) => {
     </div>
 </a>
 
-{#if $page.state.selected}
+{#if page.state.selected}
 	<Modal onclose={() => history.back()}>
 		<div in:scale={{ start: 0.0, duration: 300 }} out:fade={{ duration: 100 }}>
 			<!-- svelte-ignore a11y_autofocus -->
@@ -95,7 +95,7 @@ onclick={async (e) => {
 				</button
 			>
 			<div class="data">
-				<AssetPage data={$page.state.selected} />
+				<AssetPage data={page.state.selected} />
 			</div>
 		</div>
 	</Modal>

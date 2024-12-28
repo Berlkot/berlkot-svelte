@@ -1,10 +1,10 @@
 <script>
-	import { page } from "$app/stores";
+	import { page } from "$app/state";
 
     let { href, children, ...other } = $props();
   </script>
   
-<a {href} {...other} class:active={$page.url.pathname === href} aria-current={$page.url.pathname === href}>
+<a {href} {...other} class:active={page.url.pathname === href} aria-current={page.url.pathname === href}>
     {@render children?.()}
 </a>
 
