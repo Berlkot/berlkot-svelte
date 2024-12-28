@@ -7,7 +7,7 @@ export async function handle({ event, resolve }) {
 	} else if (event.url.pathname.startsWith('/admin')) {
 		// this is deranged that i have to use fucking redirect here and cannot throw 404 
 		// sveltekit is a such great framework omg
-		redirect(301, '/login');
+		redirect(307, '/login');
 	}
 	return resolve(event);
 }
