@@ -17,9 +17,9 @@
 	<article>
 		<header>
 			{#if data.thumbnail}
-				<img src="/asset/{data.thumbnail.name}.webp?w=1280&h=720" alt={data.title} width="1280" height="720" />
+				<img src="/asset/{data.thumbnail.name}.webp?w=1280&h=720" alt={data.thumbnail.alt} width="1280" height="720" />
+				<p>{data.thumbnail.smallDescription}</p>
 			{/if}
-			<img src="" alt="">
 			<h1>{data.title}</h1>
 			<p>{data.author}</p>
 			<time datetime={data.createdAt.toString()}

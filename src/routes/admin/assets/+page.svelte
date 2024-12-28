@@ -8,6 +8,7 @@
 	import ImageContainer from './ImageContainer.svelte';
 	import Autocomplete from '$lib/Autocomplete.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg'
+	import { searchFolders, searchTags } from '$lib/client-helpers';
 
 	interface Props {
 		data: PageData;
@@ -17,18 +18,7 @@
 	let { form, data }: Props = $props();
 	let images = $state(data.images);
 	let modalIsOpen = $state(false);
-	async function searchTags(keyword: string) {
-		const url = "/api/autocomplete/asset";
-		const response = await fetch(url, {
-			method: "POST",	
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({ text: keyword })
-		})
-		const data = await response.json()
-		return data
-	}
+
 </script>
 
 <section>
@@ -164,6 +154,12 @@
 				<div class="tags">
 					<Autocomplete name="tags" optFunction={searchTags} key="name" defaultSelected={[]} multipule={true} delay={200} allowNew={true}/>
 				</div>
+				</label>
+				<label>
+					Folders
+					<div class="tags">
+					<Autocomplete name="folders" optFunction={searchFolders} key="name" defaultSelected={[]} multipule={true} delay={200} allowNew={true} />
+					</div>
 				</label>	
 				<button class="submit" type="submit">Add</button>
 			</form>

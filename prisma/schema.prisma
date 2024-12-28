@@ -52,6 +52,7 @@ model AssetTag {
   id     String  @id @default(uuid())
   name   String  @unique
   assets Asset[]
+  type Int @default(0) // 0 tag 1 folder
 }
 
 model PostTag {

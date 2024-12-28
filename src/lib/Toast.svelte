@@ -1,5 +1,6 @@
 <script>
 	import { fade } from 'svelte/transition';
+	import CloseImg from '$lib/assets/icons/close.svg'
 
 	let { type = 'error', dismissible = true, children, dismiss } = $props();
 </script>
@@ -18,7 +19,9 @@
 	</div>
 
 	{#if dismissible}
-		<button class="close" onclick={() => dismiss()}> X </button>
+		<button class="close" onclick={() => dismiss()}>
+			<img src="{CloseImg}" alt="">
+		</button>
 	{/if}
 </div>
 
@@ -30,7 +33,8 @@
 		display: flex;
 		align-items: center;
 		margin: 0 auto 0.5rem auto;
-		width: 20rem;
+		width: 30rem;
+		font: 1.6rem/1.5 var(--ff-paragraph);
 		pointer-events: auto;
 	}
 	.error {

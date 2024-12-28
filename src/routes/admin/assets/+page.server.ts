@@ -26,7 +26,8 @@ const validatorConfig: { [key: string]: FieldConfig } = {
 	type: ['int', 'range:0:2'],
 	visibility: ['int', 'range:-1:2'],
 	maturity: ['int', 'range:0:3'],
-	tags: ['string']
+	tags: ['string'],
+	folders: ['string']
 };
 const validatorConfigWithFile = { ...validatorConfig };
 validatorConfigWithFile.file.push('reqired');
@@ -43,18 +44,19 @@ export const actions = {
 		if (!data) {
 			return fail(400, validator.status);
 		}
-		const { file, name, tags, ...rest } = data;
-		const stringTags = tags ? (tags as string).split(',') : undefined
+		const { file, name, tags, folders, ...rest } = data;
+		const stringTags = tags ? (tags as string).split(',') : []
+		const foldersTags = folders ? (folders as string).split(',') : []
 		const q: Prisma.AssetUpdateInput = {
 			name: String(name),
 			...rest
 		};
 		const prev = await prisma.asset.findUnique({ where: { id: String(data.id) }, include: { tags: true } });
 
-		if (stringTags) {
+		if (stringTags || foldersTags) {
 			q.tags = {}
-			const toDisconnect = prev!.tags.filter((tag) => !stringTags.includes(tag.name)).map((tag) => ({ id: tag.id }));
-			q.tags.connectOrCreate = stringTags.map((tag) => ({ where: { name: tag }, create: { name: tag } }));
+			const toDisconnect = prev!.tags.filter((tag) => !stringTags.includes(tag.name) && !foldersTags?.includes(tag.name)).map((tag) => ({ id: tag.id }));
+			q.tags.connectOrCreate = [...stringTags.map((tag) => ({ where: { name: tag }, create: { name: tag } })), ...foldersTags.map((tag) => ({ where: { name: tag }, create: { name: tag, type: 1 } }))];
 			if (toDisconnect) {
 				q.tags.disconnect = toDisconnect;
 			}
@@ -91,13 +93,17 @@ export const actions = {
 		if (!data) {
 			return fail(400, validator.status);
 		}
-		const { file, name, tags, ...rest } = data;
-		const stringTags = (tags as string).split(',')
-		const objTags = await Promise.all(stringTags.map((tag) => prisma.assetTag.upsert({ where: { name: tag }, update: {}, create: { name: tag } })));
+		const { file, name, tags, folders, ...rest } = data;
+		const stringTags = tags ? (tags as string).split(',') : []
+		const foldersTags = folders ? (folders as string).split(',') : []
 		try {
 			await mkdir(`data/assets/${name}`);
 		} catch {
 			return fail(400, { message: 'Image already exists' });
+		}
+		let objTags
+		if (stringTags || foldersTags) {
+			objTags = await Promise.all([...stringTags.map((tag) => prisma.assetTag.upsert({ where: { name: tag }, update: {}, create: { name: tag } })), ...foldersTags.map((tag) => prisma.assetTag.upsert({ where: { name: tag }, update: {}, create: { name: tag, type: 1 } }))]);
 		}
 
 		const path = `data/assets/${name}/${name + extname((file as File).name)}`;

@@ -21,7 +21,8 @@ export async function load({ params, locals, url }: RequestEvent) {
 			contentWarning: true,
 			maturity: true,
 			tags: { select: { name: true } }
-		}
+		},
+		orderBy: { creationDate: 'desc' }
 	};
 	if (!locals.admin) {
 		q.where!.visibility = 0;

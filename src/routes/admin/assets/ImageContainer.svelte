@@ -7,6 +7,7 @@
 	import type { ActionData } from './$types';
 	import Autocomplete from '$lib/Autocomplete.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg'
+	import { searchFolders, searchTags } from '$lib/client-helpers';
 
 	interface Props {
 		image: Asset;
@@ -18,18 +19,6 @@
 	let showConfirm = $state(false);
 	function getRandomInt(max: number) {
 		return Math.floor(Math.random() * max);
-	}
-	async function searchTags(keyword: string) {
-		const url = "/api/autocomplete/asset";
-		const response = await fetch(url, {
-			method: "POST",	
-			headers: {
-				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({ text: keyword })
-		})
-		const data = await response.json()
-		return data
 	}
 </script>
 
@@ -203,7 +192,13 @@
 				<label>
 					Tags
 					<div class="tags">
-					<Autocomplete name="tags" optFunction={searchTags} key="name" defaultSelected={image.tags} multipule={true} delay={200} allowNew={true} />
+					<Autocomplete name="tags" optFunction={searchTags} key="name" defaultSelected={image.tags.filter((tag) => tag.type === 0)} multipule={true} delay={200} allowNew={true} />
+					</div>
+				</label>
+				<label>
+					Folders
+					<div class="tags">
+					<Autocomplete name="folders" optFunction={searchFolders} key="name" defaultSelected={image.tags.filter((tag) => tag.type === 1)} multipule={true} delay={200} allowNew={true} />
 					</div>
 				</label>
 
