@@ -7,7 +7,9 @@
 		multipule?: boolean;
 		optionItem?: any;
 		key: string;
+		placeholder?: string;
 		allowNew?: boolean;
+		onChange?: Function;
 	}
 	let {
 		optFunction,
@@ -17,7 +19,9 @@
 		multipule,
 		optionItem,
 		key,
-		allowNew = false
+		placeholder = "",
+		allowNew = false,
+		onChange
 	}: Props = $props();
 	async function oninput(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		if (timeout) clearTimeout(timeout);
@@ -52,6 +56,9 @@
 	let selection: object[] = $state([...defaultSelected]);
 	let options = $state([]);
 	let value = $state(defaultSelected.map((t) => t[key as keyof typeof t]).join(','));
+	$effect(() => {
+		if (onChange) onChange(value);
+	})
 	let timeout: Timer;
 	let input: HTMLInputElement;
 	let focused = $state(0);
@@ -80,6 +87,7 @@
 		{/if}
 		<div class="autocomplete-input">
 			<input
+				placeholder={placeholder}
 				id="autocomplete-input"
 				bind:this={input}
 				type="text"

@@ -7,10 +7,18 @@ export async function load({ params, locals, url }: RequestEvent) {
 	// TODO: implement filters
 	// const maturity = url.searchParams.getAll('maturity');
 	// const ordering = url.searchParams.get('ordering');
-	// const tags = url.searchParams.getAll('tag');
+	let tags = url.searchParams.getAll('tags');
+	if (tags.length > 0) {
+		tags = tags[0].split(',')
+	} else {
+		tags = []
+	}
 	// const text = url.searchParams.get('text');
 	const q: Prisma.AssetFindManyArgs = {
-		where: { inGallery: true },
+		where: {
+			inGallery: true,
+			AND: tags.map((tag) => ({ tags: { some: { name: tag } } }))
+		},
 		select: {
 			name: true,
 			height: true,
