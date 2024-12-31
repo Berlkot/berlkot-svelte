@@ -1,19 +1,33 @@
 <script lang="ts">
 	import HeroImage from '$lib/assets/images/hero_bg.webp';
 	import ImageCard from '$lib/ImageCard.svelte';
+	import ArticleCard from '$lib/ArticleCard.svelte';
 	let { data } = $props();
 </script>
 
 <svelte:head>
 	<title>Berlkot</title>
+	<meta name="og:description" content="Website of Berlkot, artist and developer obsessed with cats, tech and comics.">
+	<meta name="description" content="Website of Berlkot, artist and developer obsessed with cats, tech and comics.">
+	<meta property="og:title" content="Berlkot | Artist & Developer" />
 </svelte:head>
 <div class="hero-bg" style:background-image="url({HeroImage})"></div>
-<h1 class="visually-hidden">Berlkot site home page</h1>
-<section class="home-page">
-	<h2 class="heading">Berlkot</h2>
-</section>
+<div class="hero-text">
+	<h1>Berlkot <span><br>Creative & Developer</span></h1>
+	<p><a class="link link-decor" href="/about">socials</a> | <a class="link link-decor" href="mailto:contact@berlkot.com">Email</a></p>
+</div>
 <section>
 	<h2 class="heading">Latest to read</h2>
+	<ul class="blog-list">
+		{#each data.posts as post}
+			<li>
+				<ArticleCard {post} />
+			</li>
+		{/each}
+	</ul>
+	<div class="more-wrap">
+		<a href="/blog" class="button link link-decor more-btn">More articles</a>
+	</div>
 </section>
 <section>
 	<h2 class="heading">Latest to look</h2>
@@ -25,11 +39,30 @@
 		{/each}
 	</ul>
 	<div class="more-wrap">
-		<a href="/gallery" class="button link more-btn">More artworks</a>
+		<a href="/gallery" class="button link link-decor more-btn">More artworks</a>
 	</div>
 </section>
 
 <style>
+	.hero-text {
+		font-family: var(--ff-display);
+		margin-top: 175px;
+		display: flex;
+		justify-content: center;
+		text-align: center;
+		flex-direction: column;
+		margin-bottom: 4rem;
+	}
+	.hero-text p {
+		margin: 0;
+		font: 1.6rem/0 var(--ff-display);
+	}
+	.hero-text h1 {
+		font: 3.6rem/0.3em var(--ff-display);
+	}
+	.hero-text h1 span {
+		font: 1.8rem/1em var(--ff-display);
+	}
 	.more-btn {
 		font-family: var(--ff-display);
 		display: block;
@@ -39,9 +72,6 @@
 		justify-content: end;
 		margin-top: 1.5rem;
 		display: flex;
-	}
-	.home-page {
-		margin-top: 300px;
 	}
 	.hero-bg {
 		position: absolute;

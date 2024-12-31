@@ -15,6 +15,11 @@ renderer.paragraph = function (text) {
 	if (text.startsWith('<img')) return text;
 	else return '<p>' + text + '</p>';
 };
+renderer.link = function (href, title, text) {
+	if (href.startsWith("http")) 
+		return `<a target="_blank" class="link external" href="${href}" ${title ? 'title="' + title +'"': ""}>${text}</a>`
+	return `<a class="link" href="${href}" ${title ? 'title="' + title +'"': ""}>${text}</a>`
+}
 
 async function walkTokens(token) {
 	if (token.type === 'image' && path.basename(token.href) === token.href) {

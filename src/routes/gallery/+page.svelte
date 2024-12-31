@@ -7,29 +7,37 @@
 	import { goto } from '$app/navigation';
 	let tags: any = page.url.searchParams.getAll('tags');
 	if (tags.length > 0) {
-		tags = tags[0].split(',').map((tag: any) => ({name: tag}))
+		tags = tags[0].split(',').map((tag: any) => ({ name: tag }));
 	} else {
-		tags = []
+		tags = [];
 	}
 	const initialTags = tags;
 	let skipedinit = false;
 	async function onChange(value) {
 		if (!skipedinit) {
 			skipedinit = true;
-			return
-		};
+			return;
+		}
 		if (!value) {
-			await goto('/gallery')
-			return
-		};
+			await goto('/gallery');
+			return;
+		}
 		await goto('/gallery?tags=' + value);
 	}
 </script>
 
 <svelte:head>
-	<title>Berlkot gallery</title>
+	<title>Gallery | Berlkot</title>
+	<meta name="title" content="Gallery | Berlkot">
+	<meta name="title" content="Gallery | Berlkot">
+	<meta name="description" content="All sorts of artworks for past couple of years">
+	<meta name="og:description" content="All sorts of artworks for past couple of years">
 </svelte:head>
-<h1>Gallery</h1>
+<div class="page-title">
+	<h1>Gallery</h1>
+	<p>Here you can find all of my artworks for past couple years</p>
+</div>
+
 <!-- 
 // TODO: Implement filtering
 // goto('/gallery?maturity=' + maturity + '&ordering=' + ordering + '&tag=' + tags + '&text=' + text);
@@ -44,18 +52,26 @@
 </form> -->
 <label>
 	Tag filter:
-<Autocomplete onChange={onChange} name="tags" placeholder="Type to search" optFunction={searchTags} key="name" defaultSelected={initialTags} multipule={true} delay={200}/>
+	<Autocomplete
+		{onChange}
+		name="tags"
+		placeholder="Type to search"
+		optFunction={searchTags}
+		key="name"
+		defaultSelected={initialTags}
+		multipule={true}
+		delay={200}
+	/>
 </label>
 <section>
 	<ul class="gallery">
-	{#each data.images as image}
-	<li>
-		<ImageCard {image} />
-	</li>
-	{/each}
-</ul>
+		{#each data.images as image}
+			<li>
+				<ImageCard {image} />
+			</li>
+		{/each}
+	</ul>
 </section>
-
 
 <style>
 	@media (max-width: 712px) {
@@ -68,5 +84,7 @@
 		text-wrap: nowrap;
 		display: flex;
 		gap: 1rem;
+		font-weight: bold;
+		padding: 1rem;
 	}
 </style>

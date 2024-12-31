@@ -59,7 +59,7 @@ onclick={async (e) => {
     }
 }}
 >
-    <div class="image-card">
+    <div class="image-card focusable">
             {#if image.maturity > 0 && !confirmedMatureContent}
             <div class="card-text">
                 <span>{image.maturity == 2 ? 'NSFW' : 'Questionable'}</span>
@@ -103,11 +103,11 @@ onclick={async (e) => {
 
 <style>
 	.click-to-reveal {
-		font: 1.6rem/1.2em var(--ff-paragraph);
+		font: 1.4rem/1.2em var(--ff-paragraph);
 		font-weight: bold;
 	}
 	.card-text {
-		font: bold 2.25rem/1.2em var(--ff-display);
+		font: bold 2rem/1.2em var(--ff-display);
 		
 		text-align: center;
 	}
@@ -129,68 +129,9 @@ onclick={async (e) => {
 		background: repeating-linear-gradient(
 			-45deg, black 0px, #62498f 4px, rgba(0, 0, 0, 0) 8px);
 		border-radius: 4px;
-		position: relative;
 		transition: 0.2s filter linear;
 	}
-	@keyframes selection {
-		0% {
-			opacity: 1;
-			transform: scale(1.5);
-		}
-		10% {
-			opacity: 1;
-		}
-		15% {
-			opacity: 0;
-		}
-		30% {
-			opacity: 1;
-		}
-		40% {
-			opacity: 1;
-		}
-		45% {
-			opacity: 0;
-		}
-		55% {
-			transform: scale(1.5);
-		}
-		60% {
-			opacity: 1;
-		}
-		70% {
-			transform: scale(1);
-		}
-	}
-	.image-card::after, .image-card::before {
-		opacity: 0;
-		position: absolute;
-		content: "";
-		width: 30px;
-		height: 30px;
-		z-index: 1;
-		transition: opacity 0.2s ease-in-out;
-		filter: var(--chromatic-aberration);
-	}
-	.image-card::before {
-		top: 0;
-		left: 0;
-		border-left: 2px solid var(--color-text);
-		border-top: 2px solid var(--color-text);
-	}
-	.image-card::after {
-		right: 0;
-		bottom: 0;
-		border-bottom: 2px solid var(--color-text);
-		border-right: 2px solid var(--color-text);
-	}
-	.image-card:hover::before, .image-card:hover::after {
-		opacity: 1;
-		animation-name: selection;
-		animation-duration: 0.9s;
-		animation-timing-function: ease-in;
-		animation-iteration-count: 1;
-	}
+
 	.image-card:hover p {
 		filter: var(--chromatic-aberration);
 		opacity: 1;
@@ -201,6 +142,9 @@ onclick={async (e) => {
 
 	.image-card:hover .title {
 		opacity: 1;
+	}
+	.title p {
+		margin: 0;
 	}
 
 	.image-card p {

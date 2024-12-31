@@ -47,8 +47,12 @@ export const actions = {
 			const thumbnail = (await prisma.asset.findUnique({ where: { name: String(data.thumbnail) } }))!
 			data.thumbnail = {};
 			data.thumbnail.connect = { id: thumbnail.id }
-			await generateThumbnail(`data/assets/${thumbnail.name}/${thumbnail.name}.webp`, `data/assets/${thumbnail.name}/${thumbnail.name}.webp`, 465, 260);
-			await generateThumbnail(`data/assets/${thumbnail.name}/${thumbnail.name}.webp`, `data/assets/${thumbnail.name}/${thumbnail.name}.webp`, 1280, 720);
+			let end = 'webp';
+			if (thumbnail.type === 1) {
+				end = 'mp4';
+			}
+			await generateThumbnail(`data/assets/${thumbnail.name}/${thumbnail.name}.${end}`, `data/assets/${thumbnail.name}/${thumbnail.name}.webp`, 465, 260);
+			await generateThumbnail(`data/assets/${thumbnail.name}/${thumbnail.name}.${end}`, `data/assets/${thumbnail.name}/${thumbnail.name}.webp`, 1280, 720);
 		}
 
 		const q: Prisma.PostUpdateInput = {

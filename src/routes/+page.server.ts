@@ -20,9 +20,23 @@ export async function load({ locals }: RequestEvent) {
 		},
 		orderBy: { creationDate: 'desc' }
 	};
+	const qp: Prisma.PostFindManyArgs = {
+		take: 3,
+		select: {
+			thumbnail: true,
+			name: true,
+			title: true,
+			description: true,
+			createdAt: true,
+			tags: true
+		},
+		orderBy: { createdAt: 'desc' }
+	}
 	if (!locals.admin) {
 		q.where!.visibility = 0;
+		qp.where!.visibility = 0;
 	}
 	const asset = await prisma.asset.findMany(q);
-	return { images: asset };
+	const posts = await prisma.post.findMany(qp);
+	return { images: asset, posts: posts };
 }

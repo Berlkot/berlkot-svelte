@@ -118,6 +118,10 @@
 							select({ [key]: input.value });
 						}
 					}
+					if (e.key == 'Backspace' && !multipule && selection.length > 0) {
+						selection = [];
+						value = '';
+					}
 				}}
 				role="combobox"
 				aria-controls="autocomplete-list"

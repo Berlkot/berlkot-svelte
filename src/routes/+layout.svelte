@@ -43,7 +43,7 @@
 			</div>
 			<div class="right">
 				<NavLink href="/gallery">Gallery</NavLink>
-				<NavLink href="/projects">Projects</NavLink>
+				<NavLink href="" class="disabled">Projects</NavLink>
 			</div>
 		</nav>
 	</header>
@@ -75,7 +75,7 @@
 		<div class="real-footer">
 			<p>
 				&copy; Berlkot 2024-2025 &bull; Site sourse code can be found <a
-					class="link"
+					class="link link-decor"
 					href="https://github.com/Berlkot/berlkot-svelte"
 					target="_blank">here</a
 				>
@@ -96,7 +96,7 @@
 		fill: var(--color-accent);
 	}
 	main {
-		margin: 2.6rem 0 8rem 0;
+		margin: 1rem 1rem 8rem 1rem;
 	}
 
 	footer {
@@ -153,7 +153,7 @@
 	}
 	@media (max-width: 730px) {
 		main {
-			margin: 2.6rem 2rem 8rem 2rem;
+			margin: 1rem 2rem 8rem 2rem;
 		}
 		header {
 			height: 53px;
@@ -217,7 +217,7 @@
 			margin-right: 45px;
 		}
 		.left::after {
-			content: url('/assets/images/test.svg');
+			content: url('/assets/images/decoration.svg');
 			position: absolute;
 			top: 0;
 			left: -23px;
@@ -227,7 +227,7 @@
 			height: 100%;
 		}
 		.right::after {
-			content: url('/assets/images/test.svg');
+			content: url('/assets/images/decoration.svg');
 			position: absolute;
 			top: 0;
 			right: -23px;
