@@ -46,7 +46,7 @@
 		<div class="metadata">
 			<span>By {data.author}</span>
 			<span
-				>{#if data.updatedAt > data.createdAt}<time
+				>{#if data.updatedAt > new Date(data.createdAt.getTime() + 86400000)}<time
 						class="updated"
 						datetime={data.updatedAt.toString()}
 						>{new Intl.DateTimeFormat(undefined, options).format(data.updatedAt)}</time
