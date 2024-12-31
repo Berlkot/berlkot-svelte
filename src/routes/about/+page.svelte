@@ -2,6 +2,15 @@
 	import Head from '$lib/assets/images/head.webp';
 	import Instagram from '$lib/assets/icons/instagram.svg';
 </script>
+
+<svelte:head>
+	<title>About | Berlkot</title>
+	<meta name="og:title" content="Some stuff about myself and my website">
+	<meta name="og:description" content="Some stuff about myself and my website">
+	<meta name="author" content="Berlkot">
+
+
+</svelte:head>
 <div class="content">
 <h1 class="page-title">about</h1>
 <img class="portrait" src={Head} width="500" height="456" alt="Berlian close up portrait" />
@@ -10,18 +19,18 @@
 	<p class="sub">Berlkot | he/him</p>
 	<p>
 		At least that how i called in the virtual world. This name based on combining word
-		<span class="whiter">"berlian"</span> as for <span class="whiter">"shiny"</span> and word "cat" written in russian transliteration
+		<strong>"berlian"</strong> as for <strong>"shiny"</strong> and word "cat" written in russian transliteration
 	</p>
 	<p>
-		I'm also a <span class="whiter">CS student</span> studying how to make machines do *beep-boop*. Made some progress in image
+		I'm also a <strong>CS student</strong> studying how to make machines do *beep-boop*. Made some progress in image
 		processing and game dev
 	</p>
 	<p>
-		<span class="whiter">As an artist</span> i really like developing an overall style for a project. Have some expiriense
+		<strong>As an artist</strong> i really like developing an overall style for a project. Have some expiriense
 		working in a team as a background & concept artist
 	</p>
 	<p>
-		<span class="whiter">In free time</span>, i really like tinkering with stuff (thats why i have linux as my main system) and gaming. And i also somehow got myself involved into furry fandom. Now I really want to make my own fursuit at some point <span class="accent">:D</span>
+		<strong>In free time</strong>, i really like tinkering with stuff (thats why i have linux as my main system) and gaming. And i also somehow got myself involved into furry fandom. Now I really want to make my own fursuit at some point <span class="accent">:D</span>
 	</p>
 </section>
 <section>
@@ -32,7 +41,7 @@
 		ground up.
 	</p>
 	<p>
-		I'm <span class="whiter">still working</span> on some major parts of it. For example RSS and sitemap are still missing. And the projects tab... But i have something sweat planned as a way to test my web animation framework. So keep an eye on that <span class="accent">0w0</span>
+		I'm <strong>still working</strong> on some major parts of it. For example RSS and sitemap are still missing. And the projects tab... But i have something sweat planned as a way to test my web animation framework. So keep an eye on that <span class="accent">0w0</span>
 	</p>
 </section>
 <section>
@@ -76,10 +85,7 @@
 	.accent {
 		color: var(--color-accent);
 	}
-	.whiter {
-		color: #ffe5e5;
-		font-weight: bold;
-	}
+
 	.sub {
 		font-family: var(--ff-display);
 	}

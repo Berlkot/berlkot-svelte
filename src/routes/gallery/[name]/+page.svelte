@@ -39,7 +39,9 @@
 		<!--We trust ourself or hacked-->
 		<!--eslint-disable-next-line svelte/no-at-html-tags-->
 		<div class="content">{@html data.largeDescription}</div>
-
+		{#if data.copyright}
+		<p class="tag-list">Copyright: {data.copyright}</p>
+		{/if}
 		<!-- eslint doesnt know that prisma has related queries-->
 		 <p class="tag-list">Tags:
 			{#each (data as any).tags.filter((tag) => tag.type === 0) as tag}
