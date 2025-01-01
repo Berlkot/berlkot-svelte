@@ -34,6 +34,7 @@ export async function load({ locals }: RequestEvent) {
 	}
 	if (!locals.admin) {
 		q.where!.visibility = 0;
+		qp.where = {};
 		qp.where!.visibility = 0;
 	}
 	const asset = await prisma.asset.findMany(q);

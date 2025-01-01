@@ -10,6 +10,7 @@
 
 <svelte:head>
 	<title>{data.title} | Berlkot</title>
+	<meta name="og:type" content="image">
 	<meta name="og:title" content="{data.title} | Berlkot">
 	<meta name="description" content="{data.smallDescription}">
 	<meta name="og:description" content="{data.smallDescription}">
