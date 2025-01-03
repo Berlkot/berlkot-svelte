@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "bunx --bun vite dev",
-		"build": "bunx --bun vite build && cp -R data build/",
+		"build": "bunx --bun vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -26,7 +26,7 @@
 		"prettier-plugin-svelte": "^3.3.2",
 		"prisma": "^6.1.0",
 		"svelte": "^5.16.0",
-		"svelte-adapter-bun": "^0.5.2",
+		"svelte-adapter-bun": "git+https://github.com/gornostay25/svelte-adapter-bun.git",
 		"svelte-check": "^4.1.1",
 		"tslib": "^2.8.1",
 		"tsx": "^4.19.2",
