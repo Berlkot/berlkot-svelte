@@ -7,6 +7,7 @@
     import Modal from '$lib/Modal.svelte';
     import AssetPage from '$routes/gallery/[name]/+page.svelte';
     import { fade, scale } from 'svelte/transition';
+	import { confirmedMatureContent } from './stores/persistent';
     let { image } = $props();
     let href = $state<string>('');
     let confirm = $state(false);
@@ -20,7 +21,6 @@
 			goto(href);
 		}
 	}
-	let confirmedMatureContent = $state(false || (browser && localStorage.getItem('confirmedMatureContent') === 'true'));
 </script>
 
 {#if confirm}
@@ -30,7 +30,7 @@
 		rejectText="No, Take me back!"
 		onreject={() => (confirm = false)}
 		onconfirm={async () => {
-			confirmedMatureContent = true;
+			confirmedMatureContent.update((value) => true);
 			localStorage.setItem('confirmedMatureContent', 'true');
 			confirm = false;
 			await navigate();
@@ -52,7 +52,7 @@ onclick={async (e) => {
 
     href = e.currentTarget.href;
     e.preventDefault();
-    if (image.maturity > 0 && !confirmedMatureContent) {
+    if (image.maturity > 0 && !$confirmedMatureContent) {
         confirm = true;
     } else {
         await navigate();
@@ -60,7 +60,7 @@ onclick={async (e) => {
 }}
 >
     <div class="image-card focusable">
-            {#if image.maturity > 0 && !confirmedMatureContent}
+            {#if image.maturity > 0 && !$confirmedMatureContent}
             <div class="card-text">
                 <span>{image.maturity == 2 ? 'NSFW' : 'Questionable'}</span>
                 <span class="click-to-reveal">Click to reveal (18+)</span>
