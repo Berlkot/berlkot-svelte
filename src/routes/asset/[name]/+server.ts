@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client';
 import { error, type RequestEvent } from '@sveltejs/kit';
 import { basename, extname } from 'path';
 
-export async function GET({ params, locals, url }: RequestEvent) {
+export async function GET({ params, locals, url, request }: RequestEvent) {
 	// and this prevents any sort of path injection because NaN equals to false lol
 	const width = parseInt(url.searchParams.get('w') as string);
 	const height = parseInt(url.searchParams.get('h') as string);
@@ -29,8 +29,17 @@ export async function GET({ params, locals, url }: RequestEvent) {
 		if (!(await file.exists())) {
 			throw Error();
 		}
+		const hasher = new Bun.CryptoHasher("sha256");
+		hasher.update(file.lastModified.toString())
+		hasher.update(name)
+		hasher.update(width.toString())
+		hasher.update(height.toString())
+		const header = hasher.digest("base64")
+		if (request.headers.get("If-None-Match") === header) {
+			return new Response(null, { status: 304, headers: { "Etag": header } });
+		}
 		const response = new Response(file);
-		//response.headers.set("Cache-Control", 'public, max-age=3600')
+		response.headers.set("Etag", header)
 		return response;
 	} catch {
 		throw error(404, { message: 'Image not found' });
