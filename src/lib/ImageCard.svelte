@@ -145,6 +145,7 @@ onclick={async (e) => {
 	}
 	.title p {
 		margin: 0;
+		text-align: center;
 	}
 
 	.image-card p {
