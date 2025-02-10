@@ -29,17 +29,17 @@ export async function GET({ params, locals, url, request }: RequestEvent) {
 		if (!(await file.exists())) {
 			throw Error();
 		}
-		const hasher = new Bun.CryptoHasher("sha256");
-		hasher.update(file.lastModified.toString())
-		hasher.update(name)
-		hasher.update(width.toString())
-		hasher.update(height.toString())
-		const header = hasher.digest("base64")
-		if (request.headers.get("If-None-Match") === header) {
-			return new Response(null, { status: 304, headers: { "Etag": header } });
+		const hasher = new Bun.CryptoHasher('sha256');
+		hasher.update(file.lastModified.toString());
+		hasher.update(name);
+		hasher.update(width.toString());
+		hasher.update(height.toString());
+		const header = hasher.digest('base64');
+		if (request.headers.get('If-None-Match') === header) {
+			return new Response(null, { status: 304, headers: { Etag: header } });
 		}
 		const response = new Response(file);
-		response.headers.set("Etag", header)
+		response.headers.set('Etag', header);
 		return response;
 	} catch {
 		throw error(404, { message: 'Image not found' });

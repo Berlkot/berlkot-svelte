@@ -5,23 +5,21 @@
 	let viewport: HTMLDivElement | undefined = $state();
 	let activated = $state(false);
 	let rect: DOMRect | undefined = $state();
-    async function toggleZoom(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
-    activated = !activated;
+	async function toggleZoom(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
+		activated = !activated;
 
-    if (!activated) {
-        zoom = 1.5;
-        translateX = 0;
-        translateY = 0;
-    } else {
-        await tick();
-		rect = viewport!.getBoundingClientRect();
-        centerx = rect.left + rect.width / 2;
-        centery = rect.top + rect.height / 2;
-		updateOffset(e);
-    }
-}
-
-
+		if (!activated) {
+			zoom = 1.5;
+			translateX = 0;
+			translateY = 0;
+		} else {
+			await tick();
+			rect = viewport!.getBoundingClientRect();
+			centerx = rect.left + rect.width / 2;
+			centery = rect.top + rect.height / 2;
+			updateOffset(e);
+		}
+	}
 
 	let zoom = $state(1.5);
 	let centerx: number = $state(0);
@@ -35,36 +33,30 @@
 		} else {
 			zoom = Math.max(0.8, zoom - 0.2);
 		}
-
 	}
-function onmousemove(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
+	function onmousemove(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
 		e.preventDefault();
-		rect = viewport!.getBoundingClientRect();	
-		updateOffset(e)
-
-}
-function updateOffset(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElement; }) {
-	const signx = Math.sign(centerx - e.clientX);
-        const signy = Math.sign(centery - e.clientY);
-        let offsetx = Math.abs(centerx - e.clientX);
-        let offsety = Math.abs(centery - e.clientY);
-		const maxOffsetX = (rect!.width / 4)
-		const maxOffsetY = (rect!.height / 4)
+		rect = viewport!.getBoundingClientRect();
+		updateOffset(e);
+	}
+	function updateOffset(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElement }) {
+		const signx = Math.sign(centerx - e.clientX);
+		const signy = Math.sign(centery - e.clientY);
+		let offsetx = Math.abs(centerx - e.clientX);
+		let offsety = Math.abs(centery - e.clientY);
+		const maxOffsetX = rect!.width / 4;
+		const maxOffsetY = rect!.height / 4;
 
 		if (offsetx >= maxOffsetX && offsetx - maxOffsetX >= offsety - maxOffsetY) {
-			offsety = (offsety / offsetx) * maxOffsetX 
-			offsetx = maxOffsetX; 
+			offsety = (offsety / offsetx) * maxOffsetX;
+			offsetx = maxOffsetX;
 		} else if (offsety > maxOffsetY && offsety - maxOffsetY >= offsetx - maxOffsetX) {
 			offsetx = (offsetx / offsety) * maxOffsetY;
-			offsety = maxOffsetY; 
+			offsety = maxOffsetY;
 		}
 		translateX = offsetx * signx;
 		translateY = offsety * signy;
-}
-
-
-
-
+	}
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -83,7 +75,9 @@ function updateOffset(e: MouseEvent & { currentTarget: EventTarget & HTMLDivElem
 			onwheel={(e) => wheel(e)}
 			onpointermove={(e) => onmousemove(e)}
 			onmousemove={(e) => onmousemove(e)}
-			style:transform={`translate(${translateX}px, ${translateY}px) scale(${zoom})`} style:transform-origin={`50% 50%`}>
+			style:transform={`translate(${translateX}px, ${translateY}px) scale(${zoom})`}
+			style:transform-origin={`50% 50%`}
+		>
 			{@render children?.()}
 		</div>
 	</div>

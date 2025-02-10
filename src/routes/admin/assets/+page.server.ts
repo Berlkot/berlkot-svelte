@@ -35,7 +35,7 @@ validatorConfigWithFile.file.push('reqired');
 delete validatorConfigWithFile.id;
 
 export async function load() {
-	return { images: await prisma.asset.findMany({include: {tags: true}}) };
+	return { images: await prisma.asset.findMany({ include: { tags: true } }) };
 }
 
 export const actions = {
@@ -46,28 +46,38 @@ export const actions = {
 			return fail(400, validator.status);
 		}
 		const { file, name, tags, folders, ...rest } = data;
-		const stringTags = tags ? (tags as string).split(',') : []
-		const foldersTags = folders ? (folders as string).split(',') : []
+		const stringTags = tags ? (tags as string).split(',') : [];
+		const foldersTags = folders ? (folders as string).split(',') : [];
 		const q: Prisma.AssetUpdateInput = {
 			name: String(name),
 			...rest
 		};
-		const prev = await prisma.asset.findUnique({ where: { id: String(data.id) }, include: { tags: true } });
+		const prev = await prisma.asset.findUnique({
+			where: { id: String(data.id) },
+			include: { tags: true }
+		});
 
 		if (stringTags || foldersTags) {
-			q.tags = {}
-			const toDisconnect = prev!.tags.filter((tag) => !stringTags.includes(tag.name) && !foldersTags?.includes(tag.name)).map((tag) => ({ id: tag.id }));
-			q.tags.connectOrCreate = [...stringTags.map((tag) => ({ where: { name: tag }, create: { name: tag } })), ...foldersTags.map((tag) => ({ where: { name: tag }, create: { name: tag, type: 1 } }))];
+			q.tags = {};
+			const toDisconnect = prev!.tags
+				.filter((tag) => !stringTags.includes(tag.name) && !foldersTags?.includes(tag.name))
+				.map((tag) => ({ id: tag.id }));
+			q.tags.connectOrCreate = [
+				...stringTags.map((tag) => ({ where: { name: tag }, create: { name: tag } })),
+				...foldersTags.map((tag) => ({ where: { name: tag }, create: { name: tag, type: 1 } }))
+			];
 			if (toDisconnect) {
 				q.tags.disconnect = toDisconnect;
 			}
 		}
 		if (prev!.name !== name) {
-		rename(`data/assets/${prev!.name}`, `data/assets/${name}`, () => {});
-		await Bun.$`rename ${prev!.name} ${name} data/assets/${name}/*`
+			rename(`data/assets/${prev!.name}`, `data/assets/${name}`, () => {});
+			await Bun.$`rename ${prev!.name} ${name} data/assets/${name}/*`;
 		}
 		if ((file as File).name) {
-			const thumbnails = (await readdir(`data/assets/${name}`, { withFileTypes: true})).filter((f) => f.name !== `${name}.webp` && f.name !== `${name}.mp4`);
+			const thumbnails = (await readdir(`data/assets/${name}`, { withFileTypes: true })).filter(
+				(f) => f.name !== `${name}.webp` && f.name !== `${name}.mp4`
+			);
 			await rm(`data/assets/${name}`, { force: true, recursive: true });
 			await mkdir(`data/assets/${name}`);
 			const path = `data/assets/${name}/${name + extname((file as File).name)}`;
@@ -81,14 +91,23 @@ export const actions = {
 			q.height = size.height;
 			try {
 				for (const thumbnail of thumbnails) {
-					await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, parseInt(thumbnail.name.split("_")[0]), parseInt(thumbnail.name.split("_")[1]));
-				} 
+					await generateThumbnail(
+						out_path,
+						`data/assets/${q.name}/${q.name}.webp`,
+						parseInt(thumbnail.name.split('_')[0]),
+						parseInt(thumbnail.name.split('_')[1])
+					);
+				}
 			} catch {
 				return fail(422, { message: 'Failed to proccess media' });
 			}
 		}
-		const asset = await prisma.asset.update({ where: { id: String(data.id) }, data: q, include: { tags: true } });
-		await prisma.assetTag.deleteMany({ where: {assets: { none: {}}}})
+		const asset = await prisma.asset.update({
+			where: { id: String(data.id) },
+			data: q,
+			include: { tags: true }
+		});
+		await prisma.assetTag.deleteMany({ where: { assets: { none: {} } } });
 		return asset;
 	},
 	create: async ({ request }: RequestEvent) => {
@@ -98,16 +117,27 @@ export const actions = {
 			return fail(400, validator.status);
 		}
 		const { file, name, tags, folders, ...rest } = data;
-		const stringTags = tags ? (tags as string).split(',') : []
-		const foldersTags = folders ? (folders as string).split(',') : []
+		const stringTags = tags ? (tags as string).split(',') : [];
+		const foldersTags = folders ? (folders as string).split(',') : [];
 		try {
 			await mkdir(`data/assets/${name}`);
 		} catch {
 			return fail(400, { message: 'Image already exists' });
 		}
-		let objTags
+		let objTags;
 		if (stringTags || foldersTags) {
-			objTags = await Promise.all([...stringTags.map((tag) => prisma.assetTag.upsert({ where: { name: tag }, update: {}, create: { name: tag } })), ...foldersTags.map((tag) => prisma.assetTag.upsert({ where: { name: tag }, update: {}, create: { name: tag, type: 1 } }))]);
+			objTags = await Promise.all([
+				...stringTags.map((tag) =>
+					prisma.assetTag.upsert({ where: { name: tag }, update: {}, create: { name: tag } })
+				),
+				...foldersTags.map((tag) =>
+					prisma.assetTag.upsert({
+						where: { name: tag },
+						update: {},
+						create: { name: tag, type: 1 }
+					})
+				)
+			]);
 		}
 
 		const path = `data/assets/${name}/${name + extname((file as File).name)}`;
@@ -121,12 +151,12 @@ export const actions = {
 			name: String(name),
 			width: size.width,
 			height: size.height,
-			...rest,
+			...rest
 		};
 		if (objTags) {
 			q.tags = {
 				connect: objTags.map((tag) => ({ id: tag.id }))
-			}
+			};
 		}
 		try {
 			// also checks if image type is supported by imagemagick
@@ -141,6 +171,6 @@ export const actions = {
 		const name = data.get('name') as string;
 		await prisma.asset.delete({ where: { name: name } });
 		await rm(`data/assets/${name}`, { force: true, recursive: true });
-		await prisma.assetTag.deleteMany({ where: {assets: { none: {}}}})
+		await prisma.assetTag.deleteMany({ where: { assets: { none: {} } } });
 	}
 } satisfies Actions;

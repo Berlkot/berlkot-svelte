@@ -15,7 +15,7 @@
 	<meta name="author" content={data.author} />
 	<meta name="og:type" content="article" />
 	{#if data.thumbnail}
-		<meta name="og:image" content="https://berlkot.com/asset/{data.thumbnail.name}.webp">
+		<meta name="og:image" content="https://berlkot.com/asset/{data.thumbnail.name}.webp" />
 	{/if}
 </svelte:head>
 
@@ -53,7 +53,8 @@
 					> |{/if}
 				<time datetime={data.createdAt.toString()}
 					>{new Intl.DateTimeFormat(undefined, options).format(data.createdAt)}</time
-				></span>
+				></span
+			>
 		</div>
 		<section>{@html data.content}</section>
 	</article>

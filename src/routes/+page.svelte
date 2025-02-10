@@ -7,14 +7,23 @@
 
 <svelte:head>
 	<title>Berlkot</title>
-	<meta name="og:description" content="Website of Berlkot, artist and developer obsessed with cats, tech and comics.">
-	<meta name="description" content="Website of Berlkot, artist and developer obsessed with cats, tech and comics.">
+	<meta
+		name="og:description"
+		content="Website of Berlkot, artist and developer obsessed with cats, tech and comics."
+	/>
+	<meta
+		name="description"
+		content="Website of Berlkot, artist and developer obsessed with cats, tech and comics."
+	/>
 	<meta property="og:title" content="Berlkot | Artist & Developer" />
 </svelte:head>
 <div class="hero-bg" style:background-image="url({HeroImage})"></div>
 <div class="hero-text">
-	<h1>Berlkot <span><br>Creative & Developer</span></h1>
-	<p><a class="link link-decor" href="/about">socials</a> | <a class="link link-decor" href="mailto:contact@berlkot.com">Email</a></p>
+	<h1>Berlkot <span><br />Creative & Developer</span></h1>
+	<p>
+		<a class="link link-decor" href="/about">socials</a> |
+		<a class="link link-decor" href="mailto:contact@berlkot.com">Email</a>
+	</p>
 </div>
 <section>
 	<h2 class="heading">Latest to read</h2>
@@ -66,7 +75,6 @@
 	.more-btn {
 		font-family: var(--ff-display);
 		display: block;
-
 	}
 	.more-wrap {
 		justify-content: end;

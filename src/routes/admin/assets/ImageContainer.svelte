@@ -6,7 +6,7 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
 	import Autocomplete from '$lib/Autocomplete.svelte';
-	import CloseImg from '$lib/assets/icons/close.svg'
+	import CloseImg from '$lib/assets/icons/close.svg';
 	import { searchFolders, searchTags } from '$lib/client-helpers';
 
 	interface Props {
@@ -73,7 +73,7 @@
 				<h2>Edit image</h2>
 				<!-- svelte-ignore a11y_autofocus -->
 				<button class="close" autofocus onclick={() => (showModal = false)}>
-					<img src="{CloseImg}" alt="">
+					<img src={CloseImg} alt="" />
 				</button>
 			</div>
 
@@ -108,12 +108,12 @@
 								type: 'error',
 								message: result.error.message,
 								timeout: 3000
-							})
+							});
 						}
 					};
 				}}
 			>
-				<input name="id" type="hidden" value={image.id} hidden/>
+				<input name="id" type="hidden" value={image.id} hidden />
 				{#if form?.message}<p class="error">{form?.message}</p>{/if}
 				<label>
 					File
@@ -192,13 +192,29 @@
 				<label>
 					Tags
 					<div class="tags">
-					<Autocomplete name="tags" optFunction={searchTags} key="name" defaultSelected={image.tags.filter((tag) => tag.type === 0)} multipule={true} delay={200} allowNew={true} />
+						<Autocomplete
+							name="tags"
+							optFunction={searchTags}
+							key="name"
+							defaultSelected={image.tags.filter((tag) => tag.type === 0)}
+							multipule={true}
+							delay={200}
+							allowNew={true}
+						/>
 					</div>
 				</label>
 				<label>
 					Folders
 					<div class="tags">
-					<Autocomplete name="folders" optFunction={searchFolders} key="name" defaultSelected={image.tags.filter((tag) => tag.type === 1)} multipule={true} delay={200} allowNew={true} />
+						<Autocomplete
+							name="folders"
+							optFunction={searchFolders}
+							key="name"
+							defaultSelected={image.tags.filter((tag) => tag.type === 1)}
+							multipule={true}
+							delay={200}
+							allowNew={true}
+						/>
 					</div>
 				</label>
 

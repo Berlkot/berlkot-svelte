@@ -29,7 +29,7 @@ export const actions = {
 		if (!data) {
 			return fail(400, validator.status);
 		}
-		
+
 		await prisma.post.create({ data: data as unknown as Prisma.PostCreateInput });
 		return { success: true };
 	},
@@ -39,29 +39,48 @@ export const actions = {
 		if (!data) {
 			return fail(400, validator.status);
 		}
-		
-		const stringTags = data.tags ? (data.tags as string).split(',') : undefined
-		const prev = await prisma.post.findUnique({ where: { id: String(data.id) }, include: { tags: true } });
+
+		const stringTags = data.tags ? (data.tags as string).split(',') : undefined;
+		const prev = await prisma.post.findUnique({
+			where: { id: String(data.id) },
+			include: { tags: true }
+		});
 		if (data.thumbnail) {
-			
-			const thumbnail = (await prisma.asset.findUnique({ where: { name: String(data.thumbnail) } }))!
+			const thumbnail = (await prisma.asset.findUnique({
+				where: { name: String(data.thumbnail) }
+			}))!;
 			data.thumbnail = {};
-			data.thumbnail.connect = { id: thumbnail.id }
+			data.thumbnail.connect = { id: thumbnail.id };
 			let end = 'webp';
 			if (thumbnail.type === 1) {
 				end = 'mp4';
 			}
-			await generateThumbnail(`data/assets/${thumbnail.name}/${thumbnail.name}.${end}`, `data/assets/${thumbnail.name}/${thumbnail.name}.webp`, 465, 260);
-			await generateThumbnail(`data/assets/${thumbnail.name}/${thumbnail.name}.${end}`, `data/assets/${thumbnail.name}/${thumbnail.name}.webp`, 1280, 720);
+			await generateThumbnail(
+				`data/assets/${thumbnail.name}/${thumbnail.name}.${end}`,
+				`data/assets/${thumbnail.name}/${thumbnail.name}.webp`,
+				465,
+				260
+			);
+			await generateThumbnail(
+				`data/assets/${thumbnail.name}/${thumbnail.name}.${end}`,
+				`data/assets/${thumbnail.name}/${thumbnail.name}.webp`,
+				1280,
+				720
+			);
 		}
 
 		const q: Prisma.PostUpdateInput = {
 			...data
-		}
+		};
 		if (stringTags) {
-			q.tags = {}
-			const toDisconnect = prev!.tags.filter((tag) => !stringTags.includes(tag.name)).map((tag) => ({ id: tag.id }));
-			q.tags.connectOrCreate = stringTags.map((tag) => ({ where: { name: tag }, create: { name: tag } }));
+			q.tags = {};
+			const toDisconnect = prev!.tags
+				.filter((tag) => !stringTags.includes(tag.name))
+				.map((tag) => ({ id: tag.id }));
+			q.tags.connectOrCreate = stringTags.map((tag) => ({
+				where: { name: tag },
+				create: { name: tag }
+			}));
 			if (toDisconnect) {
 				q.tags.disconnect = toDisconnect;
 			}
@@ -70,7 +89,7 @@ export const actions = {
 			where: { id: String(data.id) },
 			data: q
 		});
-		await prisma.postTag.deleteMany({ where: {posts: { none: {}}}})
+		await prisma.postTag.deleteMany({ where: { posts: { none: {} } } });
 		return { success: true };
 	},
 	delete: async ({ request }: RequestEvent) => {

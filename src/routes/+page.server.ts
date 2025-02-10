@@ -31,7 +31,7 @@ export async function load({ locals }: RequestEvent) {
 			tags: true
 		},
 		orderBy: { createdAt: 'desc' }
-	}
+	};
 	if (!locals.admin) {
 		q.where!.visibility = 0;
 		qp.where = {};

@@ -3,15 +3,14 @@ import type { Prisma } from '@prisma/client';
 import { type RequestEvent } from '@sveltejs/kit';
 
 export async function load({ params, locals, url }: RequestEvent) {
-
 	// TODO: implement filters
 	// const maturity = url.searchParams.getAll('maturity');
 	// const ordering = url.searchParams.get('ordering');
 	let tags = url.searchParams.getAll('tags');
 	if (tags.length > 0) {
-		tags = tags[0].split(',')
+		tags = tags[0].split(',');
 	} else {
-		tags = []
+		tags = [];
 	}
 	// const text = url.searchParams.get('text');
 	const q: Prisma.AssetFindManyArgs = {

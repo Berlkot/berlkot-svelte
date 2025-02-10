@@ -7,7 +7,7 @@
 	import Modal from '$lib/Modal.svelte';
 	import ImageContainer from './ImageContainer.svelte';
 	import Autocomplete from '$lib/Autocomplete.svelte';
-	import CloseImg from '$lib/assets/icons/close.svg'
+	import CloseImg from '$lib/assets/icons/close.svg';
 	import { searchFolders, searchTags } from '$lib/client-helpers';
 
 	interface Props {
@@ -18,7 +18,6 @@
 	let { form, data }: Props = $props();
 	let images = $state(data.images);
 	let modalIsOpen = $state(false);
-
 </script>
 
 <section>
@@ -42,14 +41,14 @@
 				<h2>Create new image</h2>
 				<!-- svelte-ignore a11y_autofocus -->
 				<button
-				class="close"
-				autofocus
-				onclick={() => {
-					modalIsOpen = false
-				}}>
-				<img src="{CloseImg}" alt="">
-				</button
-			>
+					class="close"
+					autofocus
+					onclick={() => {
+						modalIsOpen = false;
+					}}
+				>
+					<img src={CloseImg} alt="" />
+				</button>
 			</div>
 
 			<form
@@ -151,16 +150,32 @@
 				</label>
 				<label>
 					Tags
-				<div class="tags">
-					<Autocomplete name="tags" optFunction={searchTags} key="name" defaultSelected={[]} multipule={true} delay={200} allowNew={true}/>
-				</div>
+					<div class="tags">
+						<Autocomplete
+							name="tags"
+							optFunction={searchTags}
+							key="name"
+							defaultSelected={[]}
+							multipule={true}
+							delay={200}
+							allowNew={true}
+						/>
+					</div>
 				</label>
 				<label>
 					Folders
 					<div class="tags">
-					<Autocomplete name="folders" optFunction={searchFolders} key="name" defaultSelected={[]} multipule={true} delay={200} allowNew={true} />
+						<Autocomplete
+							name="folders"
+							optFunction={searchFolders}
+							key="name"
+							defaultSelected={[]}
+							multipule={true}
+							delay={200}
+							allowNew={true}
+						/>
 					</div>
-				</label>	
+				</label>
 				<button class="submit" type="submit">Add</button>
 			</form>
 		</div>

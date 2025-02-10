@@ -1,5 +1,6 @@
-import { browser } from "$app/environment";
+import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 
-export const confirmedMatureContent = writable((browser && localStorage.getItem('confirmedMatureContent') === 'true'))
-
+export const confirmedMatureContent = writable(
+	browser && localStorage.getItem('confirmedMatureContent') === 'true'
+);

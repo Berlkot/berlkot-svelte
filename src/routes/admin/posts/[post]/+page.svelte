@@ -8,7 +8,6 @@
 	let inPreview = $state(false);
 	let { data }: Props = $props();
 	let post = $state(data.post);
-
 </script>
 
 <h1>Post managment</h1>
@@ -18,7 +17,7 @@
 </div>
 
 {#if inPreview}
-	<Preview post={post}/>
+	<Preview {post} />
 {:else}
-	<Edit bind:post={post} images={data.images}/>
+	<Edit bind:post images={data.images} />
 {/if}

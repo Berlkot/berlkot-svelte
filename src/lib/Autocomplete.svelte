@@ -19,7 +19,7 @@
 		multipule,
 		optionItem,
 		key,
-		placeholder = "",
+		placeholder = '',
 		allowNew = false,
 		onChange
 	}: Props = $props();
@@ -54,11 +54,16 @@
 	}
 	let showDropdown = $state(false);
 	let selection: object[] = $state([...defaultSelected]);
+	$effect(
+		() => {
+			selection = [...defaultSelected]
+		}
+	)
 	let options = $state([]);
 	let value = $state(defaultSelected.map((t) => t[key as keyof typeof t]).join(','));
 	$effect(() => {
 		if (onChange) onChange(value);
-	})
+	});
 	let timeout: Timer;
 	let input: HTMLInputElement;
 	let focused = $state(0);
@@ -87,7 +92,7 @@
 		{/if}
 		<div class="autocomplete-input">
 			<input
-				placeholder={placeholder}
+				{placeholder}
 				id="autocomplete-input"
 				bind:this={input}
 				type="text"

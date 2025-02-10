@@ -1,14 +1,14 @@
 <script lang="ts">
-	import ArticleCard from "$lib/ArticleCard.svelte";
+	import ArticleCard from '$lib/ArticleCard.svelte';
 	let { data } = $props();
 </script>
 
 <svelte:head>
 	<title>Blog | Berlkot</title>
-	<meta name="title" content="Blog | Berlkot">
-	<meta name="og:title" content="Blog | Berlkot">
-	<meta name="description" content="Some of my thoughts to share with outer world">
-	<meta name="og:description" content="Some of my thoughts to share with outer world">
+	<meta name="title" content="Blog | Berlkot" />
+	<meta name="og:title" content="Blog | Berlkot" />
+	<meta name="description" content="Some of my thoughts to share with outer world" />
+	<meta name="og:description" content="Some of my thoughts to share with outer world" />
 </svelte:head>
 
 <div class="page-title">

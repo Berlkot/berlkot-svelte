@@ -54,7 +54,7 @@
 <footer>
 	<div class="wrapper">
 		<div class="social">
-			<p><b>Contact</b><br>I can be found on those social media platforms</p>
+			<p><b>Contact</b><br />I can be found on those social media platforms</p>
 			<ul>
 				<li>
 					<a href="https://www.instagram.com/berlkot/" target="_blank">

@@ -18,20 +18,20 @@
 <button onclick={() => (showModal = true)}>Add</button>
 
 {#if showModal}
-<Modal>
-	<form method="POST" action="?/create">
-		{#if form?.message}<p class="error">{form?.message}</p>{/if}
-		<label>
-			Name
-			<input name="name" type="text" required />
-		</label>
-		<label>
-			Title
-			<input name="title" type="text" required/>
-		</label>
-		<button type="submit">Add</button>
-	</form>
-</Modal>
+	<Modal>
+		<form method="POST" action="?/create">
+			{#if form?.message}<p class="error">{form?.message}</p>{/if}
+			<label>
+				Name
+				<input name="name" type="text" required />
+			</label>
+			<label>
+				Title
+				<input name="title" type="text" required />
+			</label>
+			<button type="submit">Add</button>
+		</form>
+	</Modal>
 {/if}
 
 <style>

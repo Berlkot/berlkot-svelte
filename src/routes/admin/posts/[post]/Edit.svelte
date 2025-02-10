@@ -1,38 +1,46 @@
 <script lang="ts">
-	import Autocomplete from "$lib/Autocomplete.svelte";
+	import Autocomplete from '$lib/Autocomplete.svelte';
 
-    let { post = $bindable(), images } = $props();
+	let { post = $bindable(), images } = $props();
 
 	async function searchTags(keyword: string) {
-		const url = "/api/autocomplete/post";
+		const url = '/api/autocomplete/post';
 		const response = await fetch(url, {
-			method: "POST",	
+			method: 'POST',
 			headers: {
-				"Content-Type": "application/json"
+				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({ text: keyword })
-		})
-		const data = await response.json()
-		return data
+		});
+		const data = await response.json();
+		return data;
 	}
 	async function searchImages(keyword: string) {
-		return images.filter((i) => i.name.includes(keyword))
+		return images.filter((i) => i.name.includes(keyword));
 	}
 	let formattedDate = $state(post.createdAt.toISOString().substring(0, 10));
 	$effect(() => {
 		post.createdAt = new Date(formattedDate);
-	})
+	});
 </script>
 
 <form action="/admin/posts?/edit" method="POST">
-    <input type="hidden" name="id" value={post.id} hidden>
+	<input type="hidden" name="id" value={post.id} hidden />
 	<label>
 		Thumbnail
 		<div class="tags">
-			<Autocomplete name="thumbnail" optFunction={searchImages} key="name" defaultSelected={post.thumbnail ? [post.thumbnail] : []} multipule={false} delay={200} allowNew={false}/>
+			<Autocomplete
+				name="thumbnail"
+				optFunction={searchImages}
+				key="name"
+				defaultSelected={post.thumbnail ? [post.thumbnail] : []}
+				multipule={false}
+				delay={200}
+				allowNew={false}
+			/>
 		</div>
 	</label>
-    <label>
+	<label>
 		Name
 		<input name="name" type="text" required bind:value={post.name} />
 	</label>
@@ -51,7 +59,15 @@
 	<label>
 		Tags
 		<div class="tags">
-			<Autocomplete name="tags" optFunction={searchTags} key="name" defaultSelected={post.tags} multipule={true} delay={200} allowNew={true}/>
+			<Autocomplete
+				name="tags"
+				optFunction={searchTags}
+				key="name"
+				defaultSelected={post.tags}
+				multipule={true}
+				delay={200}
+				allowNew={true}
+			/>
 		</div>
 	</label>
 	<label>
@@ -60,7 +76,7 @@
 	</label>
 	<label>
 		Creation Date
-		<input name="createdAt" type="date" bind:value={formattedDate}/>
+		<input name="createdAt" type="date" bind:value={formattedDate} />
 	</label>
 	<label>
 		Visibility
@@ -70,9 +86,8 @@
 			<option value="1" selected={post.visibility == 1}>for subs</option>
 		</select>
 	</label>
-<button>Save</button>
+	<button>Save</button>
 </form>
-
 
 <style>
 	.tags {

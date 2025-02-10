@@ -1,6 +1,6 @@
 <script lang="ts">
-    let { post } = $props();
-    const options: Intl.DateTimeFormatOptions = {
+	let { post } = $props();
+	const options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'short',
 		day: 'numeric'
@@ -8,44 +8,43 @@
 </script>
 
 <a class="blog-card" href="/blog/{post.name}">
-    <article>
-        {#if post.thumbnail}
-            <img
-                src="/asset/{post.thumbnail.name}.webp?w=465&h=260"
-                alt="{post.thumbnail.alt}"
-                width="465"
-                height="260"
-            />
-        {/if}
-        <ul class="tag-list">
-            {#each post.tags as tag}
-                <li class="tag">
-                    {tag.name}
-                </li>
-            {/each}
-        </ul>
-        <div class="card-text">
-            <h3>{post.title}</h3>
-            <p>{post.description}</p>
-            <span>{new Intl.DateTimeFormat(undefined, options).format(post.createdAt)}</span>
-        </div>
-    </article>
+	<article>
+		{#if post.thumbnail}
+			<img
+				src="/asset/{post.thumbnail.name}.webp?w=465&h=260"
+				alt={post.thumbnail.alt}
+				width="465"
+				height="260"
+			/>
+		{/if}
+		<ul class="tag-list">
+			{#each post.tags as tag}
+				<li class="tag">
+					{tag.name}
+				</li>
+			{/each}
+		</ul>
+		<div class="card-text">
+			<h3>{post.title}</h3>
+			<p>{post.description}</p>
+			<span>{new Intl.DateTimeFormat(undefined, options).format(post.createdAt)}</span>
+		</div>
+	</article>
 </a>
 
 <style>
-
 	.blog-card:hover .card-text {
 		filter: var(--chromatic-aberration);
 	}
 	.card-text {
 		transition: filter 0.2s ease-in-out;
 	}
-    img {
-        transition: filter 0.2s ease-in-out;
-    }
-    .blog-card:hover img {
-        filter: brightness(120%);
-    }
+	img {
+		transition: filter 0.2s ease-in-out;
+	}
+	.blog-card:hover img {
+		filter: brightness(120%);
+	}
 	a {
 		text-decoration: none;
 		color: inherit;

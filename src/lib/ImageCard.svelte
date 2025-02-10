@@ -1,16 +1,16 @@
 <script lang="ts">
-    import { goto, preloadData, pushState } from '$app/navigation';
-    import { page } from '$app/state';
-    import { browser } from "$app/environment"
-    import ConfirmDialog from '$lib/ConfirmDialog.svelte';
-    import CloseImg from '$lib/assets/icons/close.svg'
-    import Modal from '$lib/Modal.svelte';
-    import AssetPage from '$routes/gallery/[name]/+page.svelte';
-    import { fade, scale } from 'svelte/transition';
+	import { goto, preloadData, pushState } from '$app/navigation';
+	import { page } from '$app/state';
+	import { browser } from '$app/environment';
+	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
+	import CloseImg from '$lib/assets/icons/close.svg';
+	import Modal from '$lib/Modal.svelte';
+	import AssetPage from '$routes/gallery/[name]/+page.svelte';
+	import { fade, scale } from 'svelte/transition';
 	import { confirmedMatureContent } from './stores/persistent';
-    let { image } = $props();
-    let href = $state<string>('');
-    let confirm = $state(false);
+	let { image } = $props();
+	let href = $state<string>('');
+	let confirm = $state(false);
 	async function navigate() {
 		const result = await preloadData(href);
 
@@ -39,46 +39,40 @@
 {/if}
 
 <a
-href="/gallery/{image.name}"
-onclick={async (e) => {
-    if (
-        e.shiftKey || // or the link is opened in a new window
-        e.metaKey ||
-        e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
-        // should also consider clicking with a mouse scroll wheel
-    ) {
-        return;
-    }
+	href="/gallery/{image.name}"
+	onclick={async (e) => {
+		if (
+			e.shiftKey || // or the link is opened in a new window
+			e.metaKey ||
+			e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
+			// should also consider clicking with a mouse scroll wheel
+		) {
+			return;
+		}
 
-    href = e.currentTarget.href;
-    e.preventDefault();
-    if (image.maturity > 0 && !$confirmedMatureContent) {
-        confirm = true;
-    } else {
-        await navigate();
-    }
-}}
+		href = e.currentTarget.href;
+		e.preventDefault();
+		if (image.maturity > 0 && !$confirmedMatureContent) {
+			confirm = true;
+		} else {
+			await navigate();
+		}
+	}}
 >
-    <div class="image-card focusable">
-            {#if image.maturity > 0 && !$confirmedMatureContent}
-            <div class="card-text">
-                <span>{image.maturity == 2 ? 'NSFW' : 'Questionable'}</span>
-                <span class="click-to-reveal">Click to reveal (18+)</span>
-            </div>
-            {:else}
-                <img
-                    src="/asset/{image.name}.webp?w=270&h=270"
-                    alt={image.alt}
-                    width="270"
-                    height="270"
-                />
-            {/if}
+	<div class="image-card focusable">
+		{#if image.maturity > 0}
+			<div class="card-text">
+				<span>{image.maturity == 2 ? 'NSFW' : 'Questionable'}</span>
+				<span class="click-to-reveal">Click to reveal (18+)</span>
+			</div>
+		{:else}
+			<img src="/asset/{image.name}.webp?w=270&h=270" alt={image.alt} width="270" height="270" />
+		{/if}
 
-        <div class="title">
-            <p>{image.title || image.name}</p>
-        </div>
-
-    </div>
+		<div class="title">
+			<p>{image.title || image.name}</p>
+		</div>
+	</div>
 </a>
 
 {#if page.state.selected}
@@ -90,10 +84,10 @@ onclick={async (e) => {
 				autofocus
 				onclick={() => {
 					history.back();
-				}}>
-				<img src="{CloseImg}" alt="">
-				</button
+				}}
 			>
+				<img src={CloseImg} alt="" />
+			</button>
 			<div class="data">
 				<AssetPage data={page.state.selected} />
 			</div>
@@ -108,7 +102,7 @@ onclick={async (e) => {
 	}
 	.card-text {
 		font: bold 2rem/1.2em var(--ff-display);
-		
+
 		text-align: center;
 	}
 	span {
@@ -126,8 +120,7 @@ onclick={async (e) => {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: repeating-linear-gradient(
-			-45deg, black 0px, #62498f 4px, rgba(0, 0, 0, 0) 8px);
+		background: repeating-linear-gradient(-45deg, black 0px, #62498f 4px, rgba(0, 0, 0, 0) 8px);
 		border-radius: 4px;
 		transition: 0.2s filter linear;
 	}

@@ -4,14 +4,26 @@
 	import ImageCard from '$lib/ImageCard.svelte';
 	let { data } = $props();
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { goto, afterNavigate } from '$app/navigation';
 	let tags: any = page.url.searchParams.getAll('tags');
 	if (tags.length > 0) {
 		tags = tags[0].split(',').map((tag: any) => ({ name: tag }));
 	} else {
 		tags = [];
 	}
-	const initialTags = tags;
+	let initialTags = $state(tags);
+	afterNavigate(
+		() => {
+			let tags: any = page.url.searchParams.getAll('tags');
+			if (tags.length > 0) {
+				tags = tags[0].split(',').map((tag: any) => ({ name: tag }));
+			} else {
+				tags = [];
+			}
+			initialTags = tags
+			console.log($state.snapshot(initialTags))
+		}
+	)
 	let skipedinit = false;
 	async function onChange(value) {
 		if (!skipedinit) {
@@ -28,10 +40,10 @@
 
 <svelte:head>
 	<title>Gallery | Berlkot</title>
-	<meta name="title" content="Gallery | Berlkot">
-	<meta name="title" content="Gallery | Berlkot">
-	<meta name="description" content="All sorts of artworks for past couple of years">
-	<meta name="og:description" content="All sorts of artworks for past couple of years">
+	<meta name="title" content="Gallery | Berlkot" />
+	<meta name="title" content="Gallery | Berlkot" />
+	<meta name="description" content="All sorts of artworks for past couple of years" />
+	<meta name="og:description" content="All sorts of artworks for past couple of years" />
 </svelte:head>
 <div class="page-title">
 	<h1>Gallery</h1>

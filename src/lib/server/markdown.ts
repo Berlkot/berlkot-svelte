@@ -4,7 +4,7 @@ import path, { basename, extname } from 'path';
 
 const renderer = new marked.Renderer();
 
-renderer.image = function ({href, title, text}) {
+renderer.image = function ({ href, title, text }) {
 	const [url, width, height] = href.split('?');
 	if (!width || !height)
 		return `<img class="blog_img" src="/${url}" alt="${text}" title="${title}">`;
@@ -12,16 +12,16 @@ renderer.image = function ({href, title, text}) {
 };
 
 renderer.paragraph = function (tokens) {
-	const text = this.parser.parseInline(tokens.tokens)
+	const text = this.parser.parseInline(tokens.tokens);
 	if (text.startsWith('<img')) return text;
 	else return '<p>' + text + '</p>';
 };
-renderer.link = function ({href, title, tokens}) {
-	const text = this.parser.parseInline(tokens)
-	if (href.startsWith("http")) 
-		return `<a target="_blank" class="link external" href="${href}" ${title ? 'title="' + title +'"': ""}>${text}</a>`
-	return `<a class="link" href="${href}" ${title ? 'title="' + title +'"': ""}>${text}</a>`
-}
+renderer.link = function ({ href, title, tokens }) {
+	const text = this.parser.parseInline(tokens);
+	if (href.startsWith('http'))
+		return `<a target="_blank" class="link external" href="${href}" ${title ? 'title="' + title + '"' : ''}>${text}</a>`;
+	return `<a class="link" href="${href}" ${title ? 'title="' + title + '"' : ''}>${text}</a>`;
+};
 
 async function walkTokens(token) {
 	if (token.type === 'image' && path.basename(token.href) === token.href) {
