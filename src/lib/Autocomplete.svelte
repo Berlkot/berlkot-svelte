@@ -54,12 +54,14 @@
 	}
 	let showDropdown = $state(false);
 	let selection: object[] = $state([...defaultSelected]);
-	$effect(() => {
-		selection = [...defaultSelected];
-	});
-	let options = $state([]);
 	let value = $state(defaultSelected.map((t) => t[key as keyof typeof t]).join(','));
 	$effect(() => {
+		selection = [...defaultSelected];
+		value = defaultSelected.map((t) => t[key as keyof typeof t]).join(',');
+	});
+	let options = $state([]);
+	$effect(() => {
+		console.log("triggered");
 		if (onChange) onChange(value);
 	});
 	let timeout: Timer;
