@@ -5,18 +5,6 @@
 	let { data } = $props();
 </script>
 
-<svelte:head>
-	<title>Berlkot</title>
-	<meta
-		name="og:description"
-		content="Website of Berlkot, artist and developer obsessed with cats, tech and comics."
-	/>
-	<meta
-		name="description"
-		content="Website of Berlkot, artist and developer obsessed with cats, tech and comics."
-	/>
-	<meta property="og:title" content="Berlkot | Artist & Developer" />
-</svelte:head>
 <div class="hero-bg" style:background-image="url({HeroImage})"></div>
 <div class="hero-text">
 	<h1>Berlkot <span><br />Creative & Developer</span></h1>

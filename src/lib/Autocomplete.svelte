@@ -54,11 +54,9 @@
 	}
 	let showDropdown = $state(false);
 	let selection: object[] = $state([...defaultSelected]);
-	$effect(
-		() => {
-			selection = [...defaultSelected]
-		}
-	)
+	$effect(() => {
+		selection = [...defaultSelected];
+	});
 	let options = $state([]);
 	let value = $state(defaultSelected.map((t) => t[key as keyof typeof t]).join(','));
 	$effect(() => {

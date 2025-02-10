@@ -3,12 +3,6 @@
 	import Instagram from '$lib/assets/icons/instagram.svg';
 </script>
 
-<svelte:head>
-	<title>About | Berlkot</title>
-	<meta name="og:title" content="Some stuff about myself and my website" />
-	<meta name="og:description" content="Some stuff about myself and my website" />
-	<meta name="author" content="Berlkot" />
-</svelte:head>
 <div class="content">
 	<h1 class="page-title">about</h1>
 	<img class="portrait" src={Head} width="500" height="456" alt="Berlian close up portrait" />

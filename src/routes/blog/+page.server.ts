@@ -19,5 +19,13 @@ export async function load({ params, locals }: RequestEvent) {
 		q.where.visibility = 0;
 	}
 	const posts = await prisma.post.findMany(q);
-	return { posts };
+	return {
+		posts,
+		meta: {
+			title: 'Blog | Berlkot',
+			'og:title': 'Blog | Berlkot',
+			description: 'Some of my thoughts to share with outer world',
+			'og:description': 'Some of my thoughts to share with outer world'
+		}
+	};
 }

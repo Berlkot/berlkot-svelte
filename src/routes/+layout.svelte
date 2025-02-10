@@ -4,12 +4,27 @@
 	import AvatarImg from '$lib/assets/avatar.png';
 	import NavLink from '$lib/NavLink.svelte';
 	import Instagram from '$lib/assets/icons/instagram.svg';
+	import { page } from '$app/state';
 	interface Props {
 		children?: Snippet;
 	}
 
 	let { children }: Props = $props();
 </script>
+
+<svelte:head>
+	{#if page.state.selected}
+		<title>{page.state.selected.meta.title}</title>
+		{#each Object.keys(page.state.selected.meta) as metatag}
+			<meta name={metatag} content={page.state.selected.meta[metatag]} />
+		{/each}
+	{:else if page.data.meta}
+		<title>{page.data.meta.title}</title>
+		{#each Object.keys(page.data.meta) as metatag}
+			<meta name={metatag} content={page.data.meta[metatag]} />
+		{/each}
+	{/if}
+</svelte:head>
 
 <Toasts />
 <div class="wrapper">

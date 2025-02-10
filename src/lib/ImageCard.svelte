@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto, preloadData, pushState } from '$app/navigation';
 	import { page } from '$app/state';
-	import { browser } from '$app/environment';
 	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg';
 	import Modal from '$lib/Modal.svelte';

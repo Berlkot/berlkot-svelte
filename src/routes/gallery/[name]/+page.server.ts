@@ -19,7 +19,18 @@ export async function load({ params, locals }: RequestEvent) {
 		asset.largeDescription = asset.largeDescription
 			? await renderMarkdown(asset.largeDescription)
 			: 'No description provided';
-		return asset;
+		return {
+			asset: asset,
+			meta: {
+				title: `${asset.title} | Berlkot`,
+				'og:type': 'image',
+				'og:title': `${asset.title} | Berlkot`,
+				'og:image': `https://berlkot.com/asset/${asset.name}.webp`,
+				description: asset.smallDescription,
+				'og:description': asset.smallDescription,
+				author: asset.author
+			}
+		};
 	} catch {
 		throw error(404, 'Gallery image not found');
 	}

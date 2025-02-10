@@ -12,20 +12,18 @@
 		tags = [];
 	}
 	let initialTags = $state(tags);
-	afterNavigate(
-		() => {
-			let tags: any = page.url.searchParams.getAll('tags');
-			if (tags.length > 0) {
-				tags = tags[0].split(',').map((tag: any) => ({ name: tag }));
-			} else {
-				tags = [];
-			}
-			initialTags = tags
-			console.log($state.snapshot(initialTags))
+	afterNavigate(() => {
+		let tags: any = page.url.searchParams.getAll('tags');
+		if (tags.length > 0) {
+			tags = tags[0].split(',').map((tag: any) => ({ name: tag }));
+		} else {
+			tags = [];
 		}
-	)
+		initialTags = tags;
+	});
 	let skipedinit = false;
 	async function onChange(value) {
+		console.log(value);
 		if (!skipedinit) {
 			skipedinit = true;
 			return;
@@ -38,13 +36,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Gallery | Berlkot</title>
-	<meta name="title" content="Gallery | Berlkot" />
-	<meta name="title" content="Gallery | Berlkot" />
-	<meta name="description" content="All sorts of artworks for past couple of years" />
-	<meta name="og:description" content="All sorts of artworks for past couple of years" />
-</svelte:head>
 <div class="page-title">
 	<h1>Gallery</h1>
 	<p>Here you can find all of my artworks for past couple years</p>

@@ -19,7 +19,18 @@ export async function load({ params, locals }: RequestEvent) {
 		}
 		const post = await prisma.post.findUniqueOrThrow(q);
 		post.content = post.content ? await renderMarkdown(post.content) : 'Blogpost is empty';
-		return post;
+		let meta = {
+			title: `${post.title} | Berlkot`,
+			'og:title': `${post.title} | Berlkot`,
+			description: post.description,
+			'og:description': post.description,
+			author: post.author,
+			'og:type': 'article'
+		};
+		if (post.thumbnail) {
+			meta['og:image'] = `https://berlkot.com/asset/${post.thumbnail.name}.webp`;
+		}
+		return { post, meta };
 	} catch {
 		throw error(404, return_string);
 	}

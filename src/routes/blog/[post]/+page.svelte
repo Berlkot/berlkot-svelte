@@ -7,56 +7,44 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{data.title}</title>
-	<meta name="og:title" content="{data.title} | Berlkot" />
-	<meta name="description" content={data.description} />
-	<meta name="og:description" content={data.description} />
-	<meta name="author" content={data.author} />
-	<meta name="og:type" content="article" />
-	{#if data.thumbnail}
-		<meta name="og:image" content="https://berlkot.com/asset/{data.thumbnail.name}.webp" />
-	{/if}
-</svelte:head>
-
 <section class="blog">
 	<!--We trust ourself or hacked-->
 	<!--eslint-disable svelte/no-at-html-tags-->
 	<a class="link" href="/blog">&lt; Back</a>
 	<article>
-		{#if data.thumbnail}
+		{#if data.post.thumbnail}
 			<figure>
-				<figcaption>{data.thumbnail.smallDescription}</figcaption>
+				<figcaption>{data.post.thumbnail.smallDescription}</figcaption>
 				<img
-					src="/asset/{data.thumbnail.name}.webp?w=1280&h=720"
-					alt={data.thumbnail.alt}
+					src="/asset/{data.post.thumbnail.name}.webp?w=1280&h=720"
+					alt={data.post.thumbnail.alt}
 					width="1280"
 					height="720"
 				/>
 			</figure>
 		{/if}
 		<ul class="tag-list">
-			{#each data.tags as tag}
+			{#each data.post.tags as tag}
 				<li class="tag">
 					{tag.name}
 				</li>
 			{/each}
 		</ul>
-		<h1>{data.title}</h1>
+		<h1>{data.post.title}</h1>
 		<div class="metadata">
-			<span>By {data.author}</span>
+			<span>By {data.post.author}</span>
 			<span
-				>{#if data.updatedAt > new Date(data.createdAt.getTime() + 86400000)}<time
+				>{#if data.post.updatedAt > new Date(data.post.createdAt.getTime() + 86400000)}<time
 						class="updated"
-						datetime={data.updatedAt.toString()}
-						>{new Intl.DateTimeFormat(undefined, options).format(data.updatedAt)}</time
+						datetime={data.post.updatedAt.toString()}
+						>{new Intl.DateTimeFormat(undefined, options).format(data.post.updatedAt)}</time
 					> |{/if}
-				<time datetime={data.createdAt.toString()}
-					>{new Intl.DateTimeFormat(undefined, options).format(data.createdAt)}</time
+				<time datetime={data.post.createdAt.toString()}
+					>{new Intl.DateTimeFormat(undefined, options).format(data.post.createdAt)}</time
 				></span
 			>
 		</div>
-		<section>{@html data.content}</section>
+		<section>{@html data.post.content}</section>
 	</article>
 </section>
 

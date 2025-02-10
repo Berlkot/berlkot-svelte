@@ -8,60 +8,56 @@
 	import Zoom from './Zoom.svelte';
 </script>
 
-<svelte:head>
-	<title>{data.title} | Berlkot</title>
-	<meta name="og:type" content="image" />
-	<meta name="og:title" content="{data.title} | Berlkot" />
-	<meta name="description" content={data.smallDescription} />
-	<meta name="og:description" content={data.smallDescription} />
-	<meta name="author" content={data.author} />
-	<meta name="og:image" content="https://berlkot.com/asset/{data.name}.webp" />
-</svelte:head>
 <section>
 	<div class="full-view">
-		{#if data.type == 1}
+		{#if data.asset.type == 1}
 			<!-- svelte-ignore a11y_media_has_caption -->
-			<video controls loop src="/asset/{data.name}.mp4"></video>
+			<video controls loop src="/asset/{data.asset.name}.mp4"></video>
 		{:else}
 			<Zoom>
-				<img src="/asset/{data.name}.webp" alt={data.alt} width={data.width} height={data.height} />
+				<img
+					src="/asset/{data.asset.name}.webp"
+					alt={data.asset.alt}
+					width={data.asset.width}
+					height={data.asset.height}
+				/>
 			</Zoom>
 		{/if}
 	</div>
 	<div class="image-content">
-		<h2>{data.title}</h2>
+		<h2>{data.asset.title}</h2>
 		<p class="text-smaller">
-			By <span>{data.author}</span> at
+			By <span>{data.asset.author}</span> at
 			<span
-				><time datetime={data.creationDate.toString()}
-					>{new Intl.DateTimeFormat(undefined, options).format(data.creationDate)}</time
+				><time datetime={data.asset.creationDate.toString()}
+					>{new Intl.DateTimeFormat(undefined, options).format(data.asset.creationDate)}</time
 				></span
 			>
 			|
 			<span
-				>{#if data.maturity == 0}SFW{:else if data.maturity == 1}Questionable{:else}NSFW{/if}</span
+				>{#if data.asset.maturity == 0}SFW{:else if data.asset.maturity == 1}Questionable{:else}NSFW{/if}</span
 			>
 			|
 			<span
-				>{#if data.visibility == 0}Public{:else if data.visibility == 1}Sub only{:else if data.visibility == -1}Private{/if}</span
+				>{#if data.asset.visibility == 0}Public{:else if data.asset.visibility == 1}Sub only{:else if data.asset.visibility == -1}Private{/if}</span
 			>
 		</p>
 		<!--We trust ourself or hacked-->
 		<!--eslint-disable-next-line svelte/no-at-html-tags-->
-		<div class="content">{@html data.largeDescription}</div>
-		{#if data.copyright}
-			<p class="tag-list">Copyright: {data.copyright}</p>
+		<div class="content">{@html data.asset.largeDescription}</div>
+		{#if data.asset.copyright}
+			<p class="tag-list">Copyright: {data.asset.copyright}</p>
 		{/if}
 		<!-- eslint doesnt know that prisma has related queries-->
 		<p class="tag-list">
 			Tags:
-			{#each (data as any).tags.filter((tag) => tag.type === 0) as tag}
+			{#each (data.asset as any).tags.filter((tag) => tag.type === 0) as tag}
 				<a class="tag" href="/gallery?tags={tag.name}">{tag.name}</a>
 			{/each}
 		</p>
 		<p class="tag-list">
 			Folders:
-			{#each (data as any).tags.filter((tag) => tag.type === 1) as tag}
+			{#each (data.asset as any).tags.filter((tag) => tag.type === 1) as tag}
 				<a class="tag tag-yellow" href="/gallery?tags={tag.name}">{tag.name}</a>
 			{/each}
 		</p>

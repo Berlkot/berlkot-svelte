@@ -2,6 +2,9 @@ import { ADMIN_SECRET } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
 
 export async function handle({ event, resolve }) {
+	console.log(
+		`INFO: ${event.getClientAddress()} - ${event.url.pathname} [${event.request.method}]`
+	);
 	if (event.cookies.get('auth') === ADMIN_SECRET) {
 		event.locals.admin = true;
 	} else if (event.url.pathname.startsWith('/admin')) {
@@ -10,4 +13,16 @@ export async function handle({ event, resolve }) {
 		redirect(307, '/login');
 	}
 	return resolve(event);
+}
+
+export async function handleError({ error, event, status, message }) {
+	if (status === 404) {
+		console.log(
+			`INFO: ${event.getClientAddress()} tried to access ${event.url.pathname} with ${event.request.method} but failed`
+		);
+	}
+	console.log(
+		`ERROR: ${message} error caused by ${event.getClientAddress()} - ${event.url.pathname} [${event.request.method}]:`
+	);
+	console.log(error);
 }

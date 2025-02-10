@@ -35,5 +35,13 @@ export async function load({ params, locals, url }: RequestEvent) {
 		q.where!.visibility = 0;
 	}
 	const asset = await prisma.asset.findMany(q);
-	return { images: asset };
+	return {
+		images: asset,
+		meta: {
+			title: 'Gallery | Berlkot',
+			'og:title': 'Gallery | Berlkot',
+			description: 'All sorts of artworks for past couple of years',
+			'og:description': 'All sorts of artworks for past couple of years'
+		}
+	};
 }

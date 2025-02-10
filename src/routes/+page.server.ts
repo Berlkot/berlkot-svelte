@@ -39,5 +39,15 @@ export async function load({ locals }: RequestEvent) {
 	}
 	const asset = await prisma.asset.findMany(q);
 	const posts = await prisma.post.findMany(qp);
-	return { images: asset, posts: posts };
+	return {
+		images: asset,
+		posts: posts,
+		meta: {
+			title: `Berlkot | Artist & Developer`,
+			'og:title': 'Berlkot | Artist & Developer',
+			description: 'Website of Berlkot, artist and developer obsessed with cats, tech and comics.',
+			'og:description':
+				'Website of Berlkot, artist and developer obsessed with cats, tech and comics.'
+		}
+	};
 }

@@ -36,10 +36,14 @@ export async function GET({ params, locals, url, request }: RequestEvent) {
 		hasher.update(height.toString());
 		const header = hasher.digest('base64');
 		if (request.headers.get('If-None-Match') === header) {
-			return new Response(null, { status: 304, headers: { Etag: header } });
+			return new Response(null, {
+				status: 304,
+				headers: { Etag: header, 'Cache-Control': 'max-age=7200, must-revalidate' }
+			});
 		}
 		const response = new Response(file);
 		response.headers.set('Etag', header);
+		response.headers.set('Cache-Control', 'max-age=7200, must-revalidate');
 		return response;
 	} catch {
 		throw error(404, { message: 'Image not found' });
