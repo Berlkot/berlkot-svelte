@@ -195,7 +195,7 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: start;
-		overflow: scroll;
+		overflow: auto;
 	}
 	.autocomplete-focused {
 		border-color: var(--color-primary);
