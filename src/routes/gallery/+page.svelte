@@ -23,7 +23,6 @@
 	});
 	let skipedinit = false;
 	async function onChange(value) {
-		console.log(value);
 		if (!skipedinit) {
 			skipedinit = true;
 			return;

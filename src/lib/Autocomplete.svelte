@@ -61,7 +61,6 @@
 	});
 	let options = $state([]);
 	$effect(() => {
-		console.log("triggered");
 		if (onChange) onChange(value);
 	});
 	let timeout: Timer;
