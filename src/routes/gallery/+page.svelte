@@ -52,19 +52,19 @@
 	<input type="text" name="search" id="" />
 	<button type="submit">Search</button>
 </form> -->
-<label>
-	Tag filter:
+<div class="tags">
 	<Autocomplete
 		{onChange}
 		name="tags"
-		placeholder="Type to search"
+		placeholder="tag1, tag2..."
 		optFunction={searchTags}
 		key="name"
 		defaultSelected={initialTags}
 		multipule={true}
 		delay={200}
 	/>
-</label>
+</div>
+
 <section>
 	<ul class="gallery">
 		{#each data.images as image}
@@ -82,11 +82,7 @@
 			grid-template-rows: repeat(auto-fill, minmax(160px, 1fr));
 		}
 	}
-	label {
-		text-wrap: nowrap;
-		display: flex;
-		gap: 1rem;
-		font-weight: bold;
+	.tags {
 		padding: 1rem;
 	}
 </style>

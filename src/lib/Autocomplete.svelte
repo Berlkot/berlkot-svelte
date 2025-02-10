@@ -24,6 +24,9 @@
 		onChange
 	}: Props = $props();
 	async function oninput(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
+		if (!showDropdown) {
+			showDropdown = true;
+		}
 		if (timeout) clearTimeout(timeout);
 		if (input.value.length < 1) {
 			options = [];
