@@ -5,7 +5,6 @@ export async function load() {
 			'og:title': `About | Berlkot`,
 			description: 'Some stuff about myself and my website',
 			'og:description': 'Some stuff about myself and my website',
-			author: asset.author
 		}
 	};
 }

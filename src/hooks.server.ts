@@ -20,6 +20,7 @@ export async function handleError({ error, event, status, message }) {
 		console.log(
 			`INFO: ${event.getClientAddress()} tried to access ${event.url.pathname} with ${event.request.method} but failed`
 		);
+		return
 	}
 	console.log(
 		`ERROR: ${message} error caused by ${event.getClientAddress()} - ${event.url.pathname} [${event.request.method}]:`
