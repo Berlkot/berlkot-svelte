@@ -12,5 +12,4 @@ dev.db*
 data/*.*
 data/assets/*
 data/thumbnails/*
-static/*
 prisma/script.ts
