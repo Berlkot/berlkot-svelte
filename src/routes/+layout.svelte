@@ -1,9 +1,9 @@
 <script lang="ts">
 
-	import { beforeNavigate, onNavigate } from "$app/navigation";
-    import Animator from "$lib/animator.svelte";
-    import framedata from '$lib/assets/metadata.json';
-    import atlas from '$lib/assets/output.png';
+	// import { beforeNavigate, onNavigate } from "$app/navigation";
+    // import Animator from "$lib/animator.svelte";
+    // import framedata from '$lib/assets/metadata.json';
+    // import atlas from '$lib/assets/output.png';
 
 	import type { Snippet } from 'svelte';
 	import Toasts from '$lib/toasts.svelte';
@@ -15,10 +15,10 @@
 		children?: Snippet;
 	}
 
-	let animator;
-    onNavigate(async (nav) => {
-        await animator.play_animation('main');
-    })
+	// let animator;
+    // onNavigate(async (nav) => {
+    //     await animator.play_animation('main');
+    // })
 
 
 	let { children }: Props = $props();
@@ -37,7 +37,7 @@
 		{/each}
 	{/if}
 </svelte:head>
-<Animator bind:this={animator} framedata={framedata} atlas={atlas}/>
+<!-- <Animator bind:this={animator} framedata={framedata} atlas={atlas}/> -->
 <Toasts />
 <div class="wrapper">
 	<header>
