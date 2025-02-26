@@ -1,4 +1,10 @@
 <script lang="ts">
+
+	import { beforeNavigate, onNavigate } from "$app/navigation";
+    import Animator from "$lib/animator.svelte";
+    import framedata from '$lib/assets/metadata.json';
+    import atlas from '$lib/assets/output.png';
+
 	import type { Snippet } from 'svelte';
 	import Toasts from '$lib/toasts.svelte';
 	import AvatarImg from '$lib/assets/avatar.png';
@@ -8,6 +14,12 @@
 	interface Props {
 		children?: Snippet;
 	}
+
+	let animator;
+    onNavigate(async (nav) => {
+        await animator.play_animation('main');
+    })
+
 
 	let { children }: Props = $props();
 </script>
@@ -25,7 +37,7 @@
 		{/each}
 	{/if}
 </svelte:head>
-
+<Animator bind:this={animator} framedata={framedata} atlas={atlas}/>
 <Toasts />
 <div class="wrapper">
 	<header>
