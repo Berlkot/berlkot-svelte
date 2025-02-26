@@ -1,0 +1,34 @@
+name: bun.sh CD
+
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy using ssh
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 22
+        script: |
+          export BUN_INSTALL="$HOME/.bun"
+          export PATH="$BUN_INSTALL/bin:$PATH"
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+          cd ~
+          git clone https://github.com/Berlkot/berlkot-svelte.git
+          cd ~/berlkot-svelte
+          cp ~/site-build/.env .env
+          bun install
+          bunx prisma generate
+          bun run build
+          rm -rf ~/site-build/client ~/site-build/server/
+          cp -rf build/. ~/site-build/
+          rm -rf ~/berlkot-svelte ~/site-build/.env.example
+          cd ~
+          pm2 restart index
