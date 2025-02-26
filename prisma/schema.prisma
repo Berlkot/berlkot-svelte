@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-// в какой-то момент мне стало просто похуй
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,7 +9,7 @@ datasource db {
 
 model Post {
   id          String    @id @default(uuid())
-  thumbnail   Asset?    @relation("thumbnail")
+  thumbnail   Asset?    @relation(fields: [thumbnailId], references: [id])
   name        String    @unique
   title       String
   author      String    @default("Berlkot")
@@ -22,37 +19,87 @@ model Post {
   updatedAt   DateTime  @updatedAt
   visibility  Int       @default(-1) // -1 admin 0 public 1 sub only
   tags        PostTag[]
-  assets      Asset[]
+  thumbnailId String?
 }
 
 model Asset {
-  id               String           @id @default(uuid())
-  name             String           @unique
-  author           String           @default("Berlkot")
-  title            String?
-  alt              String?
-  type             Int              @default(0) // 0 image 1 video
-  width            Int
-  height           Int
-  contentWarning   String?
-  copyright        String?
-  smallDescription String?
-  largeDescription String?
-  creationDate     DateTime         @default(now())
-  inGallery        Boolean          @default(false)
-  visibility       Int              @default(-1) // -1 admin 0 public 1 sub only
-  maturity         Int              @default(0) // 0 sfw 1 questionable 2 nsfw
-  tags             AssetTag[]
-  posts            Post[]
-  thumbnailIn      Post?            @relation("thumbnail", fields: [thumbnailInId], references: [id])
-  thumbnailInId    String?          @unique
+  id            String          @id @default(uuid())
+  name          String          @unique
+  alt           String?
+  type          Int             @default(0) // 0 image 1 video
+  width         Int
+  height        Int
+  visibility    Int             @default(-1) // -1 admin 0 public 1 sub only
+  posts         Post[]
+  galleryPosts  GalleryPost[]
+  PageInChapter PageInChapter[]
 }
 
-model AssetTag {
-  id     String  @id @default(uuid())
-  name   String  @unique
-  assets Asset[]
-  type Int @default(0) // 0 tag 1 folder
+model GalleryPost {
+  id               String          @id @default(uuid())
+  name             String          @unique
+  title            String?
+  author           String          @default("Berlkot")
+  assets           Asset[]
+  creationDate     DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  smallDescription String?
+  largeDescription String?
+  copyright        String?         @default("CC BY-NC 4.0")
+  contentWarning   String?
+  effects          Json?
+  maturity         Int             @default(0) // 0 sfw 1 questionable 2 nsfw
+  visibility       Int             @default(-1) // -1 admin 0 public 1 sub only
+  tags             GalleryTag[]
+  folders          GalleryFolder[]
+}
+
+model Project {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  startDate DateTime
+  endDate   DateTime?
+  content   String
+}
+
+model Comic {
+  id         String         @id @default(uuid())
+  name       String         @unique
+  chapters   ComicChapter[]
+  maturity   Int            @default(0) // 0 sfw 1 questionable 2 nsfw
+  visibility Int            @default(-1) // -1 admin 0 public 1 sub only
+}
+
+model ComicChapter {
+  id            String          @id @default(uuid())
+  comic         Comic           @relation(fields: [comicId], references: [id])
+  visibility    Int             @default(-1) // -1 admin 0 public 1 sub only
+  comicId       String
+  PageInChapter PageInChapter[]
+  createdAt     DateTime        @default(now())
+}
+
+model PageInChapter {
+  chapter        ComicChapter @relation(fields: [comicChapterId], references: [id])
+  page           Asset        @relation(fields: [assetId], references: [id])
+  pageNumber     Int
+  effects        Json?
+  comicChapterId String
+  assetId        String
+
+  @@unique([comicChapterId, assetId])
+}
+
+model GalleryTag {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  galleryPosts GalleryPost[]
+}
+
+model GalleryFolder {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  galleryPosts GalleryPost[]
 }
 
 model PostTag {
