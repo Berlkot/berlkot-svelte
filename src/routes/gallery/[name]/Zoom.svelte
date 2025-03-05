@@ -92,8 +92,8 @@
 		top: 0;
 		left: 0;
 		width: 100%;
-		min-height: 100svh;
-		max-height: 100svh;
+		min-height: 100dvh;
+		max-height: 100dvh;
 		background-color: rgba(0, 0, 0, 0.5);
 		display: flex;
 		overflow: hidden;
