@@ -46,7 +46,7 @@
 			Right now, my social media are kinda stalling. But I have plans in the future to return to
 			updating them.
 		</p>
-		<div class="social">
+		<div class="social" id="socials">
 			<ul>
 				<li>
 					<a href="https://www.instagram.com/berlkot/" target="_blank">

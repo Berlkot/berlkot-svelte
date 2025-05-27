@@ -9,7 +9,7 @@
 <div class="hero-text">
 	<h1>Berlkot <span><br />Creative & Developer</span></h1>
 	<p>
-		<a class="link link-decor" href="/about">socials</a> |
+		<a class="link link-decor" href="/about#socials">socials</a> |
 		<a class="link link-decor" href="mailto:contact@berlkot.com">Email</a>
 	</p>
 </div>
