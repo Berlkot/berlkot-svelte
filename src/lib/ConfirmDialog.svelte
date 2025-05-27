@@ -14,7 +14,14 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-<div class="modal" role="dialog" bind:this={modal}>
+<div
+	class="modal"
+	role="dialog"
+	bind:this={modal}
+	onclick={(e) => {
+		if (e.target === modal) onreject();
+	}}
+>
 	<div class="wrapper" in:scale={{ start: 0.0, duration: 100 }} out:fade={{ duration: 100 }}>
 		<p>{text}</p>
 		<div class="flex-wr">
