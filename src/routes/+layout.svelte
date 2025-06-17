@@ -173,7 +173,7 @@
 	footer {
 		padding-top: 10rem;
 		padding-bottom: 4rem;
-		background: linear-gradient(#00000000, #180b20 40%);
+		background: linear-gradient(#00000000, #120616 40%);
 	}
 	#menu {
 		display: none;
