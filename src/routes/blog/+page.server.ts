@@ -3,7 +3,7 @@ import type { Prisma } from '@prisma/client';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export async function load({ params, locals }: RequestEvent) {
-	const q: Prisma.PostFindManyArgs = {
+	const q: Prisma.BlogPostFindManyArgs = {
 		select: {
 			title: true,
 			name: true,
@@ -11,16 +11,16 @@ export async function load({ params, locals }: RequestEvent) {
 			createdAt: true,
 			updatedAt: true,
 			tags: true,
-			thumbnail: { select: { name: true, smallDescription: true, alt: true } }
+			heroImage: { select: { name: true, alt: true } }
 		}
 	};
 	if (!locals.admin) {
 		q.where = {};
-		q.where.visibility = 0;
+		q.where.visibility = 'PUBLIC';
 	}
-	const posts = await prisma.post.findMany(q);
+	const blogPosts = await prisma.blogPost.findMany(q);
 	return {
-		posts,
+		blogPosts,
 		meta: {
 			title: 'Blog | Berlkot',
 			'og:title': 'Blog | Berlkot',

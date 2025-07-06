@@ -12,7 +12,7 @@
 	let showModal = $state(false);
 </script>
 
-{#each posts as post}
+{#each posts as post (post.name)}
 	<PostContainer {post} onremove={() => (posts = posts.filter((p) => p.name != post.name))} />
 {/each}
 <button onclick={() => (showModal = true)}>Add</button>

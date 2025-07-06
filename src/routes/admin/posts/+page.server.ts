@@ -6,7 +6,7 @@ import type { Prisma } from '@prisma/client';
 import { generateThumbnail } from '$lib/server/image-tools';
 
 export async function load() {
-	return { posts: await prisma.post.findMany() };
+	return { posts: await prisma.blogPost.findMany() };
 }
 
 const validatorConfig: { [key: string]: FieldConfig } = {
@@ -19,7 +19,7 @@ const validatorConfig: { [key: string]: FieldConfig } = {
 	createdAt: ['date'],
 	visibility: ['int', 'range:-1:2'],
 	tags: ['string'],
-	thumbnail: ['string']
+	heroImage: ['string']
 };
 
 export const actions = {
@@ -30,7 +30,7 @@ export const actions = {
 			return fail(400, validator.status);
 		}
 
-		await prisma.post.create({ data: data as unknown as Prisma.PostCreateInput });
+		await prisma.blogPost.create({ data: data as unknown as Prisma.BlogPostCreateInput });
 		return { success: true };
 	},
 	edit: async ({ request }: RequestEvent) => {
@@ -41,35 +41,35 @@ export const actions = {
 		}
 
 		const stringTags = data.tags ? (data.tags as string).split(',') : undefined;
-		const prev = await prisma.post.findUnique({
+		const prev = await prisma.blogPost.findUnique({
 			where: { id: String(data.id) },
 			include: { tags: true }
 		});
-		if (data.thumbnail) {
-			const thumbnail = (await prisma.asset.findUnique({
-				where: { name: String(data.thumbnail) }
+		if (data.heroImage) {
+			const heroImage = (await prisma.asset.findUnique({
+				where: { name: String(data.heroImage) }
 			}))!;
-			data.thumbnail = {};
-			data.thumbnail.connect = { id: thumbnail.id };
+			data.heroImage = {};
+			data.heroImage.connect = { id: heroImage.id };
 			let end = 'webp';
-			if (thumbnail.type === 1) {
+			if (heroImage.type === 'VIDEO') {
 				end = 'mp4';
 			}
 			await generateThumbnail(
-				`data/assets/${thumbnail.name}/${thumbnail.name}.${end}`,
-				`data/assets/${thumbnail.name}/${thumbnail.name}.webp`,
+				`data/assets/${heroImage.name}/${heroImage.name}.${end}`,
+				`data/assets/${heroImage.name}/${heroImage.name}.webp`,
 				465,
 				260
 			);
 			await generateThumbnail(
-				`data/assets/${thumbnail.name}/${thumbnail.name}.${end}`,
-				`data/assets/${thumbnail.name}/${thumbnail.name}.webp`,
+				`data/assets/${heroImage.name}/${heroImage.name}.${end}`,
+				`data/assets/${heroImage.name}/${heroImage.name}.webp`,
 				1280,
 				720
 			);
 		}
 
-		const q: Prisma.PostUpdateInput = {
+		const q: Prisma.BlogPostUpdateInput = {
 			...data
 		};
 		if (stringTags) {
@@ -85,16 +85,16 @@ export const actions = {
 				q.tags.disconnect = toDisconnect;
 			}
 		}
-		await prisma.post.update({
+		await prisma.blogPost.update({
 			where: { id: String(data.id) },
 			data: q
 		});
-		await prisma.postTag.deleteMany({ where: { posts: { none: {} } } });
+		await prisma.blogPostTag.deleteMany({ where: { posts: { none: {} } } });
 		return { success: true };
 	},
 	delete: async ({ request }: RequestEvent) => {
 		const data = await request.formData();
 		const name = data.get('name') as string;
-		await prisma.post.delete({ where: { name: name } });
+		await prisma.blogPost.delete({ where: { name: name } });
 	}
 };

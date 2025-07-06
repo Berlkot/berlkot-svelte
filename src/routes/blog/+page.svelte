@@ -8,7 +8,7 @@
 	<p>Here i will write down my thoughts and events happend in my life.</p>
 </div>
 <ul class="blog-list">
-	{#each data.posts as post}
+	{#each data.blogPosts as post (post.name)}
 		<li>
 			{#if !(post.createdAt > new Date())}
 				<ArticleCard {post} />

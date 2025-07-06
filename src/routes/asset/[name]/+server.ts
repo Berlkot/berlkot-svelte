@@ -11,7 +11,7 @@ export async function GET({ params, locals, url, request }: RequestEvent) {
 	try {
 		const q: Prisma.AssetFindFirstArgs = { where: { name: name } };
 		if (!locals.admin) {
-			q.where!.visibility = 0;
+			q.where!.visibility = 'PUBLIC';
 		}
 		await prisma.asset.findFirstOrThrow(q);
 		let file;

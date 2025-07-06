@@ -1,10 +1,5 @@
 <script lang="ts">
 
-	// import { beforeNavigate, onNavigate } from "$app/navigation";
-    // import Animator from "$lib/animator.svelte";
-    // import framedata from '$lib/assets/metadata.json';
-    // import atlas from '$lib/assets/output.png';
-
 	import type { Snippet } from 'svelte';
 	import Toasts from '$lib/toasts.svelte';
 	import AvatarImg from '$lib/assets/avatar.png';
@@ -15,29 +10,22 @@
 		children?: Snippet;
 	}
 
-	// let animator;
-    // onNavigate(async (nav) => {
-    //     await animator.play_animation('main');
-    // })
-
-
 	let { children }: Props = $props();
 </script>
 
 <svelte:head>
 	{#if page.state.selected}
 		<title>{page.state.selected.meta.title}</title>
-		{#each Object.keys(page.state.selected.meta) as metatag}
+		{#each Object.keys(page.state.selected.meta) as metatag (metatag)}
 			<meta name={metatag} content={page.state.selected.meta[metatag]} />
 		{/each}
 	{:else if page.data.meta}
 		<title>{page.data.meta.title}</title>
-		{#each Object.keys(page.data.meta) as metatag}
+		{#each Object.keys(page.data.meta) as metatag (metatag)}
 			<meta name={metatag} content={page.data.meta[metatag]} />
 		{/each}
 	{/if}
 </svelte:head>
-<!-- <Animator bind:this={animator} framedata={framedata} atlas={atlas}/> -->
 <Toasts />
 <div class="wrapper">
 	<header>
@@ -98,6 +86,12 @@
 			<br />
 			Reuse of website assets for commercial purposes is strictly prohibited.
 		</p>
+		
+		<ul>
+            <li>
+                <a class="link" href="https://berlkot.com/rss/blog.rss">rss</a>
+            </li>
+		</ul>
 
 		<div class="real-footer">
 			<p>
@@ -169,6 +163,9 @@
 	}
 	footer .link {
 		color: #ff5e86d2;
+		text-align: center;
+		font: 1.3rem/1.3em var(--ff-paragraph);
+		font-weight: bold;
 	}
 	footer {
 		padding-top: 10rem;

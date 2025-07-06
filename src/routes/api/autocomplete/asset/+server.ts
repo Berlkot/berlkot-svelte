@@ -3,7 +3,7 @@ import { json } from '@sveltejs/kit';
 
 export async function POST({ request }) {
 	const { text } = await request.json();
-	const tags = await prisma.assetTag.findMany({
+	const tags = await prisma.galleryTag.findMany({
 		where: {
 			name: {
 				contains: text

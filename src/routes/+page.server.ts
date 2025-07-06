@@ -3,27 +3,34 @@ import type { Prisma } from '@prisma/client';
 import { type RequestEvent } from '@sveltejs/kit';
 
 export async function load({ locals }: RequestEvent) {
-	const q: Prisma.AssetFindManyArgs = {
+	const q: Prisma.GalleryPostFindManyArgs = {
 		take: 4,
-		where: { inGallery: true },
 		select: {
 			name: true,
-			height: true,
-			width: true,
 			title: true,
-			alt: true,
-			type: true,
+			assets: {
+				take: 1,
+				select: {
+					asset: {
+						select: {
+							name: true,
+							alt: true,
+						}
+					},
+					order: true
+				},
+				orderBy: { order: 'asc' }
+			},
 			contentWarning: true,
 			maturity: true,
 			creationDate: true,
-			tags: { select: { name: true } }
 		},
 		orderBy: { creationDate: 'desc' }
 	};
-	const qp: Prisma.PostFindManyArgs = {
+	const qp: Prisma.BlogPostFindManyArgs = {
 		take: 3,
 		select: {
-			thumbnail: true,
+			heroImage: true,
 			name: true,
 			title: true,
 			description: true,
@@ -33,15 +40,16 @@ export async function load({ locals }: RequestEvent) {
 		orderBy: { createdAt: 'desc' }
 	};
 	if (!locals.admin) {
-		q.where!.visibility = 0;
+	  q.where = {};
+		q.where.visibility = 'PUBLIC';
 		qp.where = {};
-		qp.where!.visibility = 0;
+		qp.where.visibility = 'PUBLIC';
 	}
-	const asset = await prisma.asset.findMany(q);
-	const posts = await prisma.post.findMany(qp);
+	const galleryPosts = await prisma.galleryPost.findMany(q);
+	const blogPosts = await prisma.blogPost.findMany(qp);
 	return {
-		images: asset,
-		posts: posts,
+		galleryPosts: galleryPosts,
+		blogPosts: blogPosts,
 		meta: {
 			title: `Berlkot | Artist & Developer`,
 			'og:title': 'Berlkot | Artist & Developer',

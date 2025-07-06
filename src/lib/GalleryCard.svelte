@@ -7,7 +7,7 @@
 	import AssetPage from '$routes/gallery/[name]/+page.svelte';
 	import { fade, scale } from 'svelte/transition';
 	import { confirmedMatureContent } from './stores/persistent';
-	let { image } = $props();
+	let { galleryPost } = $props();
 	let href = $state<string>('');
 	let confirm = $state(false);
 	async function navigate() {
@@ -38,7 +38,7 @@
 {/if}
 
 <a
-	href="/gallery/{image.name}"
+	href="/gallery/{galleryPost.name}"
 	onclick={async (e) => {
 		if (
 			e.shiftKey || // or the link is opened in a new window
@@ -51,7 +51,7 @@
 
 		href = e.currentTarget.href;
 		e.preventDefault();
-		if (image.maturity > 0 && !$confirmedMatureContent) {
+		if (galleryPost.maturity != 'SFW' && !$confirmedMatureContent) {
 			confirm = true;
 		} else {
 			await navigate();
@@ -59,17 +59,17 @@
 	}}
 >
 	<div class="image-card focusable">
-		{#if image.maturity > 0}
+		{#if galleryPost.maturity != 'SFW'}
 			<div class="card-text">
-				<span>{image.maturity == 2 ? 'NSFW' : 'Questionable'}</span>
+				<span>{galleryPost.maturity == 'NSFW' ? 'NSFW' : 'Questionable'}</span>
 				<span class="click-to-reveal">Click to reveal (18+)</span>
 			</div>
 		{:else}
-			<img src="/asset/{image.name}.webp?w=270&h=270" alt={image.alt} width="270" height="270" />
+			<img src="/asset/{galleryPost.assets[0].asset.name}.webp?w=270&h=270" alt={galleryPost.assets[0].asset.alt} width="270" height="270" />
 		{/if}
 
 		<div class="title">
-			<p>{image.title || image.name}</p>
+			<p>{galleryPost.title || galleryPost.name}</p>
 		</div>
 	</div>
 </a>

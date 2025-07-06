@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "Post" (
+CREATE TABLE "BlogPost" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "title" TEXT NOT NULL,
@@ -8,9 +8,9 @@ CREATE TABLE "Post" (
     "description" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
-    "visibility" INTEGER NOT NULL DEFAULT -1,
-    "thumbnailId" TEXT,
-    CONSTRAINT "Post_thumbnailId_fkey" FOREIGN KEY ("thumbnailId") REFERENCES "Asset" ("id") ON DELETE SET NULL ON UPDATE CASCADE
+    "visibility" TEXT NOT NULL DEFAULT 'ADMIN',
+    "heroImageId" TEXT,
+    CONSTRAINT "BlogPost_heroImageId_fkey" FOREIGN KEY ("heroImageId") REFERENCES "Asset" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -18,10 +18,11 @@ CREATE TABLE "Asset" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "alt" TEXT,
-    "type" INTEGER NOT NULL DEFAULT 0,
+    "type" TEXT NOT NULL DEFAULT 'IMAGE',
     "width" INTEGER NOT NULL,
     "height" INTEGER NOT NULL,
-    "visibility" INTEGER NOT NULL DEFAULT -1
+    "credit" TEXT,
+    "visibility" TEXT NOT NULL DEFAULT 'ADMIN'
 );
 
 -- CreateTable
@@ -29,7 +30,6 @@ CREATE TABLE "GalleryPost" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
     "title" TEXT,
-    "author" TEXT NOT NULL DEFAULT 'Berlkot',
     "creationDate" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     "smallDescription" TEXT,
@@ -37,8 +37,17 @@ CREATE TABLE "GalleryPost" (
     "copyright" TEXT DEFAULT 'CC BY-NC 4.0',
     "contentWarning" TEXT,
     "effects" JSONB,
-    "maturity" INTEGER NOT NULL DEFAULT 0,
-    "visibility" INTEGER NOT NULL DEFAULT -1
+    "maturity" TEXT NOT NULL DEFAULT 'SFW',
+    "visibility" TEXT NOT NULL DEFAULT 'ADMIN'
+);
+
+-- CreateTable
+CREATE TABLE "GalleryAsset" (
+    "galleryId" TEXT NOT NULL,
+    "assetId" TEXT NOT NULL,
+    "order" INTEGER NOT NULL,
+    CONSTRAINT "GalleryAsset_galleryId_fkey" FOREIGN KEY ("galleryId") REFERENCES "GalleryPost" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "GalleryAsset_assetId_fkey" FOREIGN KEY ("assetId") REFERENCES "Asset" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -54,14 +63,14 @@ CREATE TABLE "Project" (
 CREATE TABLE "Comic" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
-    "maturity" INTEGER NOT NULL DEFAULT 0,
-    "visibility" INTEGER NOT NULL DEFAULT -1
+    "maturity" TEXT NOT NULL DEFAULT 'SFW',
+    "visibility" TEXT NOT NULL DEFAULT 'ADMIN'
 );
 
 -- CreateTable
 CREATE TABLE "ComicChapter" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "visibility" INTEGER NOT NULL DEFAULT -1,
+    "visibility" TEXT NOT NULL DEFAULT 'ADMIN',
     "comicId" TEXT NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "ComicChapter_comicId_fkey" FOREIGN KEY ("comicId") REFERENCES "Comic" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
@@ -90,25 +99,17 @@ CREATE TABLE "GalleryFolder" (
 );
 
 -- CreateTable
-CREATE TABLE "PostTag" (
+CREATE TABLE "BlogPostTag" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL
 );
 
 -- CreateTable
-CREATE TABLE "_PostToPostTag" (
+CREATE TABLE "_BlogPostToBlogPostTag" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
-    CONSTRAINT "_PostToPostTag_A_fkey" FOREIGN KEY ("A") REFERENCES "Post" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "_PostToPostTag_B_fkey" FOREIGN KEY ("B") REFERENCES "PostTag" ("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-
--- CreateTable
-CREATE TABLE "_AssetToGalleryPost" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL,
-    CONSTRAINT "_AssetToGalleryPost_A_fkey" FOREIGN KEY ("A") REFERENCES "Asset" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT "_AssetToGalleryPost_B_fkey" FOREIGN KEY ("B") REFERENCES "GalleryPost" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT "_BlogPostToBlogPostTag_A_fkey" FOREIGN KEY ("A") REFERENCES "BlogPost" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "_BlogPostToBlogPostTag_B_fkey" FOREIGN KEY ("B") REFERENCES "BlogPostTag" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -128,13 +129,16 @@ CREATE TABLE "_GalleryFolderToGalleryPost" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Post_name_key" ON "Post"("name");
+CREATE UNIQUE INDEX "BlogPost_name_key" ON "BlogPost"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Asset_name_key" ON "Asset"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "GalleryPost_name_key" ON "GalleryPost"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "GalleryAsset_galleryId_assetId_key" ON "GalleryAsset"("galleryId", "assetId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Project_name_key" ON "Project"("name");
@@ -152,19 +156,13 @@ CREATE UNIQUE INDEX "GalleryTag_name_key" ON "GalleryTag"("name");
 CREATE UNIQUE INDEX "GalleryFolder_name_key" ON "GalleryFolder"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PostTag_name_key" ON "PostTag"("name");
+CREATE UNIQUE INDEX "BlogPostTag_name_key" ON "BlogPostTag"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_PostToPostTag_AB_unique" ON "_PostToPostTag"("A", "B");
+CREATE UNIQUE INDEX "_BlogPostToBlogPostTag_AB_unique" ON "_BlogPostToBlogPostTag"("A", "B");
 
 -- CreateIndex
-CREATE INDEX "_PostToPostTag_B_index" ON "_PostToPostTag"("B");
-
--- CreateIndex
-CREATE UNIQUE INDEX "_AssetToGalleryPost_AB_unique" ON "_AssetToGalleryPost"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_AssetToGalleryPost_B_index" ON "_AssetToGalleryPost"("B");
+CREATE INDEX "_BlogPostToBlogPostTag_B_index" ON "_BlogPostToBlogPostTag"("B");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_GalleryPostToGalleryTag_AB_unique" ON "_GalleryPostToGalleryTag"("A", "B");

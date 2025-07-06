@@ -6,29 +6,37 @@ import type { Prisma } from '@prisma/client';
 
 export async function load({ params, locals }: RequestEvent) {
 	try {
-		const q: Prisma.AssetFindFirstArgs = {
-			where: { inGallery: true, name: params.name },
+		const q: Prisma.GalleryPostFindFirstArgs = {
+			where: {name: params.name },
 			include: {
-				tags: true
+				tags: true,
+				folders: true,
+				assets: {
+          include: {
+            asset: true
+          },
+          orderBy: {
+            order: 'asc'
+          }
+				}
 			}
 		};
 		if (!locals.admin) {
-			q.where!.visibility = 0;
+			q.where!.visibility = 'PUBLIC';
 		}
-		const asset = await prisma.asset.findFirstOrThrow(q);
-		asset.largeDescription = asset.largeDescription
-			? await renderMarkdown(asset.largeDescription)
+		const galleryPost = await prisma.galleryPost.findFirstOrThrow(q);
+		galleryPost.largeDescription = galleryPost.largeDescription
+			? await renderMarkdown(galleryPost.largeDescription)
 			: 'No description provided';
 		return {
-			asset: asset,
+			galleryPost: galleryPost,
 			meta: {
-				title: `${asset.title} | Berlkot`,
+				title: `${galleryPost.title} | Berlkot`,
 				'og:type': 'image',
-				'og:title': `${asset.title} | Berlkot`,
-				'og:image': `https://berlkot.com/asset/${asset.name}.webp`,
-				description: asset.smallDescription,
-				'og:description': asset.smallDescription,
-				author: asset.author
+				'og:title': `${galleryPost.title} | Berlkot`,
+				'og:image': `https://berlkot.com/asset/${galleryPost.assets[0].asset.name}.webp`,
+				description: galleryPost.smallDescription,
+				'og:description': galleryPost.smallDescription,
 			}
 		};
 	} catch {

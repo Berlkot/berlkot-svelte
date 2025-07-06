@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -7,9 +8,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
+// sqlite driver finally supports enums yipee 
+enum Visibility {
+  ADMIN
+  PUBLIC
+  SUB_ONLY
+}
+
+enum ContentType {
+  IMAGE
+  VIDEO
+}
+
+enum Maturity {
+  SFW
+  QUESTIONABLE
+  NSFW
+}
+
+model BlogPost {
   id          String    @id @default(uuid())
-  thumbnail   Asset?    @relation(fields: [thumbnailId], references: [id])
+  heroImage   Asset?    @relation(fields: [heroImageId], references: [id])
   name        String    @unique
   title       String
   author      String    @default("Berlkot")
@@ -17,21 +36,22 @@ model Post {
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  visibility  Int       @default(-1) // -1 admin 0 public 1 sub only
-  tags        PostTag[]
-  thumbnailId String?
+  visibility  Visibility       @default(ADMIN)
+  tags        BlogPostTag[]
+  heroImageId String?
 }
 
 model Asset {
   id            String          @id @default(uuid())
   name          String          @unique
   alt           String?
-  type          Int             @default(0) // 0 image 1 video
+  type          ContentType             @default(IMAGE)
   width         Int
   height        Int
-  visibility    Int             @default(-1) // -1 admin 0 public 1 sub only
-  posts         Post[]
-  galleryPosts  GalleryPost[]
+  credit        String?
+  visibility    Visibility      @default(ADMIN)
+  posts         BlogPost[]
+  galleryPosts  GalleryAsset[]
   PageInChapter PageInChapter[]
 }
 
@@ -39,8 +59,7 @@ model GalleryPost {
   id               String          @id @default(uuid())
   name             String          @unique
   title            String?
-  author           String          @default("Berlkot")
-  assets           Asset[]
+  assets           GalleryAsset[]
   creationDate     DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   smallDescription String?
@@ -48,12 +67,23 @@ model GalleryPost {
   copyright        String?         @default("CC BY-NC 4.0")
   contentWarning   String?
   effects          Json?
-  maturity         Int             @default(0) // 0 sfw 1 questionable 2 nsfw
-  visibility       Int             @default(-1) // -1 admin 0 public 1 sub only
+  maturity         Maturity        @default(SFW)
+  visibility       Visibility      @default(ADMIN)
   tags             GalleryTag[]
   folders          GalleryFolder[]
 }
 
+model GalleryAsset {
+  galleryPost GalleryPost @relation(fields: [galleryId], references: [id])
+  asset Asset @relation(fields: [assetId], references: [id])
+  galleryId String
+  assetId String
+  order Int
+  
+  @@unique([galleryId, assetId])
+}
+
+// dummy model for now
 model Project {
   id        String    @id @default(uuid())
   name      String    @unique
@@ -66,14 +96,14 @@ model Comic {
   id         String         @id @default(uuid())
   name       String         @unique
   chapters   ComicChapter[]
-  maturity   Int            @default(0) // 0 sfw 1 questionable 2 nsfw
-  visibility Int            @default(-1) // -1 admin 0 public 1 sub only
+  maturity   Maturity        @default(SFW)
+  visibility Visibility      @default(ADMIN)
 }
 
 model ComicChapter {
   id            String          @id @default(uuid())
   comic         Comic           @relation(fields: [comicId], references: [id])
-  visibility    Int             @default(-1) // -1 admin 0 public 1 sub only
+  visibility    Visibility      @default(ADMIN)
   comicId       String
   PageInChapter PageInChapter[]
   createdAt     DateTime        @default(now())
@@ -102,8 +132,8 @@ model GalleryFolder {
   galleryPosts GalleryPost[]
 }
 
-model PostTag {
+model BlogPostTag {
   id    String @id @default(uuid())
   name  String @unique
-  posts Post[]
+  posts BlogPost[]
 }

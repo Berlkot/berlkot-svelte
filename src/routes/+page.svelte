@@ -1,6 +1,6 @@
 <script lang="ts">
 	import HeroImage from '$lib/assets/images/hero_bg.webp';
-	import ImageCard from '$lib/ImageCard.svelte';
+	import GalleryCard from '$lib/GalleryCard.svelte';
 	import ArticleCard from '$lib/ArticleCard.svelte';
 	let { data } = $props();
 </script>
@@ -16,7 +16,7 @@
 <section>
 	<h2 class="heading">Latest to read</h2>
 	<ul class="blog-list">
-		{#each data.posts as post}
+		{#each data.blogPosts as post (post.name)}
 			<li>
 				<ArticleCard {post} />
 			</li>
@@ -29,9 +29,9 @@
 <section>
 	<h2 class="heading">Latest to look</h2>
 	<ul class="gallery">
-		{#each data.images as image}
+		{#each data.galleryPosts as galleryPost (galleryPost.name)}
 			<li>
-				<ImageCard {image} />
+				<GalleryCard {galleryPost} />
 			</li>
 		{/each}
 	</ul>

@@ -3,9 +3,9 @@ import type { RequestEvent } from './$types';
 
 export async function load({ params }: RequestEvent) {
 	return {
-		post: await prisma.post.findUnique({
+		post: await prisma.blogPost.findUnique({
 			where: { name: params.post },
-			include: { tags: true, thumbnail: { select: { name: true, id: true } } }
+			include: { tags: true, heroImage: { select: { name: true, id: true } } }
 		}),
 		images: await prisma.asset.findMany({ select: { name: true, id: true } })
 	};

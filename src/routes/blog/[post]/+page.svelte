@@ -12,39 +12,39 @@
 	<!--eslint-disable svelte/no-at-html-tags-->
 	<a class="link" href="/blog">&lt; Back</a>
 	<article>
-		{#if data.post.thumbnail}
+		{#if data.blogPost.heroImage}
 			<figure>
-				<figcaption>{data.post.thumbnail.smallDescription}</figcaption>
+				<figcaption>{data.blogPost.heroImage.credit}</figcaption>
 				<img
-					src="/asset/{data.post.thumbnail.name}.webp?w=1280&h=720"
-					alt={data.post.thumbnail.alt}
+					src="/asset/{data.blogPost.heroImage.name}.webp?w=1280&h=720"
+					alt={data.blogPost.heroImage.alt}
 					width="1280"
 					height="720"
 				/>
 			</figure>
 		{/if}
 		<ul class="tag-list">
-			{#each data.post.tags as tag}
+			{#each data.blogPost.tags as tag (tag.name)}
 				<li class="tag">
 					{tag.name}
 				</li>
 			{/each}
 		</ul>
-		<h1>{data.post.title}</h1>
+		<h1>{data.blogPost.title}</h1>
 		<div class="metadata">
-			<span>By {data.post.author}</span>
+			<span>By {data.blogPost.author}</span>
 			<span
-				>{#if data.post.updatedAt > new Date(data.post.createdAt.getTime() + 86400000)}<time
+				>{#if data.blogPost.updatedAt > new Date(data.blogPost.createdAt.getTime() + 86400000)}<time
 						class="updated"
-						datetime={data.post.updatedAt.toString()}
-						>{new Intl.DateTimeFormat(undefined, options).format(data.post.updatedAt)}</time
+						datetime={data.blogPost.updatedAt.toString()}
+						>{new Intl.DateTimeFormat(undefined, options).format(data.blogPost.updatedAt)}</time
 					> |{/if}
-				<time datetime={data.post.createdAt.toString()}
-					>{new Intl.DateTimeFormat(undefined, options).format(data.post.createdAt)}</time
+				<time datetime={data.blogPost.createdAt.toString()}
+					>{new Intl.DateTimeFormat(undefined, options).format(data.blogPost.createdAt)}</time
 				></span
 			>
 		</div>
-		<section>{@html data.post.content}</section>
+		<section>{@html data.blogPost.content}</section>
 	</article>
 </section>
 

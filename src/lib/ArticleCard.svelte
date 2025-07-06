@@ -9,16 +9,16 @@
 
 <a class="blog-card" href="/blog/{post.name}">
 	<article>
-		{#if post.thumbnail}
+		{#if post.heroImage}
 			<img
-				src="/asset/{post.thumbnail.name}.webp?w=465&h=260"
-				alt={post.thumbnail.alt}
+				src="/asset/{post.heroImage.name}.webp?w=465&h=260"
+				alt={post.heroImage.alt}
 				width="465"
 				height="260"
 			/>
 		{/if}
 		<ul class="tag-list">
-			{#each post.tags as tag}
+			{#each post.tags as tag (tag.name)}
 				<li class="tag">
 					{tag.name}
 				</li>

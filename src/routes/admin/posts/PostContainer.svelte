@@ -1,10 +1,10 @@
 <script lang="ts">
 	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
-	import type { Post } from '@prisma/client';
+	import type { BlogPost } from '@prisma/client';
 	import { addToast } from '$lib/stores/toastStore';
 
 	interface Props {
-		post: Post;
+		post: BlogPost;
 		onremove: () => void;
 	}
 	let { post, onremove }: Props = $props();

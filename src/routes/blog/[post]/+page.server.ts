@@ -7,30 +7,30 @@ const return_string = 'Blogpost not found!';
 
 export async function load({ params, locals }: RequestEvent) {
 	try {
-		const q: Prisma.PostFindUniqueArgs = {
+		const q: Prisma.BlogPostFindUniqueArgs = {
 			where: { name: params.post },
 			include: {
 				tags: true,
-				thumbnail: { select: { name: true, smallDescription: true, alt: true } }
+				heroImage: { select: { name: true, credit: true, alt: true } }
 			}
 		};
 		if (!locals.admin) {
-			q.where.visibility = 0;
+			q.where.visibility = 'PUBLIC';
 		}
-		const post = await prisma.post.findUniqueOrThrow(q);
-		post.content = post.content ? await renderMarkdown(post.content) : 'Blogpost is empty';
-		let meta = {
-			title: `${post.title} | Berlkot`,
-			'og:title': `${post.title} | Berlkot`,
-			description: post.description,
-			'og:description': post.description,
-			author: post.author,
+		const blogPost = await prisma.blogPost.findUniqueOrThrow(q);
+		blogPost.content = blogPost.content ? await renderMarkdown(blogPost.content) : 'Blogpost is empty';
+		const meta = {
+			title: `${blogPost.title} | Berlkot`,
+			'og:title': `${blogPost.title} | Berlkot`,
+			description: blogPost.description,
+			'og:description': blogPost.description,
+			author: blogPost.author,
 			'og:type': 'article'
 		};
-		if (post.thumbnail) {
-			meta['og:image'] = `https://berlkot.com/asset/${post.thumbnail.name}.webp`;
+		if (blogPost.heroImage) {
+			meta['og:image'] = `https://berlkot.com/asset/${blogPost.heroImage.name}.webp`;
 		}
-		return { post, meta };
+		return { blogPost, meta };
 	} catch {
 		throw error(404, return_string);
 	}

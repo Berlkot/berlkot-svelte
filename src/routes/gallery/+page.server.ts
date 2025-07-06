@@ -13,30 +13,42 @@ export async function load({ params, locals, url }: RequestEvent) {
 		tags = [];
 	}
 	// const text = url.searchParams.get('text');
-	const q: Prisma.AssetFindManyArgs = {
+	const q: Prisma.GalleryPostFindManyArgs = {
 		where: {
-			inGallery: true,
 			AND: tags.map((tag) => ({ tags: { some: { name: tag } } }))
 		},
 		select: {
 			name: true,
-			height: true,
-			width: true,
 			title: true,
-			alt: true,
-			type: true,
 			contentWarning: true,
 			maturity: true,
-			tags: { select: { name: true } }
+			assets: {
+				take: 1,
+				select: {
+					order: true,
+					asset: {
+						select: {
+							name: true,
+							height: true,
+							width: true,
+							alt: true,
+							type: true
+						}
+					}
+				},
+				orderBy: { order: 'asc' }
+			},
+			tags: { select: { name: true } },
+			folders: { select: { name: true } }
 		},
 		orderBy: { creationDate: 'desc' }
 	};
 	if (!locals.admin) {
-		q.where!.visibility = 0;
+		q.where!.visibility = 'PUBLIC';
 	}
-	const asset = await prisma.asset.findMany(q);
+	const galleryPosts = await prisma.galleryPost.findMany(q);
 	return {
-		images: asset,
+		galleryPosts: galleryPosts,
 		meta: {
 			title: 'Gallery | Berlkot',
 			'og:title': 'Gallery | Berlkot',

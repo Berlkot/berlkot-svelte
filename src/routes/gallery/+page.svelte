@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Autocomplete from '$lib/Autocomplete.svelte';
 	import { searchTags } from '$lib/client-helpers';
-	import ImageCard from '$lib/ImageCard.svelte';
+	import GalleryCard from '$lib/GalleryCard.svelte';
 	let { data } = $props();
 	import { page } from '$app/state';
 	import { goto, afterNavigate } from '$app/navigation';
@@ -67,9 +67,9 @@
 
 <section>
 	<ul class="gallery">
-		{#each data.images as image}
+		{#each data.galleryPosts as galleryPost (galleryPost.name)}
 			<li>
-				<ImageCard {image} />
+				<GalleryCard {galleryPost} />
 			</li>
 		{/each}
 	</ul>

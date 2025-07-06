@@ -33,7 +33,7 @@
 				name="thumbnail"
 				optFunction={searchImages}
 				key="name"
-				defaultSelected={post.thumbnail ? [post.thumbnail] : []}
+				defaultSelected={post.heroImage ? [post.heroImage] : []}
 				multipule={false}
 				delay={200}
 				allowNew={false}
