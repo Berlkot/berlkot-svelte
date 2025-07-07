@@ -7,7 +7,12 @@ declare global {
 			admin: boolean;
 		}
 		// interface PageData {}
-		// interface PageState {}
+		interface PageState {
+      selected: {
+        meta: {[name: string]: string}
+        galleryPost: object
+      };
+		}
 		// interface Platform {}
 	}
 }

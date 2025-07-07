@@ -1,15 +1,19 @@
 <script lang="ts">
+	import type { Snippet } from "svelte";
+
 	interface Props {
 		optFunction: Function;
 		defaultSelected: object[];
 		delay?: number;
 		name?: string;
 		multipule?: boolean;
-		optionItem?: any;
+		optionItem?: Snippet<[object]>;
 		key: string;
 		placeholder?: string;
 		allowNew?: boolean;
 		onChange?: Function;
+		onFocusChange?: Function;
+		selectedItem?: Snippet<[object]>
 	}
 	let {
 		optFunction,
@@ -21,7 +25,9 @@
 		key,
 		placeholder = '',
 		allowNew = false,
-		onChange
+		onChange,
+		onFocusChange,
+		selectedItem
 	}: Props = $props();
 	async function oninput(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		if (!showDropdown) {
@@ -69,14 +75,20 @@
 	let timeout: Timer;
 	let input: HTMLInputElement;
 	let focused = $state(0);
+	let dropdown: HTMLUListElement;
+	$effect(() => {
+        if (focused === -1) return; // effect bait
+		if (!dropdown) return;
+		dropdown.scroll({top: (focused + 1) * dropdown.scrollHeight / options.length - dropdown.clientHeight, behavior: 'smooth'});
+	});
 </script>
 
-<input type="text" hidden bind:value {name} class="u-none" />
+<input id={name} type="text" hidden bind:value {name} class="u-none" />
 <div class="autocomplete" class:multipule>
 	<div class="autocomplete-input-field" class:autocomplete-focused={showDropdown}>
 		{#if multipule && selection.length > 0}
 			<ul class="autocomplete-selected-list">
-				{#each selection as selected}
+				{#each selection as selected (selected[key as keyof typeof selected])}
 					<button
 						class="autocomplete-selected"
 						onclick={() => {
@@ -85,13 +97,25 @@
 						}}
 					>
 						<li>
-							{selected[key as keyof typeof selected]}
+						    {#if selectedItem}
+						        {@render selectedItem(selected)}
+							{:else}
+							    {selected[key as keyof typeof selected]}
+							{/if}
 						</li>
 						x
 					</button>
 				{/each}
 			</ul>
 		{/if}
+		{#if !multipule && selection.length > 0}
+			{#if selectedItem}
+			    {@render selectedItem(selection[0])}
+			{:else}
+			    {selection[0][key as keyof (typeof selection)[0]]}
+			{/if}
+            
+        {/if}
 		<div class="autocomplete-input">
 			<input
 				{placeholder}
@@ -100,9 +124,15 @@
 				type="text"
 				oninput={(e) => oninput(e)}
 				onfocus={() => {
+				    if (onFocusChange) {
+				        onFocusChange(true);
+				    }
 					showDropdown = true;
 				}}
 				onblur={() => {
+                    if (onFocusChange) {
+                        onFocusChange(false);
+                    }
 					showDropdown = false;
 				}}
 				onkeydown={(e) => {
@@ -125,7 +155,7 @@
 							select({ [key]: input.value });
 						}
 					}
-					if (e.key == 'Backspace' && !multipule && selection.length > 0) {
+					if (e.key == 'Backspace' && !multipule && selection.length > 0 && input.value.length === 0) {
 						selection = [];
 						value = '';
 					}
@@ -134,9 +164,7 @@
 				aria-controls="autocomplete-list"
 				aria-expanded={showDropdown}
 			/>
-			{#if !multipule && selection.length > 0}
-				{selection[0][key as keyof (typeof selection)[0]]}
-			{/if}
+
 		</div>
 	</div>
 	{#if showDropdown && options.length > 0}
@@ -144,10 +172,11 @@
 			id="autocomplete-list"
 			class="autocomplete-list"
 			role="listbox"
+			bind:this={dropdown}
 			aria-expanded={showDropdown}
 			aria-labelledby="autocomplete-input"
 		>
-			{#each options as option, index}
+			{#each options as option, index (index)}
 				<div
 					tabindex="0"
 					class="autocomplete-option"
@@ -203,9 +232,11 @@
 	.autocomplete-focused {
 		border-color: var(--color-primary);
 	}
-	.autocomplete-input,
+	.autocomplete-input {
+	    flex: auto;
+	}
 	#autocomplete-input {
-		width: 100%;
+	    width: 100%;
 		border: none;
 		display: block;
 	}

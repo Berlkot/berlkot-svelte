@@ -12,7 +12,7 @@
 
 <section>
 	<div class="full-view">
-		{#if assets[currentImage].type == 1}
+		{#if assets[currentImage].type == "VIDEO"}
 			<!-- svelte-ignore a11y_media_has_caption -->
 			<video controls loop src="/asset/{assets[currentImage].name}.mp4"></video>
 		{:else}

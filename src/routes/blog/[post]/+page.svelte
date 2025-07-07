@@ -10,7 +10,7 @@
 <section class="blog">
 	<!--We trust ourself or hacked-->
 	<!--eslint-disable svelte/no-at-html-tags-->
-	<a class="link" href="/blog">&lt; Back</a>
+	<a class="link" href="/blog">&lt; to blog list</a>
 	<article>
 		{#if data.blogPost.heroImage}
 			<figure>

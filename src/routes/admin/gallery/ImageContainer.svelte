@@ -1,11 +1,12 @@
 <script lang="ts">
-	import Modal from '$lib/Modal.svelte';
-	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
+	// FIXME
+    import Modal from '$lib/components/Modal.svelte';
+	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import type { Asset } from '@prisma/client';
 	import { addToast } from '$lib/stores/toastStore';
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
-	import Autocomplete from '$lib/Autocomplete.svelte';
+	import Autocomplete from '$lib/components/Autocomplete.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg';
 	import { searchFolders, searchTags } from '$lib/client-helpers';
 

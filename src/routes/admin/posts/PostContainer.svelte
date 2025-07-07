@@ -1,7 +1,8 @@
 <script lang="ts">
-	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
+	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import type { BlogPost } from '@prisma/client';
 	import { addToast } from '$lib/stores/toastStore';
+	import ArticleCard from '$lib/components/ArticleCard.svelte';
 
 	interface Props {
 		post: BlogPost;
@@ -10,10 +11,11 @@
 	let { post, onremove }: Props = $props();
 	let showConfirm = $state(false);
 </script>
-
-<a href="/blog/{post.name}">{post.title}</a>
-<a class="button" href="posts/{post.name}">Edit</a>
-<button class="button button-danger" onclick={() => (showConfirm = true)}>Delete</button>
+<div class="flex-we">
+    <ArticleCard {post} />
+    <a class="button" href="posts/{post.name}">Edit</a>
+    <button class="button button-danger" onclick={() => (showConfirm = true)}>Delete</button>
+</div>
 {#if showConfirm}
 	<ConfirmDialog
 		onconfirm={() => {
@@ -44,3 +46,9 @@
 		text="Are you sure you want to delete this post?"
 	/>
 {/if}
+
+<style>
+    .flex-we {
+        width: 33%;
+    }
+</style>

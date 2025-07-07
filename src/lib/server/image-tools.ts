@@ -30,7 +30,7 @@ export async function normalizeMedia(img_path: string) {
 				return `${thingNoext}.webp`;
 			}
 
-			const sharpStream = sharp(img_path, { pages: -1 }).webp({ effort: 6, lossless: true });
+			const sharpStream = sharp(img_path, { pages: -1 }).resize(1800, 1800, {fit: 'inside', withoutEnlargement: true}).webp({ effort: 6, lossless: true });
 			await sharpStream.toFile(`${thingNoext}.webp`);
 			unlink(img_path);
 			return `${thingNoext}.webp`;

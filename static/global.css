@@ -61,7 +61,13 @@ label {
 	display: block;
 }
 
-label {
+.input-container:has(input[required]) label::after {
+    content: "*";
+    color: var(--color-accent);
+    font-weight: bolder;
+}
+
+.input-container {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -375,3 +381,4 @@ strong {
 	color: #ffe5e5;
 	font-weight: bold;
 }
+

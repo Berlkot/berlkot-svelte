@@ -1,7 +1,7 @@
 <script lang="ts">
 	import HeroImage from '$lib/assets/images/hero_bg.webp';
-	import GalleryCard from '$lib/GalleryCard.svelte';
-	import ArticleCard from '$lib/ArticleCard.svelte';
+	import GalleryCard from '$lib/components/GalleryCard.svelte';
+	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	let { data } = $props();
 </script>
 

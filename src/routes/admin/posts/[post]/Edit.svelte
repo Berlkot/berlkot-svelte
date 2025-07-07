@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Autocomplete from '$lib/Autocomplete.svelte';
+	import Autocomplete from '$lib/components/Autocomplete.svelte';
 
 	let { post = $bindable(), images } = $props();
 
@@ -22,42 +22,64 @@
 	$effect(() => {
 		post.createdAt = new Date(formattedDate);
 	});
+	let focused = $state(false);
 </script>
+
+{#snippet selectedItem(image)}
+	<div class="image-select-item" class:blur-item={focused}>
+		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
+		<p>{image.name}</p>
+	</div>
+{/snippet}
+{#snippet optionItem(image)}
+	<div class="image-option-item">
+		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
+		<p>{image.name}</p>
+	</div>
+{/snippet}
 
 <form action="/admin/posts?/edit" method="POST">
 	<input type="hidden" name="id" value={post.id} hidden />
-	<label>
-		Thumbnail
+	<div class="input-container">
+		<label for="heroImage">Thumbnail</label>
 		<div class="tags">
 			<Autocomplete
-				name="thumbnail"
+				name="heroImage"
 				optFunction={searchImages}
+				{optionItem}
+				{selectedItem}
 				key="name"
 				defaultSelected={post.heroImage ? [post.heroImage] : []}
 				multipule={false}
 				delay={200}
 				allowNew={false}
+				onChange={(value) => {
+					post.heroImage = images.find((i) => i.name === value);
+				}}
+				onFocusChange={(val) => {
+					focused = val;
+				}}
 			/>
 		</div>
-	</label>
-	<label>
-		Name
-		<input name="name" type="text" required bind:value={post.name} />
-	</label>
-	<label>
-		Author
-		<input name="author" type="text" bind:value={post.author} />
-	</label>
-	<label>
-		Title
-		<input name="title" type="text" bind:value={post.title} />
-	</label>
-	<label>
-		Description
-		<textarea name="description" bind:value={post.description}></textarea>
-	</label>
-	<label>
-		Tags
+	</div>
+	<div class="input-container">
+		<label for="name">Name</label>
+		<input id="name" name="name" type="text" required bind:value={post.name} />
+	</div>
+	<div class="input-container">
+		<label for="author">Author</label>
+		<input id="author" name="author" type="text" bind:value={post.author} />
+	</div>
+	<div class="input-container">
+		<label for="title">Title</label>
+		<input id="title" name="title" type="text" bind:value={post.title} />
+	</div>
+	<div class="input-container">
+		<label for="description">Description</label>
+		<textarea id="description" name="description" bind:value={post.description}></textarea>
+	</div>
+	<div class="input-container">
+		<label for="tags">Tags</label>
 		<div class="tags">
 			<Autocomplete
 				name="tags"
@@ -69,28 +91,51 @@
 				allowNew={true}
 			/>
 		</div>
-	</label>
-	<label>
-		Content
-		<textarea name="content" rows="30" bind:value={post.content}></textarea>
-	</label>
-	<label>
-		Creation Date
-		<input name="createdAt" type="date" bind:value={formattedDate} />
-	</label>
-	<label>
-		Visibility
-		<select name="visibility">
-			<option value="-1" selected={post.visibility == -1}>admin</option>
-			<option value="0" selected={post.visibility == 0}>public</option>
-			<option value="1" selected={post.visibility == 1}>for subs</option>
+	</div>
+	<div class="input-container">
+		<label for="content">Content</label>
+		<textarea id="content" name="content" rows="30" bind:value={post.content}></textarea>
+	</div>
+	<div class="input-container">
+		<label for="createdAt">Creation Date</label>
+		<input id="createdAt" name="createdAt" type="date" bind:value={formattedDate} />
+	</div>
+
+	<div class="input-container">
+		<label for="visibility">Visibility</label>
+		<select id="visibility" name="visibility">
+			<option value="ADMIN" selected={post.visibility == 'ADMIN'}>admin</option>
+			<option value="PUBLIC" selected={post.visibility == 'PUBLIC'}>public</option>
+			<option value="SUB_ONLY" selected={post.visibility == 'SUB_ONLY'}>for subs</option>
 		</select>
-	</label>
+	</div>
 	<button>Save</button>
 </form>
 
 <style>
 	.tags {
 		width: 50%;
+	}
+	.image-select-item {
+		display: flex;
+		align-items: center;
+		margin: 5px;
+		margin-right: -20%;
+		gap: 1rem;
+		transition: filter 0.3s ease-in-out;
+		z-index: -1;
+	}
+	.image-option-item {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+	.image-option-item p,
+	.image-select-item p {
+		margin-bottom: 0;
+		display: inline-block;
+	}
+	.blur-item {
+		filter: blur(0.8px) grayscale() opacity(0.5);
 	}
 </style>

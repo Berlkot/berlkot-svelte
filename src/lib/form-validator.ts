@@ -3,7 +3,7 @@ type Modifier = 'reqired' | string;
 export type FieldConfig = [FieldType, ...Array<Modifier>];
 export class Validator {
 	private config;
-	public status: { message: string } = { message: '' };
+	public status: { [key: string]: string } = {};
 	constructor(config: { [key: string]: FieldConfig }) {
 		this.config = config;
 	}
@@ -14,8 +14,8 @@ export class Validator {
 			const value = data.get(key);
 			if (!value) {
 				if (params.includes('reqired')) {
-					this.status.message = `Required key: '${key}' not found in request`;
-					return;
+					this.status[key] = `'${key}' not found in request`;
+					continue;
 				}
 				continue;
 			}
@@ -30,7 +30,15 @@ export class Validator {
 				out[key] = new Date(Date.parse(value.toString()));
 			} else if (f_type === 'string') {
 				for (const val of params) {
-					if (val.startsWith('range')) {
+				  if (val.startsWith('enum')) {
+						const enumValues = val.split(':').slice(1);
+						if (enumValues.includes(value.toString().toUpperCase())) {
+							out[key] = value.toString().toUpperCase();
+						} else {
+							this.status[key] = `Expected one of ${enumValues.join(', ')}. Found ${value}`;
+							continue outer;
+						}
+					} else if (val.startsWith('range')) {
 						const range = val.split(':');
 						if (
 							(value as string).length >= parseInt(range[1]) &&
@@ -38,8 +46,8 @@ export class Validator {
 						) {
 							out[key] = value as string;
 						} else {
-							this.status.message = `Key: '${key}' is too long. Expected between ${range[1]}:${range[2]}. Found ${value}`;
-							return;
+							this.status[key] = `Value is too long. Expected between ${range[1]}:${range[2]}. Found ${value}`;
+							continue outer;
 						}
 					}
 				}
@@ -47,27 +55,28 @@ export class Validator {
 			} else if (f_type === 'int') {
 				const int_val = parseInt(value as string);
 				if (isNaN(int_val)) {
-					this.status.message = `Key: '${key}'. Expected integer`;
-					return;
+					this.status[key] = `Expected integer`;
+					continue;
 				}
 				for (const val of params) {
 					if (val.startsWith('range')) {
 						const range = val.split(':');
-
 						if (int_val >= parseInt(range[1]) && int_val < parseInt(range[2])) {
 							out[key] = int_val;
-							continue outer;
 						} else {
-							this.status.message = `Key: '${key}' is too large. Expected between ${range[1]}:${range[2]}. Found ${value}`;
-							return;
+							this.status[key] = `Value is too large. Expected between ${range[1]}:${range[2]}. Found ${value}`;	
 						}
+						continue outer;
 					}
 				}
 				out[key] = int_val;
 			} else {
-				this.status.message = `Key: '${key}' is not '${f_type}'`;
-				return;
+				this.status[key] = `Value is not '${f_type}'`;
+				continue;
 			}
+		}
+		if (Object.keys(this.status).length > 0) {
+			return;
 		}
 		return out;
 	}

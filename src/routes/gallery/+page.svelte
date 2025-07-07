@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Autocomplete from '$lib/Autocomplete.svelte';
+	import Autocomplete from '$lib/components/Autocomplete.svelte';
 	import { searchTags } from '$lib/client-helpers';
-	import GalleryCard from '$lib/GalleryCard.svelte';
+	import GalleryCard from '$lib/components/GalleryCard.svelte';
 	let { data } = $props();
 	import { page } from '$app/state';
 	import { goto, afterNavigate } from '$app/navigation';

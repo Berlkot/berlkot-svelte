@@ -1,14 +1,11 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
-
 	import type { Asset } from '@prisma/client';
 	import { addToast } from '$lib/stores/toastStore';
-	import Modal from '$lib/Modal.svelte';
-	import ImageContainer from './ImageContainer.svelte';
-	import Autocomplete from '$lib/Autocomplete.svelte';
+	import Modal from '$lib/components/Modal.svelte';
+	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg';
-	import { searchFolders, searchTags } from '$lib/client-helpers';
 
 	interface Props {
 		data: PageData;
@@ -18,33 +15,93 @@
 	let { form, data }: Props = $props();
 	let images = $state(data.images);
 	let modalIsOpen = $state(false);
+	let editing = $state(false);
+	let showConfirm = $state(false);
+	function getRandomInt(max: number) {
+		return Math.floor(Math.random() * max);
+	}
+	let currentImage: Asset | null = $state(null);
 </script>
 
 <section>
-	{#each images as image}
-		<ImageContainer
-			{image}
-			{form}
-			onremove={async () => {
-				images = images.filter((i) => i.name != image.name);
-			}}
-		/>
+	{#each images as image (image.id)}
+		<div class="imageContainer" data-image={image.id}>
+			<div>
+				<a href="/asset/{image.name}{image.type == 'VIDEO' ? '.mp4' : '.webp'}">
+					<img
+						src="/asset/{image.name}.webp?w=270&h=270"
+						alt={image.alt}
+						width="270"
+						height="270"
+					/>
+				</a>
+			</div>
+			<div class="wrapper">
+				<button
+					onclick={() => {
+						currentImage = image;
+						modalIsOpen = true;
+						editing = true;
+					}}
+					class="button">Edit</button
+				>
+				<button
+					class="button button-danger"
+					onclick={() => {
+						currentImage = image;
+						showConfirm = true;
+					}}>Delete</button
+				>
+			</div>
+		</div>
 	{/each}
 </section>
 <button onclick={() => (modalIsOpen = true)} class="button">Add</button>
 
+{#if showConfirm}
+	<ConfirmDialog
+		onconfirm={() => {
+			showConfirm = false;
+			let data = new FormData();
+			data.append('name', currentImage!.name);
+			fetch('?/delete', {
+				method: 'POST',
+				body: data
+			})
+				.then(() => {
+					images.splice(images.indexOf(currentImage!), 1);
+					currentImage = null;
+					addToast({
+						type: 'success',
+						message: 'Successfully deleted!',
+						timeout: 3000
+					});
+				})
+				.catch(() => {
+					currentImage = null;
+					addToast({
+						type: 'error',
+						message: 'Failed to delete image',
+						timeout: 3000
+					});
+				});
+		}}
+		onreject={() => (showConfirm = false)}
+		text="Are you sure you want to delete this image?"
+	/>
+{/if}
+
 {#if modalIsOpen}
-	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
 	<Modal>
 		<div class="form-container">
 			<div class="flex-wr">
-				<h2>Create new image</h2>
-				<!-- svelte-ignore a11y_autofocus -->
+				<h2>{editing ? 'Edit image' : 'Create new image'}</h2>
 				<button
 					class="close"
-					autofocus
 					onclick={() => {
 						modalIsOpen = false;
+						editing = false;
+						currentImage = null;
 					}}
 				>
 					<img src={CloseImg} alt="" />
@@ -54,19 +111,30 @@
 			<form
 				method="POST"
 				enctype="multipart/form-data"
-				action="?/create"
+				action={editing ? '?/edit' : '?/create'}
 				use:enhance={({ formElement, formData, action, cancel, submitter }) => {
 					(submitter as HTMLButtonElement).disabled = true;
 					return async ({ result, update }) => {
 						(submitter as HTMLButtonElement).disabled = false;
 						if (result.type === 'success') {
-							images = [...images, result.data as Asset];
+							if (editing) {
+								images[images.findIndex((image) => image.id === (result.data as Asset).id)] =
+									result.data as Asset;
+								const imageel = document.querySelector(
+									`[data-image="${result.data!.id}"] img`
+								) as HTMLImageElement;
+								imageel.src = `/asset/${result.data!.name}.webp?w=270&h=270&${getRandomInt(1000)}`;
+							} else {
+								images = [...images, result.data as Asset];
+							}
 							addToast({
 								type: 'success',
 								message: 'Successfully updated!',
 								timeout: 3000
 							});
 							modalIsOpen = false;
+							editing = false;
+							currentImage = null;
 						} else if (result.type === 'failure') {
 							addToast({
 								type: 'error',
@@ -77,115 +145,60 @@
 					};
 				}}
 			>
+				{#if editing}
+					<input name="id" type="hidden" value={currentImage!.id} hidden />
+				{/if}
 				{#if form?.message}<p class="error">{form?.message}</p>{/if}
-				<label>
-					File
-					<input name="file" type="file" required={true} />
-				</label>
-				<label>
-					Name
-					<input name="name" type="text" required />
-				</label>
-				<label>
-					Author
-					<input name="author" type="text" value="Berlkot" />
-				</label>
-				<label>
-					Title
-					<input name="title" type="text" />
-				</label>
-				<label>
-					Alt
-					<input name="alt" type="text" />
-				</label>
-				<label>
-					Type
-					<select name="type">
-						<option value="0" selected>picture</option>
-						<option value="1">video</option>
+				<div class="input-container">
+					<label for="file"> File </label>
+					<input id="file" name="file" type="file" required={!editing} />
+				</div>
+				<div class="input-container">
+					<label for="name"> Name </label>
+					<input id="name" name="name" type="text" required value={currentImage?.name} />
+				</div>
+				<div class="input-container">
+					<label for="alt"> Alt </label>
+					<input id="alt" name="alt" type="text" value={currentImage?.alt} />
+				</div>
+				<div class="input-container">
+					<label for="type"> Type </label>
+					<select id="type" name="type">
+						<option value="IMAGE" selected={currentImage?.type === 'IMAGE'}>picture</option>
+						<option value="VIDEO" selected={currentImage?.type === 'VIDEO'}>video</option>
 					</select>
-				</label>
-				<label>
-					Content warning
-					<input name="contentWarning" type="text" />
-				</label>
-				<label>
-					Copyright
-					<input name="copyright" type="text" />
-				</label>
-				<label>
-					Small Description
-					<textarea name="smallDescription"></textarea>
-				</label>
-				<label>
-					Large Description
-					<textarea name="largeDescription" rows="10"></textarea>
-				</label>
-				<label>
-					Creation Date
-					<input name="creationDate" type="date" />
-				</label>
-				<label>
-					Gallery image
-					<select name="inGallery">
-						<option value="true">true</option>
-						<option value="false" selected>false</option>
+				</div>
+				<div class="input-container">
+					<label for="credit"> Credit </label>
+					<input id="credit" name="credit" type="text" value={currentImage?.credit} />
+				</div>
+				<div class="input-container">
+					<label for="visibility"> Visibility </label>
+					<select id="visibility" name="visibility">
+						<option value="ADMIN" selected={currentImage?.visibility === 'ADMIN'}>admin</option>
+						<option value="PUBLIC" selected={currentImage?.visibility === 'PUBLIC'}>public</option>
+						<option value="SUB_ONLY" selected={currentImage?.visibility === 'SUB_ONLY'}
+							>for subs</option
+						>
 					</select>
-				</label>
-				<label>
-					Visibility
-					<select name="visibility">
-						<option value="-1" selected>admin</option>
-						<option value="0">public</option>
-						<option value="1">for subs</option>
-					</select>
-				</label>
-				<label>
-					Maturity
-					<select name="maturity">
-						<option value="0" selected>sfw</option>
-						<option value="1">questionable</option>
-						<option value="2">nsfw</option>
-					</select>
-				</label>
-				<label>
-					Tags
-					<div class="tags">
-						<Autocomplete
-							name="tags"
-							optFunction={searchTags}
-							key="name"
-							defaultSelected={[]}
-							multipule={true}
-							delay={200}
-							allowNew={true}
-						/>
-					</div>
-				</label>
-				<label>
-					Folders
-					<div class="tags">
-						<Autocomplete
-							name="folders"
-							optFunction={searchFolders}
-							key="name"
-							defaultSelected={[]}
-							multipule={true}
-							delay={200}
-							allowNew={true}
-						/>
-					</div>
-				</label>
-				<button class="submit" type="submit">Add</button>
+				</div>
+				<button class="submit" type="submit">{currentImage ? 'Update' : 'Add'}</button>
 			</form>
 		</div>
 	</Modal>
 {/if}
 
 <style>
-	.tags {
+	section {
 		display: flex;
-		width: 50%;
+		justify-content: space-evenly;
+		flex-wrap: wrap;
+		gap: 2rem;
+	}
+	.wrapper {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 	}
 	.form-container {
 		display: flex;

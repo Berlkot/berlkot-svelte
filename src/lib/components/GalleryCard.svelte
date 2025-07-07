@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { goto, preloadData, pushState } from '$app/navigation';
 	import { page } from '$app/state';
-	import ConfirmDialog from '$lib/ConfirmDialog.svelte';
+	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg';
-	import Modal from '$lib/Modal.svelte';
+	import Modal from '$lib/components/Modal.svelte';
 	import AssetPage from '$routes/gallery/[name]/+page.svelte';
 	import { fade, scale } from 'svelte/transition';
-	import { confirmedMatureContent } from './stores/persistent';
+	import { confirmedMatureContent } from '$lib/stores/persistent';
 	let { galleryPost } = $props();
 	let href = $state<string>('');
 	let confirm = $state(false);

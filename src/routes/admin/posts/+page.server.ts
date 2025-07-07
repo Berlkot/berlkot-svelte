@@ -6,7 +6,7 @@ import type { Prisma } from '@prisma/client';
 import { generateThumbnail } from '$lib/server/image-tools';
 
 export async function load() {
-	return { posts: await prisma.blogPost.findMany() };
+  return { posts: await prisma.blogPost.findMany({include: {tags: true, heroImage: true}}) };
 }
 
 const validatorConfig: { [key: string]: FieldConfig } = {
@@ -17,7 +17,7 @@ const validatorConfig: { [key: string]: FieldConfig } = {
 	description: ['string'],
 	content: ['string'],
 	createdAt: ['date'],
-	visibility: ['int', 'range:-1:2'],
+	visibility: ['string', 'enum:ADMIN:PUBLIC:SUB_ONLY'],
 	tags: ['string'],
 	heroImage: ['string']
 };

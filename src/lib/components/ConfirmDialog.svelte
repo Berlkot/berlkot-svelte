@@ -1,5 +1,6 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
+	import { trapFocus } from 'trap-focus-svelte'
 
 	let {
 		onconfirm = () => {},
@@ -12,14 +13,17 @@
 	let modal = $state();
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
 	class="modal"
 	role="dialog"
+	tabindex=-1
+	use:trapFocus
 	bind:this={modal}
 	onclick={(e) => {
 		if (e.target === modal) onreject();
+	}}
+	onkeydown={(e) => {
+		if (e.key === 'Escape') onreject();
 	}}
 >
 	<div class="wrapper" in:scale={{ start: 0.0, duration: 100 }} out:fade={{ duration: 100 }}>

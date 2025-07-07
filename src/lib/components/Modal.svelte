@@ -1,16 +1,21 @@
 <script>
+    import { trapFocus } from 'trap-focus-svelte'
 	let { onclose = () => {}, children } = $props();
 	let modal = $state();
 </script>
 
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+
 <div
 	class="modal"
 	role="dialog"
 	bind:this={modal}
+	tabindex=-1
+	use:trapFocus
 	onclick={(e) => {
 		if (e.target === modal) onclose();
+	}}
+	onkeydown={(e) => {
+		if (e.key === 'Escape') onclose();
 	}}
 >
 	<div class="wrapper">
