@@ -1,5 +1,5 @@
 export async function searchTags(keyword: string) {
-	const url = '/api/autocomplete/asset';
+	const url = '/api/autocomplete/asset/tags';
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -12,7 +12,7 @@ export async function searchTags(keyword: string) {
 }
 
 export async function searchFolders(keyword: string) {
-	const url = '/api/autocomplete/asset';
+	const url = '/api/autocomplete/asset/folders';
 	const response = await fetch(url, {
 		method: 'POST',
 		headers: {
@@ -21,5 +21,5 @@ export async function searchFolders(keyword: string) {
 		body: JSON.stringify({ text: keyword })
 	});
 	const data = await response.json();
-	return data.filter((i) => i.type == 1);
+	return data;
 }

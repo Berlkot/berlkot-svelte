@@ -3,7 +3,6 @@ import { fail } from '@sveltejs/kit';
 import prisma from '$lib/server/prisma';
 import { Validator, type FieldConfig } from '$lib/form-validator';
 import type { Prisma } from '@prisma/client';
-import { generateThumbnail } from '$lib/server/image-tools';
 
 export async function load() {
   return { posts: await prisma.blogPost.findMany({include: {tags: true, heroImage: true}}) };
@@ -51,22 +50,6 @@ export const actions = {
 			}))!;
 			data.heroImage = {};
 			data.heroImage.connect = { id: heroImage.id };
-			let end = 'webp';
-			if (heroImage.type === 'VIDEO') {
-				end = 'mp4';
-			}
-			await generateThumbnail(
-				`data/assets/${heroImage.name}/${heroImage.name}.${end}`,
-				`data/assets/${heroImage.name}/${heroImage.name}.webp`,
-				465,
-				260
-			);
-			await generateThumbnail(
-				`data/assets/${heroImage.name}/${heroImage.name}.${end}`,
-				`data/assets/${heroImage.name}/${heroImage.name}.webp`,
-				1280,
-				720
-			);
 		}
 
 		const q: Prisma.BlogPostUpdateInput = {

@@ -74,8 +74,8 @@ model GalleryPost {
 }
 
 model GalleryAsset {
-  galleryPost GalleryPost @relation(fields: [galleryId], references: [id])
-  asset Asset @relation(fields: [assetId], references: [id])
+  galleryPost GalleryPost @relation(fields: [galleryId], references: [id], onDelete: Cascade)
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
   galleryId String
   assetId String
   order Int

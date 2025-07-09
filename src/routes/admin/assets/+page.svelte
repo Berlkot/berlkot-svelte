@@ -164,7 +164,9 @@
 				<div class="input-container">
 					<label for="type"> Type </label>
 					<select id="type" name="type">
-						<option value="IMAGE" selected={currentImage?.type === 'IMAGE'}>picture</option>
+						<option value="IMAGE" selected={currentImage?.type === 'IMAGE' || !currentImage}
+							>picture</option
+						>
 						<option value="VIDEO" selected={currentImage?.type === 'VIDEO'}>video</option>
 					</select>
 				</div>
@@ -175,7 +177,9 @@
 				<div class="input-container">
 					<label for="visibility"> Visibility </label>
 					<select id="visibility" name="visibility">
-						<option value="ADMIN" selected={currentImage?.visibility === 'ADMIN'}>admin</option>
+						<option value="ADMIN" selected={currentImage?.visibility === 'ADMIN' || !currentImage}
+							>admin</option
+						>
 						<option value="PUBLIC" selected={currentImage?.visibility === 'PUBLIC'}>public</option>
 						<option value="SUB_ONLY" selected={currentImage?.visibility === 'SUB_ONLY'}
 							>for subs</option

@@ -110,6 +110,8 @@ export const actions = {
 		try {
 			// also checks if image type is supported by imagemagick
 			await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 270, 270);
+			await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 465, 260);
+			await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 1280, 720);
 		} catch {
 			return fail(422, { message: 'Failed to proccess media' });
 		}

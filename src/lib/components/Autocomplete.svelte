@@ -13,7 +13,9 @@
 		allowNew?: boolean;
 		onChange?: Function;
 		onFocusChange?: Function;
-		selectedItem?: Snippet<[object]>
+		selectedItem?: Snippet<[object]>;
+		required?: boolean;
+		allowOrderChange?: boolean;
 	}
 	let {
 		optFunction,
@@ -27,7 +29,9 @@
 		allowNew = false,
 		onChange,
 		onFocusChange,
-		selectedItem
+		selectedItem,
+		required = false,
+		allowOrderChange = false // TODO
 	}: Props = $props();
 	async function oninput(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		if (!showDropdown) {
@@ -83,7 +87,7 @@
 	});
 </script>
 
-<input id={name} type="text" hidden bind:value {name} class="u-none" />
+<input id={name} {required} type="text" hidden bind:value {name} class="u-none" />
 <div class="autocomplete" class:multipule>
 	<div class="autocomplete-input-field" class:autocomplete-focused={showDropdown}>
 		{#if multipule && selection.length > 0}
