@@ -1,7 +1,7 @@
 import prisma from '$lib/server/prisma';
 
 export async function GET() {
-  const posts = await prisma.post.findMany({
+  const posts = await prisma.blogPost.findMany({
     take: 10,
     orderBy: { createdAt: 'desc' },
     select: {

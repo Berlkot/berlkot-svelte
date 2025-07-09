@@ -95,7 +95,7 @@
 		
 		<ul>
             <li>
-                <a class="link" href="https://berlkot.com/rss/blog.rss">rss</a>
+                <a class="link" href="/rss/blog.rss">rss</a>
             </li>
 		</ul>
 
@@ -124,6 +124,7 @@
 	}
 	main {
 		margin: 1rem 1rem 8rem 1rem;
+		position: relative;
 	}
 
 	footer {

@@ -76,7 +76,7 @@
 		background-repeat: no-repeat;
 		left: 50%;
 		transform: translate(-50%, 0);
-		top: 40px;
+		top: -198px;
 		z-index: -1;
 	}
 	.heading {
