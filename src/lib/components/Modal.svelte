@@ -8,6 +8,7 @@
 <div
 	class="modal"
 	role="dialog"
+	aria-modal="true"
 	bind:this={modal}
 	tabindex=-1
 	use:trapFocus
