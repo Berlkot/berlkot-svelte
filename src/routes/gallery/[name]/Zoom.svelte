@@ -123,17 +123,6 @@
 
 		if (oldZoom === newZoom) return;
 
-		if (rect) {
-			const mouseX = e.clientX - rect.left;
-			const mouseY = e.clientY - rect.top;
-
-			const imageX = (mouseX - translateX) / oldZoom;
-			const imageY = (mouseY - translateY) / oldZoom;
-
-			translateX = mouseX - imageX * newZoom;
-			translateY = mouseY - imageY * newZoom;
-		}
-
 		zoom = newZoom;
 	}
 
