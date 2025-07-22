@@ -79,6 +79,8 @@
 	let timeout: Timer;
 	let input: HTMLInputElement;
 	let focused = $state(0);
+	// making this $state() not necessary
+	// svelte-ignore non_reactive_update 
 	let dropdown: HTMLUListElement;
 	$effect(() => {
         if (focused === -1) return; // effect bait
