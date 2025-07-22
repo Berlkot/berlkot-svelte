@@ -66,7 +66,7 @@
 	}
 	.more-wrap {
 		justify-content: end;
-		margin-top: 1.5rem;
+		margin-top: 2rem;
 		display: flex;
 	}
 	.hero-bg {
@@ -84,7 +84,7 @@
 		text-align: center;
 		align-items: center;
 		text-wrap: nowrap;
-		margin-bottom: 1.5rem;
+		margin-bottom: 2.5rem;
 	}
 	.heading::before {
 		content: '';
