@@ -23,8 +23,9 @@
 </script>
 
 {#if confirm}
+    <!-- this is stupid, but there are no other way? -->
 	<ConfirmDialog
-		text="This image contains 18+ content, do you want to proceed?"
+		text={`This image contains ${galleryPost.maturity != 'SFW' ? '18+' : ''} ${galleryPost.maturity != 'SFW' && galleryPost.contentWarning ? 'and' : ''} ${galleryPost.contentWarning ? galleryPost.contentWarning : ''} content, do you want to proceed?`}
 		confirmText="Yes, I am"
 		rejectText="No, Take me back!"
 		onreject={() => (confirm = false)}
@@ -51,7 +52,7 @@
 
 		href = e.currentTarget.href;
 		e.preventDefault();
-		if (galleryPost.maturity != 'SFW' && !$confirmedMatureContent) {
+		if ((galleryPost.maturity != 'SFW' || galleryPost.contentWarning) && !$confirmedMatureContent) {
 			confirm = true;
 		} else {
 			await navigate();
@@ -59,13 +60,21 @@
 	}}
 >
 	<div class="image-card focusable">
-		{#if galleryPost.maturity != 'SFW'}
+		{#if galleryPost.maturity != 'SFW' || galleryPost.contentWarning}
 			<div class="card-text">
-				<span>{galleryPost.maturity == 'NSFW' ? 'NSFW' : 'Questionable'}</span>
-				<span class="click-to-reveal">Click to reveal (18+)</span>
+				<span>{galleryPost.maturity != 'SFW' ? galleryPost.maturity : 'Content Warning'}</span>
+				<span class="content-warning">{galleryPost.contentWarning}</span>
+				<span class="click-to-reveal"
+					>Click to reveal {galleryPost.maturity != 'SFW' ? '(18+)' : ''}</span
+				>
 			</div>
 		{:else}
-			<img src="/asset/{galleryPost.assets[0].asset.name}.webp?w=270&h=270" alt={galleryPost.assets[0].asset.alt} width="270" height="270" />
+			<img
+				src="/asset/{galleryPost.assets[0].asset.name}.webp?w=270&h=270"
+				alt={galleryPost.assets[0].asset.alt}
+				width="270"
+				height="270"
+			/>
 		{/if}
 
 		<div class="title">
@@ -98,6 +107,7 @@
 	.click-to-reveal {
 		font: 1.4rem/1.2em var(--ff-paragraph);
 		font-weight: bold;
+		opacity: 0.8;
 	}
 	.card-text {
 		font: bold 2rem/1.2em var(--ff-display);
@@ -119,7 +129,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: repeating-linear-gradient(-45deg, black 0px, #62498f 4px, rgba(0, 0, 0, 0) 8px);
+		background: repeating-linear-gradient(-45deg, black 0px, #81375c 4px, rgba(0, 0, 0, 0) 8px);
 		border-radius: 4px;
 		transition: 0.2s filter linear;
 	}
@@ -176,5 +186,10 @@
 	}
 	.data {
 		max-width: 100%;
+	}
+	.content-warning {
+		font: 1.6rem/1.3em var(--ff-paragraph);
+		color: var(--color-accent);
+		font-weight: bold;
 	}
 </style>
