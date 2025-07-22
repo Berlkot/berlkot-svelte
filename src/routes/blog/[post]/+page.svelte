@@ -1,5 +1,6 @@
 <script lang="ts">
 	let { data } = $props();
+	import GoBack from '$lib/components/GoBack.svelte';
 	let options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'short',
@@ -10,7 +11,7 @@
 <section class="blog">
 	<!--We trust ourself or hacked-->
 	<!--eslint-disable svelte/no-at-html-tags-->
-	<a class="link" href="/blog">&lt; to blog list</a>
+	<GoBack defaultUrl="/blog" />
 	<article>
 		{#if data.blogPost.heroImage}
 			<figure>

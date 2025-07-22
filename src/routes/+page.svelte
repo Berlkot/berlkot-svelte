@@ -18,7 +18,7 @@
 	<ul class="blog-list">
 		{#each data.blogPosts as post (post.name)}
 			<li>
-				<ArticleCard {post} />
+				<ArticleCard {post} params='?linkback=/' />
 			</li>
 		{/each}
 	</ul>

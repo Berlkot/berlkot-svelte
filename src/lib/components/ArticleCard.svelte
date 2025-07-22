@@ -1,5 +1,6 @@
 <script lang="ts">
-	let { post } = $props();
+    import type BlogPost from "@prisma/client";
+	let { post, params }: { post: BlogPost; params?: string } = $props();
 	const options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'short',
@@ -7,7 +8,7 @@
 	};
 </script>
 
-<a class="blog-card" href="/blog/{post.name}">
+<a class="blog-card" href="/blog/{post.name}{params}">
 	<article>
 		{#if post.heroImage}
 			<img
