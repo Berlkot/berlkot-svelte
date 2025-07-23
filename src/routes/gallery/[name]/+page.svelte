@@ -15,6 +15,7 @@
 </script>
 
 <section>
+    <!-- There is probably a way to make this more a11y friendly, but I'm not competent enough -->
 	<div class="full-view">
 		{#if assets.length > 0 && currentImage > 0}
 			<button
@@ -102,7 +103,7 @@
 		<p class="tag-list">
 			Folders:
 			{#each data.galleryPost.folders as folder (folder.name)}
-				<a class="tag tag-yellow" href="/gallery?tags={folder.name}">{folder.name}</a>
+				<a class="tag tag-yellow" href="/gallery?folder={folder.name}">{folder.name}</a>
 			{/each}
 		</p>
 		{#if data.galleryPost.contentWarning}

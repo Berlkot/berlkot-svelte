@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -27,16 +27,16 @@ enum Maturity {
 }
 
 model BlogPost {
-  id          String    @id @default(uuid())
-  heroImage   Asset?    @relation(fields: [heroImageId], references: [id])
-  name        String    @unique
+  id          String        @id @default(uuid())
+  heroImage   Asset?        @relation(fields: [heroImageId], references: [id])
+  name        String        @unique
   title       String
-  author      String    @default("Berlkot")
+  author      String        @default("Berlkot")
   content     String?
   description String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  visibility  Visibility       @default(ADMIN)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  visibility  Visibility    @default(ADMIN)
   tags        BlogPostTag[]
   heroImageId String?
 }
@@ -45,7 +45,7 @@ model Asset {
   id            String          @id @default(uuid())
   name          String          @unique
   alt           String?
-  type          ContentType             @default(IMAGE)
+  type          ContentType     @default(IMAGE)
   width         Int
   height        Int
   credit        String?
@@ -53,6 +53,7 @@ model Asset {
   posts         BlogPost[]
   galleryPosts  GalleryAsset[]
   PageInChapter PageInChapter[]
+  heroInFolder  GalleryFolder?
 }
 
 model GalleryPost {
@@ -75,11 +76,11 @@ model GalleryPost {
 
 model GalleryAsset {
   galleryPost GalleryPost @relation(fields: [galleryId], references: [id], onDelete: Cascade)
-  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
-  galleryId String
-  assetId String
-  order Int
-  
+  asset       Asset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  galleryId   String
+  assetId     String
+  order       Int
+
   @@unique([galleryId, assetId])
 }
 
@@ -96,8 +97,8 @@ model Comic {
   id         String         @id @default(uuid())
   name       String         @unique
   chapters   ComicChapter[]
-  maturity   Maturity        @default(SFW)
-  visibility Visibility      @default(ADMIN)
+  maturity   Maturity       @default(SFW)
+  visibility Visibility     @default(ADMIN)
 }
 
 model ComicChapter {
@@ -129,11 +130,16 @@ model GalleryTag {
 model GalleryFolder {
   id           String        @id @default(uuid())
   name         String        @unique
+  description  String?
+  heroImage    Asset?        @relation(fields: [heroImageId], references: [id])
+  heroImageId  String?       @unique
+  width        Int           @default(1)
+  height       Int           @default(1)
   galleryPosts GalleryPost[]
 }
 
 model BlogPostTag {
-  id    String @id @default(uuid())
-  name  String @unique
+  id    String     @id @default(uuid())
+  name  String     @unique
   posts BlogPost[]
 }

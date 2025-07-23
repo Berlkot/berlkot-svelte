@@ -1,21 +1,44 @@
 import prisma from '$lib/server/prisma';
-import type { Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { type RequestEvent } from '@sveltejs/kit';
 
 export async function load({ params, locals, url }: RequestEvent) {
-	// TODO: implement filters
-	// const maturity = url.searchParams.getAll('maturity');
-	// const ordering = url.searchParams.get('ordering');
 	let tags = url.searchParams.getAll('tags');
 	if (tags.length > 0) {
 		tags = tags[0].split(',');
 	} else {
 		tags = [];
 	}
-	// const text = url.searchParams.get('text');
+	const folder = url.searchParams.get('folder');
+	if (!folder && !tags.length) {
+    const folders = await prisma.galleryFolder.findMany(
+      {
+        include: {heroImage: true}
+      }
+    );
+   	return {
+		folders: folders,
+		meta: {
+			title: 'Gallery | Berlkot',
+			'og:title': 'Gallery | Berlkot',
+			description: 'All sorts of artworks for past couple of years',
+			'og:description': 'All sorts of artworks for past couple of years'
+		}
+	};
+	}
+	let folderObj
+	const andQuery: Prisma.GalleryPostWhereInput[] = tags.map((tag) => ({ tags: { some: { name: tag } } }))
+	if (folder) {
+	  andQuery.push({ folders: { some: { name: folder } } })
+		folderObj	= await prisma.galleryFolder.findUnique({
+				where: {
+					name: folder
+				}
+			});
+	}
 	const q: Prisma.GalleryPostFindManyArgs = {
 		where: {
-			AND: tags.map((tag) => ({ tags: { some: { name: tag } } }))
+      AND: andQuery,
 		},
 		select: {
 			name: true,
@@ -25,7 +48,6 @@ export async function load({ params, locals, url }: RequestEvent) {
 			assets: {
 				take: 1,
 				select: {
-					order: true,
 					asset: {
 						select: {
 							name: true,
@@ -49,11 +71,12 @@ export async function load({ params, locals, url }: RequestEvent) {
 	const galleryPosts = await prisma.galleryPost.findMany(q);
 	return {
 		galleryPosts: galleryPosts,
+		folder: folderObj,
 		meta: {
-			title: 'Gallery | Berlkot',
-			'og:title': 'Gallery | Berlkot',
-			description: 'All sorts of artworks for past couple of years',
-			'og:description': 'All sorts of artworks for past couple of years'
+			title: `Gallery ${folder ? `- ${folder}` : ''} | Berlkot`,
+			'og:title': `Gallery ${folder ? `- ${folder}` : ''} | Berlkot`,
+			description: folderObj ? folderObj.description : 'All sorts of artworks for past couple of years',
+			'og:description': folderObj ? folderObj.description : 'All sorts of artworks for past couple of years'
 		}
 	};
 }

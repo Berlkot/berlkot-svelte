@@ -87,8 +87,8 @@ export const actions = {
 			const toDisconnect = prev!.folders
 				.filter((folder) => !stringFolders.includes(folder.name))
 				.map((folder) => ({ id: folder.id }));
-			q.folders.connectOrCreate = [
-				...stringFolders.map((folder) => ({ where: { name: folder }, create: { name: folder } }))
+			q.folders.connect = [
+				...stringFolders.map((folder) => ({ name: folder }))
 			];
 			if (toDisconnect) {
 				q.folders.disconnect = toDisconnect;

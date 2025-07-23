@@ -129,8 +129,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: repeating-linear-gradient(-45deg, black 0px, #81375c 4px, rgba(0, 0, 0, 0) 8px);
+		background: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0) 0px, #81375c 4px, rgba(0, 0, 0, 0) 8px);
 		border-radius: 4px;
+		background-blend-mode: overlay;
 		transition: 0.2s filter linear;
 	}
 

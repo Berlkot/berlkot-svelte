@@ -2,7 +2,7 @@
 	import type { Snippet } from "svelte";
 
 	interface Props {
-		optFunction: Function;
+		optFunction: (value: string) => Promise<object[]>;
 		defaultSelected: object[];
 		delay?: number;
 		name?: string;
@@ -11,9 +11,10 @@
 		key: string;
 		placeholder?: string;
 		allowNew?: boolean;
-		onChange?: Function;
-		onFocusChange?: Function;
+		onChange?: (value: string) => void;
+		onFocusChange?: (isFocused: boolean) => void;
 		selectedItem?: Snippet<[object]>;
+		getItemStyle?: (item: object) => string | null;
 		required?: boolean;
 		allowOrderChange?: boolean;
 	}
@@ -29,9 +30,10 @@
 		allowNew = false,
 		onChange,
 		onFocusChange,
-		selectedItem,
+		selectedItem = optionItem,
 		required = false,
-		allowOrderChange = false // TODO
+		allowOrderChange = false, // TODO
+		getItemStyle = () => null,
 	}: Props = $props();
 	async function oninput(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		if (!showDropdown) {
@@ -72,7 +74,7 @@
 		selection = [...defaultSelected];
 		value = defaultSelected.map((t) => t[key as keyof typeof t]).join(',');
 	});
-	let options = $state([]);
+	let options = $state<{[key: string]: unknown}[]>([]);
 	$effect(() => {
 		if (onChange) onChange(value);
 	});
@@ -101,6 +103,7 @@
 							selection.splice(selection.indexOf(selected), 1);
 							value = selection.map((t) => t[key as keyof typeof t]).join(',');
 						}}
+						style={getItemStyle(selected)}
 					>
 						<li>
 						    {#if selectedItem}
@@ -128,6 +131,7 @@
 				id="autocomplete-input"
 				bind:this={input}
 				type="text"
+				autocomplete="off"
 				oninput={(e) => oninput(e)}
 				onfocus={() => {
 				    if (onFocusChange) {
@@ -197,6 +201,7 @@
 					}}
 					role="option"
 					aria-selected={index === focused}
+					style={getItemStyle(option)}
 				>
 					{#if optionItem}
 						{@render optionItem(option)}
@@ -270,7 +275,7 @@
 		margin: 0;
 	}
 	.focused {
-		background-color: #bc45c050;
+		background-color: var(--color-accent-fill);
 		border: 1px solid var(--color-accent);
 	}
 	button {
@@ -288,6 +293,6 @@
 		border: 1px solid var(--color-accent);
 	}
 	.autocomplete-selected:hover {
-		background-color: #bc45c050;
+		background-color: var(--color-accent-fill);
 	}
 </style>

@@ -21,6 +21,7 @@
 	--color-accent-hover: #ff7d93;
 	--color-meta-accent: #ce3d9d;
 	--color-meta-yellow: #cea03d;
+	--color-meta-yellow-fill: #cea03d48;
 	--color-shadow: #14091483;
 	--ff-display: 'furoreregular', sans-serif;
 	--ff-paragraph: 'exo_2regular', sans-serif;
@@ -233,10 +234,10 @@ button:hover {
 }
 @keyframes blink {
 	0% {
-		opacity: 0;
+		opacity: 1;
 	}
 	50% {
-		opacity: 1;
+		opacity: 0;
 	}
 }
 .gallery {
@@ -265,7 +266,7 @@ button:hover {
 }
 .page-title h1 {
 	margin-top: 0;
-	margin-bottom: 0.4rem;
+	margin-bottom: 1.2rem;
 }
 .page-title p {
 	color: #ffd2c0ad;

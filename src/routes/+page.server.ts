@@ -16,8 +16,7 @@ export async function load({ locals }: RequestEvent) {
 							name: true,
 							alt: true,
 						}
-					},
-					order: true
+					}
 				},
 				orderBy: { order: 'asc' }
 			},

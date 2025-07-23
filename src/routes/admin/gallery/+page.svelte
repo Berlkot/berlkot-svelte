@@ -11,7 +11,6 @@
 	import { searchFolders, searchTags } from '$lib/client-helpers';
 	import GalleryCard from '$lib/components/GalleryCard.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
-	import { page } from '$app/state';
 
 	interface Props {
 		data: PageData;
@@ -168,7 +167,6 @@
            					name="assets"
            					optFunction={searchImages}
            					{optionItem}
-           					selectedItem={optionItem}
            					key="name"
            					defaultSelected={currentPost && currentPost.assets ? currentPost.assets.map((asset) => asset.asset) : []}
            					multipule={true}
@@ -246,7 +244,6 @@
 							defaultSelected={currentPost?.folders || []}
 							multipule={true}
 							delay={200}
-							allowNew={true}
 						/>
 					</div>
 				</div>
