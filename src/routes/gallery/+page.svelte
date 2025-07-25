@@ -140,9 +140,10 @@
 			grid-area: auto !important;
 		}
 		ul.gallery-folders {
-			grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-			grid-template-rows: repeat(auto-fill, minmax(160px, 1fr));
+			grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+			grid-template-rows: repeat(auto-fill, minmax(220px, 1fr));
 			grid-auto-rows: unset;
+			gap: 2rem;
 		}
 	}
 	.searchbox {
