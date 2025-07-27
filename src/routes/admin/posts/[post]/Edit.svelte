@@ -38,7 +38,7 @@
 	</div>
 {/snippet}
 
-<form action="/admin/posts?/edit" method="POST">
+<form action="/admin/posts?/edit" method="POST" class="admin-form">
 	<input type="hidden" name="id" value={post.id} hidden />
 	<div class="input-container">
 		<label for="heroImage">Thumbnail</label>

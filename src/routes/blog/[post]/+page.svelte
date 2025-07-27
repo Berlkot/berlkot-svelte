@@ -1,11 +1,30 @@
 <script lang="ts">
 	let { data } = $props();
 	import GoBack from '$lib/components/GoBack.svelte';
+	import { onMount } from 'svelte';
+	import { addToast } from '$lib/stores/toastStore';
 	let options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'short',
 		day: 'numeric'
 	};
+	onMount(() => {
+	    document.querySelectorAll('.heading-anchor').forEach((element) => {
+	        element.addEventListener('click', (event) => {
+	            event.preventDefault();
+				const target = element.querySelector('a');
+				history.pushState(null, '', target.getAttribute('href'))
+				navigator.clipboard.writeText(window.location.href).then(() => {
+    				addToast({
+     					type: 'success',
+     					message: 'Section link copied to clipboard',
+     					timeout: 2000
+    				});
+				});
+
+	        });
+	    });
+	});
 </script>
 
 <section class="blog">
@@ -15,13 +34,13 @@
 	<article>
 		{#if data.blogPost.heroImage}
 			<figure>
-				<figcaption>{data.blogPost.heroImage.credit}</figcaption>
 				<img
 					src="/asset/{data.blogPost.heroImage.name}.webp?w=1280&h=720"
 					alt={data.blogPost.heroImage.alt}
 					width="1280"
 					height="720"
 				/>
+				<figcaption>{data.blogPost.heroImage.credit}</figcaption>
 			</figure>
 		{/if}
 		<ul class="tag-list">
@@ -45,7 +64,7 @@
 				></span
 			>
 		</div>
-		<section>{@html data.blogPost.content}</section>
+		<section class="md-content">{@html data.blogPost.content}</section>
 	</article>
 </section>
 
@@ -53,6 +72,7 @@
 	figcaption {
 		padding: 1rem;
 		color: #ffd2c0ad;
+		font-style: italic;
 	}
 	.updated + time {
 		color: #a82b7ea1;

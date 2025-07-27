@@ -33,7 +33,7 @@
 		display: flex;
 		align-items: center;
 		margin: 0 auto 0.5rem auto;
-		width: 30rem;
+		max-width: 40rem;
 		font: 1.6rem/1.5 var(--ff-paragraph);
 		pointer-events: auto;
 	}
@@ -47,7 +47,7 @@
 		background: SkyBlue;
 	}
 	.text {
-		padding: 0 1rem;
+		padding: 0 2rem;
 	}
 	button {
 		color: white;

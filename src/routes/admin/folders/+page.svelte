@@ -118,7 +118,9 @@
 				<button
 					class="close"
 					onclick={() => {
-						modalIsOpen = false;
+					    modalIsOpen = false;
+       					editing = false;
+       					currentFolder = null;
 					}}
 				>
 					<img src={CloseImg} alt="" />
@@ -126,6 +128,7 @@
 			</div>
 
 			<form
+			    class="admin-form"
 				method="POST"
 				enctype="multipart/form-data"
 				action={editing ? '?/edit' : '?/create'}

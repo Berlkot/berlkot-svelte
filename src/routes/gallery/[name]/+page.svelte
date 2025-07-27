@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	let { data } = $props();
+	import { onMount } from 'svelte';
+	import { addToast } from '$lib/stores/toastStore';
 	const options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'short',
@@ -12,6 +14,23 @@
 	let assets = data.galleryPost.assets.map((asset) => asset.asset);
 	let currentImage = $state(0);
 	let direction = $state(1);
+	onMount(() => {
+	    document.querySelectorAll('.heading-anchor').forEach((element) => {
+	        element.addEventListener('click', (event) => {
+	            event.preventDefault();
+				const target = element.querySelector('a');
+				history.pushState(null, '', target.getAttribute('href'))
+				navigator.clipboard.writeText(window.location.href).then(() => {
+    				addToast({
+     					type: 'success',
+     					message: 'Section link copied to clipboard',
+     					timeout: 2000
+    				});
+				});
+
+	        });
+	    });
+	});
 </script>
 
 <section>
@@ -89,7 +108,7 @@
 		</p>
 		<!--We trust ourself or hacked-->
 		<!--eslint-disable-next-line svelte/no-at-html-tags-->
-		<div class="content">{@html data.galleryPost.largeDescription}</div>
+		<div class="md-content">{@html data.galleryPost.largeDescription}</div>
 		{#if data.galleryPost.copyright}
 			<p class="tag-list">Copyright: {data.galleryPost.copyright}</p>
 		{/if}

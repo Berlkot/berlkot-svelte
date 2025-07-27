@@ -109,6 +109,7 @@
 			</div>
 
 			<form
+			    class="admin-form"
 				method="POST"
 				enctype="multipart/form-data"
 				action={editing ? '?/edit' : '?/create'}
