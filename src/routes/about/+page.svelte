@@ -99,7 +99,7 @@
 		max-width: 75ch;
 	}
 	.social {
-		margin-bottom: 1rem;
+		margin: 1rem 0;
 	}
 	h2 {
 		margin-bottom: 0.5rem;
