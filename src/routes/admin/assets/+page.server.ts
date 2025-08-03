@@ -8,8 +8,7 @@ import { mkdir } from 'fs/promises';
 import type { Prisma } from '@prisma/client';
 import { rm } from 'fs/promises';
 import { Validator, type FieldConfig } from '$lib/form-validator';
-import { rename } from 'fs';
-import { readdir } from 'fs/promises';
+import { readdir, rename } from 'fs/promises';
 
 const validatorConfig: { [key: string]: FieldConfig } = {
 	id: ['string', 'reqired'],
@@ -18,7 +17,7 @@ const validatorConfig: { [key: string]: FieldConfig } = {
 	alt: ['string'],
 	credit: ['string'],
 	type: ['string', 'enum:IMAGE:VIDEO'],
-	visibility: ['string', 'enum:ADMIN:PUBLIC:SUB_ONLY'],
+	visibility: ['string', 'enum:ADMIN:PUBLIC:SUB_ONLY']
 };
 const validatorConfigWithFile = { ...validatorConfig };
 validatorConfigWithFile.file.push('reqired');
@@ -41,11 +40,18 @@ export const actions = {
 			...rest
 		};
 		const prev = await prisma.asset.findUnique({
-			where: { id: String(data.id) },
+			where: { id: String(data.id) }
 		});
 		if (prev!.name !== name) {
-			rename(`data/assets/${prev!.name}`, `data/assets/${name}`, () => {});
-			await Bun.$`rename ${prev!.name} ${name} data/assets/${name}/*`;
+			await rename(`data/assets/${prev!.name}`, `data/assets/${name}`);
+			await Promise.all(
+				(await readdir(`data/assets/${name}`, { withFileTypes: true })).map(async (f) => {
+					await rename(
+						`data/assets/${name}/${f.name}`,
+						`data/assets/${name}/${f.name.replace(prev!.name, name as string)}`
+					);
+				})
+			);
 		}
 		if ((file as File).name) {
 			const thumbnails = (await readdir(`data/assets/${name}`, { withFileTypes: true })).filter(
@@ -77,7 +83,7 @@ export const actions = {
 		}
 		const asset = await prisma.asset.update({
 			where: { id: String(data.id) },
-			data: q,
+			data: q
 		});
 		return asset;
 	},
