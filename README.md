@@ -1,8 +1,5 @@
 # Blogging site project
 
-> [!WARNING]
-> This project is in WIP state. Planning to finish it in some state 'till end of this year
-
 > [!CAUTION]
 > Bun is required to run this project
 
