@@ -14,7 +14,9 @@
 	            event.preventDefault();
 				const target = element.querySelector('a');
 				history.pushState(null, '', target.getAttribute('href'))
-				navigator.clipboard.writeText(window.location.href).then(() => {
+				const url = new URL(window.location.href)
+				url.search = ''
+				navigator.clipboard.writeText(url).then(() => {
     				addToast({
      					type: 'success',
      					message: 'Section link copied to clipboard',
