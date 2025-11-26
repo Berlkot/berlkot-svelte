@@ -70,8 +70,8 @@
 			</div>
 		{:else}
 			<img
-				src="/asset/{galleryPost.assets[0].asset.name}.webp?w=270&h=270"
-				alt={galleryPost.assets[0].asset.alt}
+				src="/asset/{galleryPost.assets[0] ? galleryPost.assets[0].asset.name : ''}.webp?w=270&h=270"
+				alt={galleryPost.assets[0] ? galleryPost.assets[0].asset.alt : ''}
 				width="270"
 				height="270"
 			/>
