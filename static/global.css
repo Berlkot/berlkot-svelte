@@ -45,6 +45,7 @@ html {
 	scrollbar-color: var(--color-scroll);
 	scroll-behavior: smooth;
 	scroll-padding-top: 63px;
+	-webkit-tap-highlight-color: transparent;
 }
 
 main {
