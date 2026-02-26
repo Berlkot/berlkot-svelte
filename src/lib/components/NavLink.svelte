@@ -26,6 +26,7 @@
 		font: bold 1.9rem/1.6em var(--ff-display);
 		padding: 10px;
 		line-height: 1em;
+		text-decoration: none;
 		color: var(--color-accent);
 		transition:
 			color 0.2s ease-in-out,
