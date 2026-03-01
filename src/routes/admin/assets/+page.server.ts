@@ -5,7 +5,7 @@ import prisma from '$lib/server/prisma';
 import { generateThumbnail, getDimensions, normalizeMedia } from '$lib/server/image-tools';
 import { extname } from 'path';
 import { mkdir } from 'fs/promises';
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '$prisma-generated/client';
 import { rm } from 'fs/promises';
 import { Validator, type FieldConfig } from '$lib/form-validator';
 import { readdir, rename } from 'fs/promises';

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
-	import type { BlogPost } from '@prisma/client';
+	import type { BlogPost } from '$prisma-generated/client';
 	import { addToast } from '$lib/stores/toastStore';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 

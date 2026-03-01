@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type BlogPost from "@prisma/client";
+    import type { BlogPost } from "$prisma-generated/client";
 	let { post, params }: { post: BlogPost; params?: string } = $props();
 	const options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',

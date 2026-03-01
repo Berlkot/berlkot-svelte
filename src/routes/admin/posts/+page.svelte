@@ -8,7 +8,7 @@
 		form: ActionData;
 	}
 	let { form, data }: Props = $props();
-	let posts = $state(data.posts);
+	let posts = $derived(data.posts);
 	let showModal = $state(false);
 </script>
 <div class="flexx">

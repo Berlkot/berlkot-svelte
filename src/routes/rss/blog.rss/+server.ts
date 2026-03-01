@@ -1,7 +1,7 @@
 import prisma from '$lib/server/prisma';
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '$prisma-generated/client';
 
-export async function GET({ locals}) {
+export async function GET({ locals }) {
   const q: Prisma.BlogPostFindManyArgs = {
     take: 10,
     orderBy: { createdAt: 'desc' },

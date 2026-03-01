@@ -3,7 +3,7 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 
-	import type { GalleryFolder } from '@prisma/client';
+	import type { GalleryFolder } from '$prisma-generated/client';
 	import { addToast } from '$lib/stores/toastStore';
 	import Modal from '$lib/components/Modal.svelte';
 	import Autocomplete from '$lib/components/Autocomplete.svelte';
@@ -16,8 +16,8 @@
 	}
 
 	let { form, data }: Props = $props();
-	let images = data.images;
-	let galleryFolders: GalleryFolder[] = $state(data.folders);
+	let images = $derived(data.images);
+	let galleryFolders: GalleryFolder[] = $derived(data.folders);
 	let modalIsOpen = $state(false);
 	let currentFolder: GalleryFolder | null = $state(null);
 	let editing = $state(false);

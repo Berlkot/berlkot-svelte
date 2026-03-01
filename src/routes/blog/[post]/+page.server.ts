@@ -1,6 +1,6 @@
 import { renderMarkdown } from '$lib/server/markdown';
 import prisma from '$lib/server/prisma';
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '$prisma-generated/client';
 import { error, type RequestEvent } from '@sveltejs/kit';
 
 const return_string = 'Blogpost not found!';

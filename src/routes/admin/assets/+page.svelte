@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
-	import type { Asset } from '@prisma/client';
+	import type { Asset } from '$prisma-generated/client';
 	import { addToast } from '$lib/stores/toastStore';
 	import Modal from '$lib/components/Modal.svelte';
 	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
@@ -13,7 +13,7 @@
 	}
 
 	let { form, data }: Props = $props();
-	let images = $state(data.images);
+	let images = $derived(data.images);
 	let modalIsOpen = $state(false);
 	let editing = $state(false);
 	let showConfirm = $state(false);

@@ -11,7 +11,7 @@
 	import Zoom from './Zoom.svelte';
 	import LeftArrow from '$lib/assets/icons/left-arrow.svg';
 	import RightArrow from '$lib/assets/icons/right-arrow.svg';
-	let assets = data.galleryPost.assets.map((asset) => asset.asset);
+	let assets = $derived(data.galleryPost.assets.map((asset) => asset.asset));
 	let currentImage = $state(0);
 	let direction = $state(1);
 	onMount(() => {

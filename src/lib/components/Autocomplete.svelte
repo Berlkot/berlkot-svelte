@@ -68,8 +68,8 @@
 		focused = 0;
 	}
 	let showDropdown = $state(false);
-	let selection: object[] = $state([...defaultSelected]);
-	let value = $state(defaultSelected.map((t) => t[key as keyof typeof t]).join(','));
+	let selection: object[] = $derived([...defaultSelected]);
+	let value = $derived(defaultSelected.map((t) => t[key as keyof typeof t]).join(','));
 	$effect(() => {
 		selection = [...defaultSelected];
 		value = defaultSelected.map((t) => t[key as keyof typeof t]).join(',');

@@ -2,7 +2,7 @@ import { renderMarkdown } from '$lib/server/markdown';
 import prisma from '$lib/server/prisma';
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '$prisma-generated/client';
 
 export async function load({ params, locals }: RequestEvent) {
 	try {

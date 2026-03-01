@@ -1,5 +1,5 @@
 import prisma from '$lib/server/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma } from '$prisma-generated/client';
 import { type RequestEvent } from '@sveltejs/kit';
 
 export async function load({ params, locals, url }: RequestEvent) {

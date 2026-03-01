@@ -4,7 +4,8 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			admin: boolean;
+      admin: boolean;
+      violated_protected_route_access: string?;
 		}
 		// interface PageData {}
 		interface PageState {

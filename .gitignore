@@ -13,3 +13,4 @@ data/*.*
 data/assets/*
 data/thumbnails/*
 prisma/script.ts
+generated

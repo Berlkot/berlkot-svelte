@@ -7,7 +7,7 @@
 	}
 	let inPreview = $state(false);
 	let { data }: Props = $props();
-	let post = $state(data.post);
+	let post = $derived(data.post);
 </script>
 
 <h1>Post managment</h1>
