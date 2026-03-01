@@ -11,12 +11,18 @@ export async function handle({ event, resolve }) {
 		// Since error() is not intended to be used in handle function,
 		// we use fetch on nonexistent page to redirect to the proper error page.
 		// ugh what the FUCK!
-		const response = await event.fetch('/__access_denied__', {
+		const internalUrl = new URL(event.url);
+		internalUrl.pathname = '/__access_denied__';
+		// hack to not cause ConnectionRefused
+		internalUrl.protocol = 'http:';
+
+		const response = await event.fetch(internalUrl.href, {
 			headers: {
 				'x-violated-path': event.url.pathname,
 				...Object.fromEntries(event.request.headers)
 			}
 		});
+
 		return new Response(response.body, {
 			status: 404,
 			headers: response.headers
@@ -29,7 +35,7 @@ export async function handle({ event, resolve }) {
 }
 
 export async function handleError({ error, event, status, message }) {
-	if (event.url.pathname === '/__access_denied__') {
+	if (event.locals.violated_protected_route_access) {
 		console.log(
 			`INFO: ${event.getClientAddress()} tried to access ${event.locals.violated_protected_route_access} protected route without login`
 		);

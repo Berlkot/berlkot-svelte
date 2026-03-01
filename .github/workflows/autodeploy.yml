@@ -30,9 +30,11 @@ jobs:
           rm -rf ~/site-build/client ~/site-build/server/
           cp -rf build/. ~/site-build/
           cp -rf prisma/. ~/site-build/prisma/
-          rm -rf ~/berlkot-svelte ~/site-build/.env.example
+          cp -rf prisma.config.js ~/site-build/
+          cp -rf package.json ~/site-build/
+          rm -rf ~/berlkot-svelte
           cd ~/site-build
-          bun install
+          bun install --omit dev
           bunx prisma generate
           bunx prisma migrate deploy
           cd ~
