@@ -1,5 +1,4 @@
 <script lang="ts">
-
 	import type { Snippet } from 'svelte';
 	import Toasts from '$lib/components/toasts.svelte';
 	import AvatarImg from '$lib/assets/avatar.png';
@@ -13,8 +12,8 @@
 
 	let { children }: Props = $props();
 	beforeNavigate((navigation) => {
-	    if (!navigation.from || !navigation.to) return;
-	    if (navigation.to!.route.id === navigation.from!.route.id) return
+		if (!navigation.from || !navigation.to) return;
+		if (navigation.to!.route.id === navigation.from!.route.id) return;
 		document.getElementById('menu')!.checked = false;
 	});
 </script>
@@ -92,16 +91,16 @@
 			<br />
 			Reuse of website assets for commercial purposes is strictly prohibited.
 		</p>
-		
+
 		<ul>
-            <li>
-                <a class="link" href="/rss/blog.rss">rss</a>
-            </li>
+			<li>
+				<a class="link" href="/rss/blog.rss">rss</a>
+			</li>
 		</ul>
 
 		<div class="real-footer">
 			<p>
-				&copy; Berlkot 2024-2025 &bull; Site sourse code can be found <a
+				&copy; Berlkot 2024-2026 &bull; Site sourse code can be found <a
 					class="link link-decor"
 					href="https://github.com/Berlkot/berlkot-svelte"
 					target="_blank">here</a
@@ -183,67 +182,70 @@
 		display: none;
 	}
 	@media (max-width: 730px) {
-    	main {
-            margin: 1rem 2rem 8rem 2rem;
-        }
-        main, footer {
-            transition: filter 0.4s ease-out;
-        }
-        header {
-            height: 53px;
-            position: sticky;
-            top: 0;
-            left: 0;
-            z-index: 2;
-        }
-        div.wrapper:has(input[type="checkbox"]:checked) main,
-        div.wrapper:has(input[type="checkbox"]:checked) ~ footer {
-            pointer-events: none;
-            filter: blur(5px);
-        }
-    
-        header nav {
-            width: 100vw;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding-top: 53px;
-            background-color: var(--bg-color);
-            text-align: center;
-            z-index: 1;
-        }
-    
-        .left,
-        .right {
-            display: flex;
-            flex-direction: column;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            
-            transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
-        }
-    
-        header input[type="checkbox"]:checked + nav .left,
-        header input[type="checkbox"]:checked + nav .right {
-            max-height: 300px;
-            opacity: 1;
-        }
-    
-        .home {
-            display: flex;
-            width: 100%;
-            border-bottom: var(--color-accent) 1px solid;
-            position: absolute;
-            top: 0;
-            left: 0;
-            padding: 7px 0 4px 1rem;
-            box-sizing: border-box;
-        }
-        .home img {
-            width: 40px;
-            height: 40px;
-        }
+		main {
+			margin: 1rem 2rem 8rem 2rem;
+		}
+		main,
+		footer {
+			transition: filter 0.4s ease-out;
+		}
+		header {
+			height: 53px;
+			position: sticky;
+			top: 0;
+			left: 0;
+			z-index: 2;
+		}
+		div.wrapper:has(input[type='checkbox']:checked) main,
+		div.wrapper:has(input[type='checkbox']:checked) ~ footer {
+			pointer-events: none;
+			filter: blur(5px);
+		}
+
+		header nav {
+			width: 100vw;
+			position: fixed;
+			top: 0;
+			left: 0;
+			padding-top: 53px;
+			background-color: var(--bg-color);
+			text-align: center;
+			z-index: 1;
+		}
+
+		.left,
+		.right {
+			display: flex;
+			flex-direction: column;
+			max-height: 0;
+			opacity: 0;
+			overflow: hidden;
+
+			transition:
+				max-height 0.3s ease-in-out,
+				opacity 0.2s ease-in-out;
+		}
+
+		header input[type='checkbox']:checked + nav .left,
+		header input[type='checkbox']:checked + nav .right {
+			max-height: 300px;
+			opacity: 1;
+		}
+
+		.home {
+			display: flex;
+			width: 100%;
+			border-bottom: var(--color-accent) 1px solid;
+			position: absolute;
+			top: 0;
+			left: 0;
+			padding: 7px 0 4px 1rem;
+			box-sizing: border-box;
+		}
+		.home img {
+			width: 40px;
+			height: 40px;
+		}
 	}
 	@media (min-width: 731px) {
 		.burger {
