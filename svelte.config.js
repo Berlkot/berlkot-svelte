@@ -18,6 +18,10 @@ const config = {
 		alias: {
 			'$routes/*': 'src/routes/*',
 			'$prisma-generated': 'generated/prisma'
+		},
+		paths: {
+			relative: false // sure, why this is a thing anyway
+			// delete and use <base href="/"> in middleware if this causes problems
 		}
 	}
 };
