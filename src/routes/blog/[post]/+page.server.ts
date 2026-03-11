@@ -1,4 +1,4 @@
-import { renderMarkdown } from '$lib/server/markdown';
+import { renderMarkdown } from '$lib/server/services/markdown/markdown';
 import prisma from '$lib/server/prisma';
 import type { Prisma } from '$prisma-generated/client';
 import { error, type RequestEvent } from '@sveltejs/kit';
@@ -18,7 +18,9 @@ export async function load({ params, locals }: RequestEvent) {
 			q.where.visibility = 'PUBLIC';
 		}
 		const blogPost = await prisma.blogPost.findUniqueOrThrow(q);
-		blogPost.content = blogPost.content ? await renderMarkdown(blogPost.content) : 'Blogpost is empty';
+		blogPost.content = blogPost.content
+			? await renderMarkdown(blogPost.content)
+			: 'Blogpost is empty';
 		const meta = {
 			title: `${blogPost.title} | Berlkot`,
 			'og:title': `${blogPost.title} | Berlkot`,

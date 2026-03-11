@@ -2,7 +2,7 @@
 	import type { Snippet } from 'svelte';
 	import Toasts from '$lib/components/toasts.svelte';
 	import AvatarImg from '$lib/assets/avatar.png';
-	import NavLink from '$lib/components/NavLink.svelte';
+	import NavLink from './NavLink.svelte';
 	import Instagram from '$lib/assets/icons/instagram.svg';
 	import { page } from '$app/state';
 	import { beforeNavigate } from '$app/navigation';

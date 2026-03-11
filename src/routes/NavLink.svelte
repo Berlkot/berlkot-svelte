@@ -10,7 +10,7 @@
 	class="{other.class}{page.url.pathname === href ? 'active' : ''}"
 	aria-current={page.url.pathname === href}
 >
-	{@render children?.()}
+	{@render children?.()}``
 </a>
 
 <style>

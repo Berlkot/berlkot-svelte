@@ -1,4 +1,4 @@
-import { renderMarkdown } from '$lib/server/markdown';
+import { renderMarkdown } from '$lib/server/services/markdown/markdown';
 import { json } from '@sveltejs/kit';
 
 export async function POST({ request }) {

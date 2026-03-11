@@ -1,4 +1,4 @@
-import { renderMarkdown } from '$lib/server/markdown';
+import { renderMarkdown } from '$lib/server/services/markdown/markdown';
 import prisma from '$lib/server/prisma';
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
@@ -7,17 +7,17 @@ import type { Prisma } from '$prisma-generated/client';
 export async function load({ params, locals }: RequestEvent) {
 	try {
 		const q: Prisma.GalleryPostFindFirstArgs = {
-			where: {name: params.name },
+			where: { name: params.name },
 			include: {
 				tags: true,
 				folders: true,
 				assets: {
-          include: {
-            asset: true
-          },
-          orderBy: {
-            order: 'asc'
-          }
+					include: {
+						asset: true
+					},
+					orderBy: {
+						order: 'asc'
+					}
 				}
 			}
 		};
@@ -36,7 +36,7 @@ export async function load({ params, locals }: RequestEvent) {
 				'og:title': `${galleryPost.title} | Berlkot`,
 				'og:image': `https://berlkot.com/asset/${galleryPost.assets[0].asset.name}.webp`,
 				description: galleryPost.smallDescription,
-				'og:description': galleryPost.smallDescription,
+				'og:description': galleryPost.smallDescription
 			}
 		};
 	} catch {
