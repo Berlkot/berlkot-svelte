@@ -1,16 +1,15 @@
 <script>
-    import { trapFocus } from 'trap-focus-svelte'
+	import { trapFocus } from 'trap-focus-svelte';
 	let { onclose = () => {}, children } = $props();
 	let modal = $state();
 </script>
-
 
 <div
 	class="modal"
 	role="dialog"
 	aria-modal="true"
 	bind:this={modal}
-	tabindex=-1
+	tabindex="-1"
 	use:trapFocus
 	onclick={(e) => {
 		if (e.target === modal) onclose();

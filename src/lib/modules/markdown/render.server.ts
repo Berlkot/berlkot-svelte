@@ -1,5 +1,5 @@
 import { getDimensions } from '$lib/server/image-tools';
-import { marked } from 'marked';
+import { marked, type Token } from 'marked';
 import path, { basename, extname } from 'path';
 import markedAlert from 'marked-alert';
 import markedFootnote from 'marked-footnote';
@@ -42,7 +42,7 @@ renderer.heading = function ({ tokens, depth }) {
           </h${depth}>`;
 };
 
-async function walkTokens(token) {
+async function walkTokens(token: Token) {
 	if (token.type === 'image' && path.basename(token.href) === token.href) {
 		const img_name = token.href;
 		const img_path = `data/assets/${basename(token.href, extname(token.href))}/${token.href}`;

@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import { generateThumbnail, getDimensions, normalizeMedia } from '$lib/server/image-tools';
 import { extname } from 'path';
 import { mkdir } from 'fs/promises';

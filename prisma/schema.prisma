@@ -1,8 +1,8 @@
 generator client {
-  provider        = "prisma-client"
+  provider   = "prisma-client"
   engineType = "client"
   runtime    = "bun"
-  output   = "../generated/prisma"
+  output     = "../generated/prisma"
 }
 
 datasource db {
@@ -33,7 +33,8 @@ model BlogPost {
   name        String        @unique
   title       String
   author      String        @default("Berlkot")
-  content     String?
+  content     Content       @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentId   String        @unique
   description String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -51,6 +52,7 @@ model Asset {
   height        Int
   credit        String?
   visibility    Visibility      @default(ADMIN)
+  contents      Content[]
   posts         BlogPost[]
   galleryPosts  GalleryAsset[]
   PageInChapter PageInChapter[]
@@ -65,7 +67,8 @@ model GalleryPost {
   creationDate     DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   smallDescription String?
-  largeDescription String?
+  largeDescription Content         @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  contentId        String          @unique
   copyright        String?         @default("CC BY-NC 4.0")
   contentWarning   String?
   effects          Json?
@@ -92,6 +95,15 @@ model Project {
   startDate DateTime
   endDate   DateTime?
   content   String
+}
+
+model Content {
+  id        String     @id @default(uuid())
+  markdown  String
+  html      String?
+  assets    Asset[]
+  blogPosts BlogPost[]
+  galleryPosts GalleryPost[]
 }
 
 model Comic {

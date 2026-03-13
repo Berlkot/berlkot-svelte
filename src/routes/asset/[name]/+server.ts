@@ -1,4 +1,4 @@
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import type { Prisma } from '$prisma-generated/client';
 import { error, type RequestEvent } from '@sveltejs/kit';
 import { basename, extname } from 'path';

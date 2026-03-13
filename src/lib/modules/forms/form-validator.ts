@@ -30,7 +30,7 @@ export class Validator {
 				out[key] = new Date(Date.parse(value.toString()));
 			} else if (f_type === 'string') {
 				for (const val of params) {
-				  if (val.startsWith('enum')) {
+					if (val.startsWith('enum')) {
 						const enumValues = val.split(':').slice(1);
 						if (enumValues.includes(value.toString().toUpperCase())) {
 							out[key] = value.toString().toUpperCase();
@@ -46,7 +46,8 @@ export class Validator {
 						) {
 							out[key] = value as string;
 						} else {
-							this.status[key] = `Value is too long. Expected between ${range[1]}:${range[2]}. Found ${value}`;
+							this.status[key] =
+								`Value is too long. Expected between ${range[1]}:${range[2]}. Found ${value}`;
 							continue outer;
 						}
 					}
@@ -64,7 +65,8 @@ export class Validator {
 						if (int_val >= parseInt(range[1]) && int_val < parseInt(range[2])) {
 							out[key] = int_val;
 						} else {
-							this.status[key] = `Value is too large. Expected between ${range[1]}:${range[2]}. Found ${value}`;	
+							this.status[key] =
+								`Value is too large. Expected between ${range[1]}:${range[2]}. Found ${value}`;
 						}
 						continue outer;
 					}

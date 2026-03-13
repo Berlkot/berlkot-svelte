@@ -1,4 +1,4 @@
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import type { Prisma } from '$prisma-generated/client';
 import { type RequestEvent } from '@sveltejs/kit';
 
@@ -14,7 +14,7 @@ export async function load({ locals }: RequestEvent) {
 					asset: {
 						select: {
 							name: true,
-							alt: true,
+							alt: true
 						}
 					}
 				},
@@ -22,7 +22,7 @@ export async function load({ locals }: RequestEvent) {
 			},
 			contentWarning: true,
 			maturity: true,
-			creationDate: true,
+			creationDate: true
 		},
 		orderBy: { creationDate: 'desc' }
 	};
@@ -39,7 +39,7 @@ export async function load({ locals }: RequestEvent) {
 		orderBy: { createdAt: 'desc' }
 	};
 	if (!locals.admin) {
-	  q.where = {};
+		q.where = {};
 		q.where.visibility = 'PUBLIC';
 		qp.where = {};
 		qp.where.visibility = 'PUBLIC';

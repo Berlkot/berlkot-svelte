@@ -1,4 +1,4 @@
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import type { RequestEvent } from './$types';
 
 export async function load({ params }: RequestEvent) {

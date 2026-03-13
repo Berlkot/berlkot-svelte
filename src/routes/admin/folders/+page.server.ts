@@ -1,6 +1,6 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import { Validator, type FieldConfig } from '$lib/form-validator';
 import type { Prisma } from '$prisma-generated/client';
 
@@ -35,7 +35,10 @@ export const actions = {
 			data.heroImage.connect = { id: heroImage.id };
 		}
 
-		return await prisma.galleryFolder.create({ data: data as unknown as Prisma.GalleryFolderCreateInput, include: { heroImage: true } });
+		return await prisma.galleryFolder.create({
+			data: data as unknown as Prisma.GalleryFolderCreateInput,
+			include: { heroImage: true }
+		});
 	},
 	edit: async ({ request }: RequestEvent) => {
 		const validator = new Validator(validatorConfig);
@@ -58,9 +61,9 @@ export const actions = {
 			where: { id: String(data.id) },
 			data: q,
 			include: {
-			heroImage:true
+				heroImage: true
 			}
-		});;
+		});
 	},
 	delete: async ({ request }: RequestEvent) => {
 		const data = await request.formData();

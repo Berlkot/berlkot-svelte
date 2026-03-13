@@ -1,6 +1,6 @@
 <script>
 	import { fade, scale } from 'svelte/transition';
-	import { trapFocus } from 'trap-focus-svelte'
+	import { trapFocus } from 'trap-focus-svelte';
 
 	let {
 		onconfirm = () => {},
@@ -16,7 +16,7 @@
 <div
 	class="modal"
 	role="dialog"
-	tabindex=-1
+	tabindex="-1"
 	use:trapFocus
 	bind:this={modal}
 	onclick={(e) => {

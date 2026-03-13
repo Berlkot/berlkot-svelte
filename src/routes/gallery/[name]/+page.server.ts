@@ -1,5 +1,5 @@
 import { renderMarkdown } from '$lib/server/services/markdown/render';
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { Prisma } from '$prisma-generated/client';

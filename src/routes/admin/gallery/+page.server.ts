@@ -2,7 +2,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import type { Prisma } from '$prisma-generated/client';
 import { Validator, type FieldConfig } from '$lib/form-validator';
 
@@ -87,9 +87,7 @@ export const actions = {
 			const toDisconnect = prev!.folders
 				.filter((folder) => !stringFolders.includes(folder.name))
 				.map((folder) => ({ id: folder.id }));
-			q.folders.connect = [
-				...stringFolders.map((folder) => ({ name: folder }))
-			];
+			q.folders.connect = [...stringFolders.map((folder) => ({ name: folder }))];
 			if (toDisconnect) {
 				q.folders.disconnect = toDisconnect;
 			}
@@ -101,7 +99,7 @@ export const actions = {
 			for (const [index, asset] of stringAssets.entries()) {
 				const created = prev!.assets.find((el) => el.asset.name === asset);
 				if (created) {
-				  if (created.order === index) continue;
+					if (created.order === index) continue;
 					q.assets.update.push({
 						where: {
 							galleryId_assetId: { assetId: created.assetId, galleryId: created.galleryId }
@@ -128,7 +126,11 @@ export const actions = {
 		const galleryPost = await prisma.galleryPost.update({
 			where: { id: String(data.id) },
 			data: q,
-			include: { tags: true, assets: {include: {asset: true}, orderBy: {order: 'asc'}}, folders: true }
+			include: {
+				tags: true,
+				assets: { include: { asset: true }, orderBy: { order: 'asc' } },
+				folders: true
+			}
 		});
 		await prisma.galleryTag.deleteMany({ where: { galleryPosts: { none: {} } } });
 		return galleryPost;
@@ -154,17 +156,19 @@ export const actions = {
 		let objFolders;
 		if (stringFolders) {
 			objFolders = await Promise.all([
-  			...stringFolders.map((folder) =>
-  				prisma.galleryFolder.upsert({ where: { name: folder }, update: {}, create: { name: folder } })
+				...stringFolders.map((folder) =>
+					prisma.galleryFolder.upsert({
+						where: { name: folder },
+						update: {},
+						create: { name: folder }
+					})
 				)
 			]);
 		}
 		let objAssets;
 		if (stringAssets) {
 			objAssets = await Promise.all([
-				...stringAssets.map((asset) =>
-					prisma.asset.findUnique({ where: { name: asset }})
-				)
+				...stringAssets.map((asset) => prisma.asset.findUnique({ where: { name: asset } }))
 			]);
 		}
 		const q: Prisma.GalleryPostCreateInput = {
@@ -184,14 +188,20 @@ export const actions = {
 		if (objAssets) {
 			q.assets = {
 				create: objAssets.map((asset, index) => ({
-						asset: { connect: { id: asset.id } },
-						order: index
-					}))
-				
+					asset: { connect: { id: asset.id } },
+					order: index
+				}))
 			};
 		}
-		console.log(q)
-		return await prisma.galleryPost.create({ data: q, include: { tags: true, assets: {include: {asset: true}, orderBy: {order: 'asc'}}, folders: true } });
+		console.log(q);
+		return await prisma.galleryPost.create({
+			data: q,
+			include: {
+				tags: true,
+				assets: { include: { asset: true }, orderBy: { order: 'asc' } },
+				folders: true
+			}
+		});
 	},
 	delete: async ({ request }: RequestEvent) => {
 		const data = await request.formData();

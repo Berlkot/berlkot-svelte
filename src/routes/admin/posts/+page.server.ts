@@ -1,11 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import { Validator, type FieldConfig } from '$lib/form-validator';
 import type { Prisma } from '$prisma-generated/client';
 
 export async function load() {
-  return { posts: await prisma.blogPost.findMany({include: {tags: true, heroImage: true}}) };
+	return { posts: await prisma.blogPost.findMany({ include: { tags: true, heroImage: true } }) };
 }
 
 const validatorConfig: { [key: string]: FieldConfig } = {

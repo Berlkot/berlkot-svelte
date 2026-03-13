@@ -23,7 +23,7 @@
 </script>
 
 {#if confirm}
-    <!-- this is stupid, but there are no other way? -->
+	<!-- this is stupid, but there are no other way? -->
 	<ConfirmDialog
 		text={`This image contains ${galleryPost.maturity != 'SFW' ? '18+' : ''} ${galleryPost.maturity != 'SFW' && galleryPost.contentWarning ? 'and' : ''} ${galleryPost.contentWarning ? galleryPost.contentWarning : ''} content, do you want to proceed?`}
 		confirmText="Yes, I am"
@@ -70,7 +70,9 @@
 			</div>
 		{:else}
 			<img
-				src="/asset/{galleryPost.assets[0] ? galleryPost.assets[0].asset.name : ''}.webp?w=270&h=270"
+				src="/asset/{galleryPost.assets[0]
+					? galleryPost.assets[0].asset.name
+					: ''}.webp?w=270&h=270"
 				alt={galleryPost.assets[0] ? galleryPost.assets[0].asset.alt : ''}
 				width="270"
 				height="270"
@@ -129,7 +131,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: repeating-linear-gradient(-45deg, rgba(0, 0, 0, 0) 0px, #81375c 4px, rgba(0, 0, 0, 0) 8px);
+		background: repeating-linear-gradient(
+			-45deg,
+			rgba(0, 0, 0, 0) 0px,
+			#81375c 4px,
+			rgba(0, 0, 0, 0) 8px
+		);
 		border-radius: 4px;
 		background-blend-mode: overlay;
 		transition: 0.2s filter linear;

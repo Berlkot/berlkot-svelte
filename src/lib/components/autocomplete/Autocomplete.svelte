@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Snippet } from "svelte";
+	import type { Snippet } from 'svelte';
 
 	interface Props {
 		optFunction: (value: string) => Promise<object[]>;
@@ -33,7 +33,7 @@
 		selectedItem = optionItem,
 		required = false,
 		allowOrderChange = false, // TODO
-		getItemStyle = () => null,
+		getItemStyle = () => null
 	}: Props = $props();
 	async function oninput(e: Event & { currentTarget: EventTarget & HTMLInputElement }) {
 		if (!showDropdown) {
@@ -74,7 +74,7 @@
 		selection = [...defaultSelected];
 		value = defaultSelected.map((t) => t[key as keyof typeof t]).join(',');
 	});
-	let options = $state<{[key: string]: unknown}[]>([]);
+	let options = $state<{ [key: string]: unknown }[]>([]);
 	$effect(() => {
 		if (onChange) onChange(value);
 	});
@@ -82,12 +82,15 @@
 	let input: HTMLInputElement;
 	let focused = $state(0);
 	// making this $state() not necessary
-	// svelte-ignore non_reactive_update 
+	// svelte-ignore non_reactive_update
 	let dropdown: HTMLUListElement;
 	$effect(() => {
-        if (focused === -1) return; // effect bait
+		if (focused === -1) return; // effect bait
 		if (!dropdown) return;
-		dropdown.scroll({top: (focused + 1) * dropdown.scrollHeight / options.length - dropdown.clientHeight, behavior: 'smooth'});
+		dropdown.scroll({
+			top: ((focused + 1) * dropdown.scrollHeight) / options.length - dropdown.clientHeight,
+			behavior: 'smooth'
+		});
 	});
 </script>
 
@@ -106,10 +109,10 @@
 						style={getItemStyle(selected)}
 					>
 						<li>
-						    {#if selectedItem}
-						        {@render selectedItem(selected)}
+							{#if selectedItem}
+								{@render selectedItem(selected)}
 							{:else}
-							    {selected[key as keyof typeof selected]}
+								{selected[key as keyof typeof selected]}
 							{/if}
 						</li>
 						x
@@ -119,12 +122,11 @@
 		{/if}
 		{#if !multipule && selection.length > 0}
 			{#if selectedItem}
-			    {@render selectedItem(selection[0])}
+				{@render selectedItem(selection[0])}
 			{:else}
-			    {selection[0][key as keyof (typeof selection)[0]]}
+				{selection[0][key as keyof (typeof selection)[0]]}
 			{/if}
-            
-        {/if}
+		{/if}
 		<div class="autocomplete-input">
 			<input
 				{placeholder}
@@ -134,15 +136,15 @@
 				autocomplete="off"
 				oninput={(e) => oninput(e)}
 				onfocus={() => {
-				    if (onFocusChange) {
-				        onFocusChange(true);
-				    }
+					if (onFocusChange) {
+						onFocusChange(true);
+					}
 					showDropdown = true;
 				}}
 				onblur={() => {
-                    if (onFocusChange) {
-                        onFocusChange(false);
-                    }
+					if (onFocusChange) {
+						onFocusChange(false);
+					}
 					showDropdown = false;
 				}}
 				onkeydown={(e) => {
@@ -165,7 +167,12 @@
 							select({ [key]: input.value });
 						}
 					}
-					if (e.key == 'Backspace' && !multipule && selection.length > 0 && input.value.length === 0) {
+					if (
+						e.key == 'Backspace' &&
+						!multipule &&
+						selection.length > 0 &&
+						input.value.length === 0
+					) {
 						selection = [];
 						value = '';
 					}
@@ -174,7 +181,6 @@
 				aria-controls="autocomplete-list"
 				aria-expanded={showDropdown}
 			/>
-
 		</div>
 	</div>
 	{#if showDropdown && options.length > 0}
@@ -244,10 +250,10 @@
 		border-color: var(--color-primary);
 	}
 	.autocomplete-input {
-	    flex: auto;
+		flex: auto;
 	}
 	#autocomplete-input {
-	    width: 100%;
+		width: 100%;
 		border: none;
 		display: block;
 	}

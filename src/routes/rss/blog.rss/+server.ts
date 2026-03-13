@@ -1,24 +1,24 @@
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import type { Prisma } from '$prisma-generated/client';
 
 export async function GET({ locals }) {
-  const q: Prisma.BlogPostFindManyArgs = {
-    take: 10,
-    orderBy: { createdAt: 'desc' },
-    select: {
-      title: true,
-      name: true,
-      description: true,
-      createdAt: true,
-      updatedAt: true,
-    }
-  }
-  if (!locals.admin) {
+	const q: Prisma.BlogPostFindManyArgs = {
+		take: 10,
+		orderBy: { createdAt: 'desc' },
+		select: {
+			title: true,
+			name: true,
+			description: true,
+			createdAt: true,
+			updatedAt: true
+		}
+	};
+	if (!locals.admin) {
 		q.where = {};
 		q.where.visibility = 'PUBLIC';
 	}
-  const posts = await prisma.blogPost.findMany(q);
-  const body = `<?xml version="1.0" encoding="UTF-8"?>
+	const posts = await prisma.blogPost.findMany(q);
+	const body = `<?xml version="1.0" encoding="UTF-8"?>
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
       <title>Berlkot Blog</title>
@@ -27,7 +27,9 @@ export async function GET({ locals }) {
       <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
       <link>https://berlkot.com/blog</link>
       <atom:link href="https://berlkot.com/rss/blog.rss" rel="self" type="application/rss+xml" />
-      ${posts.map((post) => `
+      ${posts
+				.map(
+					(post) => `
         <item>
           <title>${post.title}</title>
           <description>${post.description}</description>
@@ -36,12 +38,14 @@ export async function GET({ locals }) {
           <description>${post.description}</description>
           <pubDate>${post.createdAt}</pubDate>
         </item>
-      `).join('')}
+      `
+				)
+				.join('')}
     </channel>
-  </rss>`
-  const headers = {
-    'Cache-Control': 'max-age=0, s-maxage=3600',
-    'Content-Type': 'application/rss+xml; charset=UTF-8',
-  }
-  return new Response(body, {headers});
+  </rss>`;
+	const headers = {
+		'Cache-Control': 'max-age=0, s-maxage=3600',
+		'Content-Type': 'application/rss+xml; charset=UTF-8'
+	};
+	return new Response(body, { headers });
 }

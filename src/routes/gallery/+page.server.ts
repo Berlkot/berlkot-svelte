@@ -1,4 +1,4 @@
-import prisma from '$lib/server/prisma';
+import prisma from '$lib/server/services/prisma';
 import { Prisma } from '$prisma-generated/client';
 import { type RequestEvent } from '@sveltejs/kit';
 
@@ -11,34 +11,34 @@ export async function load({ params, locals, url }: RequestEvent) {
 	}
 	const folder = url.searchParams.get('folder');
 	if (!folder && !tags.length) {
-    const folders = await prisma.galleryFolder.findMany(
-      {
-        include: {heroImage: true}
-      }
-    );
-   	return {
-		folders: folders,
-		meta: {
-			title: 'Gallery | Berlkot',
-			'og:title': 'Gallery | Berlkot',
-			description: 'All sorts of artworks for past couple of years',
-			'og:description': 'All sorts of artworks for past couple of years'
-		}
-	};
+		const folders = await prisma.galleryFolder.findMany({
+			include: { heroImage: true }
+		});
+		return {
+			folders: folders,
+			meta: {
+				title: 'Gallery | Berlkot',
+				'og:title': 'Gallery | Berlkot',
+				description: 'All sorts of artworks for past couple of years',
+				'og:description': 'All sorts of artworks for past couple of years'
+			}
+		};
 	}
-	let folderObj
-	const andQuery: Prisma.GalleryPostWhereInput[] = tags.map((tag) => ({ tags: { some: { name: tag } } }))
+	let folderObj;
+	const andQuery: Prisma.GalleryPostWhereInput[] = tags.map((tag) => ({
+		tags: { some: { name: tag } }
+	}));
 	if (folder) {
-	  andQuery.push({ folders: { some: { name: folder } } })
-		folderObj	= await prisma.galleryFolder.findUnique({
-				where: {
-					name: folder
-				}
-			});
+		andQuery.push({ folders: { some: { name: folder } } });
+		folderObj = await prisma.galleryFolder.findUnique({
+			where: {
+				name: folder
+			}
+		});
 	}
 	const q: Prisma.GalleryPostFindManyArgs = {
 		where: {
-      AND: andQuery,
+			AND: andQuery
 		},
 		select: {
 			name: true,
@@ -75,8 +75,12 @@ export async function load({ params, locals, url }: RequestEvent) {
 		meta: {
 			title: `Gallery ${folder ? `- ${folder}` : ''} | Berlkot`,
 			'og:title': `Gallery ${folder ? `- ${folder}` : ''} | Berlkot`,
-			description: folderObj ? folderObj.description : 'All sorts of artworks for past couple of years',
-			'og:description': folderObj ? folderObj.description : 'All sorts of artworks for past couple of years'
+			description: folderObj
+				? folderObj.description
+				: 'All sorts of artworks for past couple of years',
+			'og:description': folderObj
+				? folderObj.description
+				: 'All sorts of artworks for past couple of years'
 		}
 	};
 }
