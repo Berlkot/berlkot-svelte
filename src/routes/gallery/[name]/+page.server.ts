@@ -1,4 +1,4 @@
-import { renderMarkdown } from '$lib/server/services/markdown/markdown';
+import { renderMarkdown } from '$lib/server/services/markdown/render';
 import prisma from '$lib/server/prisma';
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
