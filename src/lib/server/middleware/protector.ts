@@ -22,15 +22,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 	internalUrl.protocol = 'http:';
 
 	const response = await event.fetch(internalUrl.href, {
+		method: 'GET',
 		headers: {
 			'x-violated-path': event.url.pathname,
-			...Object.fromEntries(event.request.headers)
+			Accept: event.request.headers.get('Accept') || 'text/html'
 		}
 	});
 
-	return new Response(response.body, {
+	const htmlBody = await response.text();
+
+	return new Response(htmlBody, {
 		status: 404,
-		headers: response.headers
+		headers: {
+			'Content-Type': response.headers.get('Content-Type') || 'text/html'
+		}
 	});
 };
 
