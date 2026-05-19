@@ -1,4 +1,4 @@
-import { getDimensions } from '$lib/server/image-tools';
+import { getDimensions } from '../asset/service.server';
 import { marked, type Token } from 'marked';
 import path, { basename, extname } from 'path';
 import markedAlert from 'marked-alert';
@@ -64,7 +64,7 @@ marked.use(
 	markedHighlight({
 		emptyLangClass: 'hljs',
 		langPrefix: 'hljs language-',
-		highlight(code, lang, info) {
+		highlight(code, lang) {
 			const language = hljs.getLanguage(lang) ? lang : 'plaintext';
 			return hljs.highlight(code, { language }).value;
 		}

@@ -1,26 +1,41 @@
-import prisma from '$lib/server/services/prisma';
-import type { Prisma } from '$prisma-generated/client';
-import { error, type RequestEvent } from '@sveltejs/kit';
+import prisma from '$modules/database/prisma.server';
+import { error, redirect, type RequestEvent } from '@sveltejs/kit';
 import { basename, extname } from 'path';
+import { MEDIA_BASE_PATH } from '$modules/asset/service.server';
 
-export async function GET({ params, locals, url, request }: RequestEvent) {
+export async function GET({ params, url }: RequestEvent) {
 	// and this prevents any sort of path injection because NaN equals to false lol
 	const width = parseInt(url.searchParams.get('w') as string);
 	const height = parseInt(url.searchParams.get('h') as string);
-	const name = basename(params.name as string, extname(params.name as string));
+	const rawName = basename(params.name as string, extname(params.name as string));
+	const splitIndex = rawName.lastIndexOf('-');
+	let name;
+	let hash;
+	if (splitIndex !== -1) {
+		name = rawName.substring(0, splitIndex);
+		hash = rawName.substring(splitIndex + 1);
+	} else {
+		name = rawName;
+	}
+	const hasParams = width && height;
+	if ((width || height) && !hasParams) {
+		throw error(400);
+	}
 	try {
-		const q: Prisma.AssetFindFirstArgs = { where: { name: name } };
-		if (!locals.admin) {
-			q.where!.visibility = 'PUBLIC';
+		const asset = await prisma.asset.findFirstOrThrow({ where: { name: name } });
+		if (asset.hash && (!hash || hash !== asset.hash)) {
+			return redirect(
+				308,
+				hasParams
+					? `/asset/${asset.name}-${asset.hash}?w=${width}&h=${height}`
+					: `/asset/${asset.name}-${asset.hash}`
+			);
 		}
-		await prisma.asset.findFirstOrThrow(q);
-		let file;
-		if (width && height) {
-			file = Bun.file(`data/assets/${name}/${width}_${height}_${params.name}`);
-		} else {
-			file = Bun.file(`data/assets/${name}/${params.name}`);
-		}
-
+		const file = Bun.file(
+			hasParams
+				? `${MEDIA_BASE_PATH}/${asset.name}/${width}_${height}_${asset.name}`
+				: `${MEDIA_BASE_PATH}/${asset.name}/${asset.name}`
+		);
 		//   161 |
 		//   162 | 	const reader = response.body.getReader();
 		//               ^
@@ -29,21 +44,8 @@ export async function GET({ params, locals, url, request }: RequestEvent) {
 		if (!(await file.exists())) {
 			throw Error();
 		}
-		const hasher = new Bun.CryptoHasher('sha256');
-		hasher.update(file.lastModified.toString());
-		hasher.update(name);
-		hasher.update(width.toString());
-		hasher.update(height.toString());
-		const header = hasher.digest('base64');
-		if (request.headers.get('If-None-Match') === header) {
-			return new Response(null, {
-				status: 304,
-				headers: { Etag: header, 'Cache-Control': 'max-age=7200, must-revalidate' }
-			});
-		}
 		const response = new Response(file);
-		response.headers.set('Etag', header);
-		response.headers.set('Cache-Control', 'max-age=7200, must-revalidate');
+		response.headers.set('Cache-Control', 'max-age=315360000, public, immutable');
 		return response;
 	} catch {
 		throw error(404, { message: 'Image not found' });

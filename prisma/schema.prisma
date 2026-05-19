@@ -46,17 +46,18 @@ model BlogPost {
 model Asset {
   id            String          @id @default(uuid())
   name          String          @unique
+  hash          String?         @unique
   alt           String?
   type          ContentType     @default(IMAGE)
   width         Int
   height        Int
   credit        String?
   visibility    Visibility      @default(ADMIN)
-  contents      Content[]
   posts         BlogPost[]
   galleryPosts  GalleryAsset[]
   PageInChapter PageInChapter[]
   heroInFolder  GalleryFolder?
+  AssetInContent Content[]
 }
 
 model GalleryPost {
@@ -98,12 +99,12 @@ model Project {
 }
 
 model Content {
-  id        String     @id @default(uuid())
-  markdown  String
-  html      String?
-  assets    Asset[]
-  blogPosts BlogPost[]
+  id           String        @id @default(uuid())
+  markdown     String
+  html         String?
+  blogPosts    BlogPost[]
   galleryPosts GalleryPost[]
+  usedAssets Asset[]
 }
 
 model Comic {

@@ -1,6 +1,7 @@
 import config from '$lib/config.server';
 import type { Handle } from '@sveltejs/kit';
 import type { ServerErrorMiddleware } from './types';
+import { getAuthContext } from '../context/auth';
 
 const protectedRoutePatterns = config.middleware.protector.protectedRoutePatterns;
 
@@ -9,8 +10,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 		event.locals.violated_protected_route_access = event.request.headers.get('x-violated-path');
 		return resolve(event);
 	}
-
-	if (!protectedRoutePatterns.some((pattern) => event.url.pathname.match(pattern))) {
+	// change to locals if context fails
+	if (
+		getAuthContext()?.isAdmin ||
+		!protectedRoutePatterns.some((pattern) => event.url.pathname.match(pattern))
+	) {
 		return resolve(event);
 	}
 	// Since error() is not intended to be used in handle function,
@@ -39,7 +43,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	});
 };
 
-export const handleError: ServerErrorMiddleware = async ({ error, event, status, message }) => {
+export const handleError: ServerErrorMiddleware = async ({ event, status }) => {
 	if (event.locals.violated_protected_route_access && status !== 500) {
 		console.log(
 			`INFO: ${event.getClientAddress()} tried to access ${event.locals.violated_protected_route_access} protected route without login`

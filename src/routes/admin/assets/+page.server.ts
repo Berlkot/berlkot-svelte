@@ -1,14 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
-import prisma from '$lib/server/services/prisma';
-import { generateThumbnail, getDimensions, normalizeMedia } from '$lib/server/image-tools';
-import { extname } from 'path';
-import { mkdir } from 'fs/promises';
-import type { Prisma } from '$prisma-generated/client';
-import { rm } from 'fs/promises';
-import { Validator, type FieldConfig } from '$lib/form-validator';
-import { readdir, rename } from 'fs/promises';
+import prisma from '$lib/modules/database/prisma.server';
+import { Asset, setAssetData } from '$modules/asset/model.server';
+import { Validator, type FieldConfig } from '$lib/modules/forms/form-validator';
 
 const validatorConfig: { [key: string]: FieldConfig } = {
 	id: ['string', 'reqired'],
@@ -16,12 +11,11 @@ const validatorConfig: { [key: string]: FieldConfig } = {
 	name: ['string', 'reqired'],
 	alt: ['string'],
 	credit: ['string'],
-	type: ['string', 'enum:IMAGE:VIDEO'],
 	visibility: ['string', 'enum:ADMIN:PUBLIC:SUB_ONLY']
 };
-const validatorConfigWithFile = { ...validatorConfig };
-validatorConfigWithFile.file.push('reqired');
-delete validatorConfigWithFile.id;
+const validatorConfigCreation = { ...validatorConfig };
+validatorConfigCreation.file.push('reqired');
+delete validatorConfigCreation.id;
 
 export async function load() {
 	return { images: await prisma.asset.findMany() };
@@ -34,99 +28,38 @@ export const actions = {
 		if (!data) {
 			return fail(400, validator.status);
 		}
-		const { file, name, ...rest } = data;
-		const q: Prisma.AssetUpdateInput = {
-			name: String(name),
-			...rest
-		};
-		const prev = await prisma.asset.findUnique({
-			where: { id: String(data.id) }
-		});
-		if (prev!.name !== name) {
-			await rename(`data/assets/${prev!.name}`, `data/assets/${name}`);
-			await Promise.all(
-				(await readdir(`data/assets/${name}`, { withFileTypes: true })).map(async (f) => {
-					await rename(
-						`data/assets/${name}/${f.name}`,
-						`data/assets/${name}/${f.name.replace(prev!.name, name as string)}`
-					);
-				})
-			);
-		}
+		const { file, name, id, ...rest } = data;
+		const asset = await Asset.newFrom({ id: id as string });
+		Object.assign(asset, rest, { name: String(name) });
 		if ((file as File).name) {
-			const thumbnails = (await readdir(`data/assets/${name}`, { withFileTypes: true })).filter(
-				(f) => f.name !== `${name}.webp` && f.name !== `${name}.mp4`
-			);
-			await rm(`data/assets/${name}`, { force: true, recursive: true });
-			await mkdir(`data/assets/${name}`);
-			const path = `data/assets/${name}/${name + extname((file as File).name)}`;
-			await Bun.write(path, file as File);
-			const out_path = await normalizeMedia(path);
-			if (!out_path) {
-				return fail(422, { message: 'Failed to proccess media' });
-			}
-			const size = await getDimensions(out_path);
-			q.width = size.width;
-			q.height = size.height;
 			try {
-				for (const thumbnail of thumbnails) {
-					await generateThumbnail(
-						out_path,
-						`data/assets/${q.name}/${q.name}.webp`,
-						parseInt(thumbnail.name.split('_')[0]),
-						parseInt(thumbnail.name.split('_')[1])
-					);
-				}
+				await setAssetData(file as File, String(name));
 			} catch {
 				return fail(422, { message: 'Failed to proccess media' });
 			}
 		}
-		const asset = await prisma.asset.update({
-			where: { id: String(data.id) },
-			data: q
-		});
-		return asset;
+		asset.save();
+		return asset.deconstruct();
 	},
 	create: async ({ request }: RequestEvent) => {
-		const validator = new Validator(validatorConfigWithFile);
+		const validator = new Validator(validatorConfigCreation);
 		const data = validator.parseData(await request.formData());
 		if (!data) {
 			return fail(400, validator.status);
 		}
 		const { file, name, ...rest } = data;
 		try {
-			await mkdir(`data/assets/${name}`);
-		} catch {
-			return fail(400, { message: 'Image already exists' });
-		}
-
-		const path = `data/assets/${name}/${name + extname((file as File).name)}`;
-		await Bun.write(path, file as File);
-		const out_path = await normalizeMedia(path);
-		if (!out_path) {
-			return fail(422, { message: 'Failed to proccess media' });
-		}
-		const size = await getDimensions(out_path);
-		const q: Prisma.AssetCreateInput = {
-			name: String(name),
-			width: size.width,
-			height: size.height,
-			...rest
-		};
-		try {
-			// also checks if image type is supported by imagemagick
-			await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 270, 270);
-			await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 465, 260);
-			await generateThumbnail(out_path, `data/assets/${q.name}/${q.name}.webp`, 1280, 720);
+			await setAssetData(file as File, String(name));
 		} catch {
 			return fail(422, { message: 'Failed to proccess media' });
 		}
-		return await prisma.asset.create({ data: q });
+		const asset = await Asset.new({ name: String(name), ...rest });
+		asset.save();
+		return asset.deconstruct();
 	},
 	delete: async ({ request }: RequestEvent) => {
 		const data = await request.formData();
 		const name = data.get('name') as string;
-		await prisma.asset.delete({ where: { name: name } });
-		await rm(`data/assets/${name}`, { force: true, recursive: true });
+		(await Asset.newFrom({ name: name })).delete();
 	}
 } satisfies Actions;
