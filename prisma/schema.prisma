@@ -44,19 +44,19 @@ model BlogPost {
 }
 
 model Asset {
-  id            String          @id @default(uuid())
-  name          String          @unique
-  hash          String?         @unique
-  alt           String?
-  type          ContentType     @default(IMAGE)
-  width         Int
-  height        Int
-  credit        String?
-  visibility    Visibility      @default(ADMIN)
-  posts         BlogPost[]
-  galleryPosts  GalleryAsset[]
-  PageInChapter PageInChapter[]
-  heroInFolder  GalleryFolder?
+  id             String          @id @default(uuid())
+  name           String          @unique
+  hash           String?         @unique
+  alt            String?
+  type           ContentType     @default(IMAGE)
+  width          Int
+  height         Int
+  credit         String?
+  visibility     Visibility      @default(ADMIN)
+  posts          BlogPost[]
+  galleryPosts   GalleryAsset[]
+  PageInChapter  PageInChapter[]
+  heroInFolder   GalleryFolder?
   AssetInContent Content[]
 }
 
@@ -102,10 +102,22 @@ model Content {
   id           String        @id @default(uuid())
   markdown     String
   html         String?
+  // translations ContentTranslation[]
   blogPosts    BlogPost[]
   galleryPosts GalleryPost[]
-  usedAssets Asset[]
+  usedAssets   Asset[]
 }
+
+// model ContentTranslation {
+//   id        String  @id @default(uuid())
+//   locale    String
+//   markdown  String
+//   html      String?
+//   contentId String
+//   content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+//   @@unique([contentId, locale])
+// }
 
 model Comic {
   id         String         @id @default(uuid())
@@ -128,6 +140,7 @@ model PageInChapter {
   chapter        ComicChapter @relation(fields: [comicChapterId], references: [id])
   page           Asset        @relation(fields: [assetId], references: [id])
   pageNumber     Int
+  // pageLocale     String
   effects        Json?
   comicChapterId String
   assetId        String
