@@ -4,15 +4,14 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-      admin: boolean;
-      violated_protected_route_access: string?;
+			violated_protected_route_access: string?;
 		}
 		// interface PageData {}
 		interface PageState {
-      selected: {
-        meta: {[name: string]: string}
-        galleryPost: object
-      };
+			selected: {
+				meta: { [name: string]: string };
+				galleryPost: object;
+			};
 		}
 		// interface Platform {}
 	}
