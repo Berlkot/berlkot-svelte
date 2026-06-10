@@ -1,6 +1,13 @@
 <script lang="ts">
-	import type { BlogPost } from '$prisma-generated/client';
-	let { post, params }: { post: BlogPost; params?: string } = $props();
+	interface BlogPostCardInput {
+		name: string;
+		title: string;
+		description: string | null;
+		createdAt: Date;
+		tags: { name: string }[];
+		heroImage?: { name: string; alt?: string | null } | null;
+	}
+	let { post, params }: { post: BlogPostCardInput; params?: string } = $props();
 	const options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'short',

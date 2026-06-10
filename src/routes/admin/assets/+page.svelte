@@ -2,9 +2,9 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 	import type { Asset } from '$prisma-generated/client';
-	import { addToast } from '$lib/stores/toastStore';
-	import Modal from '$lib/components/Modal.svelte';
-	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
+	import { addToast } from '$modules/toast/toastStore';
+	import Modal from '$modules/forms/Modal.svelte';
+	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg';
 
 	interface Props {
@@ -109,7 +109,7 @@
 			</div>
 
 			<form
-			    class="admin-form"
+				class="admin-form"
 				method="POST"
 				enctype="multipart/form-data"
 				action={editing ? '?/edit' : '?/create'}

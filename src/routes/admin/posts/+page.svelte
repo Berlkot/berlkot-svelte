@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Modal from '$lib/components/Modal.svelte';
+	import Modal from '$modules/forms/Modal.svelte';
 	import type { ActionData, PageData } from './$types';
 	import PostContainer from './PostContainer.svelte';
 
@@ -11,10 +11,11 @@
 	let posts = $derived(data.posts);
 	let showModal = $state(false);
 </script>
+
 <div class="flexx">
-    {#each posts as post (post.name)}
-        <PostContainer {post} onremove={() => (posts = posts.filter((p) => p.name != post.name))} />
-    {/each}
+	{#each posts as post (post.name)}
+		<PostContainer {post} onremove={() => (posts = posts.filter((p) => p.name != post.name))} />
+	{/each}
 </div>
 
 <button onclick={() => (showModal = true)}>Add</button>

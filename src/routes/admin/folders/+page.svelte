@@ -3,12 +3,13 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 
-	import type { GalleryFolder } from '$prisma-generated/client';
-	import { addToast } from '$lib/stores/toastStore';
-	import Modal from '$lib/components/Modal.svelte';
-	import Autocomplete from '$lib/components/Autocomplete.svelte';
+	import type { Prisma } from '$prisma-generated/client';
+	type GalleryFolderWithHero = Prisma.GalleryFolderGetPayload<{ include: { heroImage: true } }>;
+	import { addToast } from '$modules/toast/toastStore';
+	import Modal from '$modules/forms/Modal.svelte';
+	import Autocomplete from '$lib/components/autocomplete/Autocomplete.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg';
-	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
+	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
 
 	interface Props {
 		data: PageData;
@@ -17,27 +18,26 @@
 
 	let { form, data }: Props = $props();
 	let images = $derived(data.images);
-	let galleryFolders: GalleryFolder[] = $derived(data.folders);
+	let galleryFolders: GalleryFolderWithHero[] = $derived(data.folders as any);
 	let modalIsOpen = $state(false);
-	let currentFolder: GalleryFolder | null = $state(null);
+	let currentFolder: GalleryFolderWithHero | null = $state(null);
 	let editing = $state(false);
 	let showConfirm = $state(false);
 	let focused = $state(false);
-
 
 	async function searchImages(keyword: string) {
 		return images.filter((i) => i.name.includes(keyword));
 	}
 </script>
 
-{#snippet selectedItem(image)}
+{#snippet selectedItem(image: any)}
 	<div class="image-select-item" class:blur-item={focused}>
 		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
 	</div>
 {/snippet}
 
-{#snippet optionItem(image)}
+{#snippet optionItem(image: any)}
 	<div class="image-option-item">
 		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
@@ -81,12 +81,12 @@
 	<ul class="gallery">
 		{#each galleryFolders as galleryFolder (galleryFolder.id)}
 			<li data-image={galleryFolder.id}>
-    			<div class="folder">
-    				{#if galleryFolder.heroImage}
-    					<img src="/asset/{galleryFolder.heroImage.name}.webp?w=270&h=270" alt="" />
-    				{/if}
-    				<p class="title">{galleryFolder.name}</p>
-    			</div>
+				<div class="folder">
+					{#if galleryFolder.heroImage}
+						<img src="/asset/{galleryFolder.heroImage.name}.webp?w=270&h=270" alt="" />
+					{/if}
+					<p class="title">{galleryFolder.name}</p>
+				</div>
 				<div class="wrapper">
 					<button
 						onclick={() => {
@@ -118,9 +118,9 @@
 				<button
 					class="close"
 					onclick={() => {
-					    modalIsOpen = false;
-       					editing = false;
-       					currentFolder = null;
+						modalIsOpen = false;
+						editing = false;
+						currentFolder = null;
 					}}
 				>
 					<img src={CloseImg} alt="" />
@@ -128,7 +128,7 @@
 			</div>
 
 			<form
-			    class="admin-form"
+				class="admin-form"
 				method="POST"
 				enctype="multipart/form-data"
 				action={editing ? '?/edit' : '?/create'}
@@ -139,10 +139,12 @@
 						if (result.type === 'success') {
 							if (editing) {
 								galleryFolders[
-									galleryFolders.findIndex((post) => post.id === (result.data as GalleryFolder).id)
-								] = result.data as GalleryFolder;
+									galleryFolders.findIndex(
+										(post) => post.id === (result.data as GalleryFolderWithHero).id
+									)
+								] = result.data as GalleryFolderWithHero;
 							} else {
-								galleryFolders = [...galleryFolders, result.data as GalleryFolder];
+								galleryFolders = [...galleryFolders, result.data as GalleryFolderWithHero];
 							}
 							addToast({
 								type: 'success',
@@ -169,20 +171,22 @@
 				<div class="input-container">
 					<label for="assets">Image</label>
 					<div class="tags">
-    					<Autocomplete
-    						name="heroImage"
-    						optFunction={searchImages}
-    						{optionItem}
-    						{selectedItem}
-    						key="name"
-    						defaultSelected={currentFolder && currentFolder.heroImage ? [currentFolder.heroImage] : []}
-    						multipule={false}
-    						delay={200}
-    						allowNew={false}
-    						onFocusChange={(val) => {
-    							focused = val;
-    						}}
-    					/>
+						<Autocomplete
+							name="heroImage"
+							optFunction={searchImages}
+							{optionItem}
+							{selectedItem}
+							key="name"
+							defaultSelected={currentFolder && currentFolder.heroImage
+								? [currentFolder.heroImage]
+								: []}
+							multipule={false}
+							delay={200}
+							allowNew={false}
+							onFocusChange={(val) => {
+								focused = val;
+							}}
+						/>
 					</div>
 				</div>
 				<div class="input-container">
@@ -191,29 +195,16 @@
 				</div>
 				<div class="input-container">
 					<label for="description">Description</label>
-					<textarea
-						id="description"
-						name="description"
-						value={currentFolder?.description}
+					<textarea id="description" name="description" value={currentFolder?.description}
 					></textarea>
 				</div>
 				<div class="input-container">
 					<label for="width">Width</label>
-					<input
-						id="width"
-						name="width"
-						type="number"
-						value={currentFolder?.width || 1}
-					/>
+					<input id="width" name="width" type="number" value={currentFolder?.width || 1} />
 				</div>
 				<div class="input-container">
 					<label for="height">Height</label>
-					<input
-						id="height"
-						name="height"
-						type="number"
-						value={currentFolder?.height || 1}
-					/>
+					<input id="height" name="height" type="number" value={currentFolder?.height || 1} />
 				</div>
 				<button class="submit" type="submit">{currentFolder ? 'Update' : 'Add'}</button>
 			</form>

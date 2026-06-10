@@ -1,8 +1,7 @@
-import prisma from '$lib/server/services/prisma';
+import prisma from '$modules/database/prisma.server';
 import type { Prisma } from '$prisma-generated/client';
-import { type RequestEvent } from '@sveltejs/kit';
 
-export async function load({ locals }: RequestEvent) {
+export async function load() {
 	const q: Prisma.GalleryPostFindManyArgs = {
 		take: 4,
 		select: {
@@ -38,14 +37,17 @@ export async function load({ locals }: RequestEvent) {
 		},
 		orderBy: { createdAt: 'desc' }
 	};
-	if (!locals.admin) {
-		q.where = {};
-		q.where.visibility = 'PUBLIC';
-		qp.where = {};
-		qp.where.visibility = 'PUBLIC';
-	}
 	const galleryPosts = await prisma.galleryPost.findMany(q);
-	const blogPosts = await prisma.blogPost.findMany(qp);
+	const blogPosts = (await prisma.blogPost.findMany(qp)) as unknown as Prisma.BlogPostGetPayload<{
+		select: {
+			heroImage: true;
+			name: true;
+			title: true;
+			description: true;
+			createdAt: true;
+			tags: true;
+		};
+	}>[];
 	return {
 		galleryPosts: galleryPosts,
 		blogPosts: blogPosts,

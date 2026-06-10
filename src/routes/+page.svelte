@@ -1,7 +1,7 @@
 <script lang="ts">
 	import HeroImage from '$lib/assets/images/hero_bg.webp';
-	import GalleryCard from '$lib/components/GalleryCard.svelte';
-	import ArticleCard from '$lib/components/ArticleCard.svelte';
+	import GalleryCard from '$modules/gallery/components/GalleryCard.svelte';
+	import ArticleCard from '$modules/article/components/ArticleCard.svelte';
 	let { data } = $props();
 </script>
 
@@ -18,7 +18,7 @@
 	<ul class="blog-list">
 		{#each data.blogPosts as post (post.name)}
 			<li>
-				<ArticleCard {post} params='?linkback=/' />
+				<ArticleCard {post} params="?linkback=/" />
 			</li>
 		{/each}
 	</ul>

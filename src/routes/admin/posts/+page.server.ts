@@ -1,11 +1,11 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
-import prisma from '$lib/server/services/prisma';
-import { Validator, type FieldConfig } from '$lib/form-validator';
-import type { Prisma } from '$prisma-generated/client';
+import prisma from '$modules/database/prisma.server';
+import { Validator, type FieldConfig } from '$modules/forms/form-validator';
 
 export async function load() {
-	return { posts: await prisma.blogPost.findMany({ include: { tags: true, heroImage: true } }) };
+	const posts = await prisma.blogPost.getPosts();
+	return { posts };
 }
 
 const validatorConfig: { [key: string]: FieldConfig } = {
@@ -29,7 +29,14 @@ export const actions = {
 			return fail(400, validator.status);
 		}
 
-		await prisma.blogPost.create({ data: data as unknown as Prisma.BlogPostCreateInput });
+		const stringTags = data.tags ? (data.tags as string).split(',') : undefined;
+		const { tags, ...rest } = data;
+
+		await prisma.blogPost.createPost({
+			...rest,
+			tags: stringTags
+		} as any);
+
 		return { success: true };
 	},
 	edit: async ({ request }: RequestEvent) => {
@@ -40,44 +47,18 @@ export const actions = {
 		}
 
 		const stringTags = data.tags ? (data.tags as string).split(',') : undefined;
-		const prev = await prisma.blogPost.findUnique({
-			where: { id: String(data.id) },
-			include: { tags: true }
-		});
-		if (data.heroImage) {
-			const heroImage = (await prisma.asset.findUnique({
-				where: { name: String(data.heroImage) }
-			}))!;
-			data.heroImage = {};
-			data.heroImage.connect = { id: heroImage.id };
-		}
+		const { id, tags, ...rest } = data;
 
-		const q: Prisma.BlogPostUpdateInput = {
-			...data
-		};
-		if (stringTags) {
-			q.tags = {};
-			const toDisconnect = prev!.tags
-				.filter((tag) => !stringTags.includes(tag.name))
-				.map((tag) => ({ id: tag.id }));
-			q.tags.connectOrCreate = stringTags.map((tag) => ({
-				where: { name: tag },
-				create: { name: tag }
-			}));
-			if (toDisconnect) {
-				q.tags.disconnect = toDisconnect;
-			}
-		}
-		await prisma.blogPost.update({
-			where: { id: String(data.id) },
-			data: q
-		});
-		await prisma.blogPostTag.deleteMany({ where: { posts: { none: {} } } });
+		await prisma.blogPost.updatePost(String(id), {
+			...rest,
+			tags: stringTags
+		} as any);
+
 		return { success: true };
 	},
 	delete: async ({ request }: RequestEvent) => {
 		const data = await request.formData();
 		const name = data.get('name') as string;
-		await prisma.blogPost.delete({ where: { name: name } });
+		await prisma.blogPost.deletePost(name);
 	}
 };

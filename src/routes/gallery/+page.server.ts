@@ -1,8 +1,8 @@
-import prisma from '$lib/server/services/prisma';
+import prisma from '$modules/database/prisma.server';
 import { Prisma } from '$prisma-generated/client';
 import { type RequestEvent } from '@sveltejs/kit';
 
-export async function load({ params, locals, url }: RequestEvent) {
+export async function load({ url }: RequestEvent) {
 	let tags = url.searchParams.getAll('tags');
 	if (tags.length > 0) {
 		tags = tags[0].split(',');
@@ -11,9 +11,7 @@ export async function load({ params, locals, url }: RequestEvent) {
 	}
 	const folder = url.searchParams.get('folder');
 	if (!folder && !tags.length) {
-		const folders = await prisma.galleryFolder.findMany({
-			include: { heroImage: true }
-		});
+		const folders = await prisma.galleryFolder.getFolders();
 		return {
 			folders: folders,
 			meta: {
@@ -30,45 +28,15 @@ export async function load({ params, locals, url }: RequestEvent) {
 	}));
 	if (folder) {
 		andQuery.push({ folders: { some: { name: folder } } });
-		folderObj = await prisma.galleryFolder.findUnique({
-			where: {
-				name: folder
-			}
-		});
+		folderObj = await prisma.galleryFolder.getFolder(folder);
 	}
-	const q: Prisma.GalleryPostFindManyArgs = {
+	const q: Omit<Prisma.GalleryPostFindManyArgs, 'include'> = {
 		where: {
 			AND: andQuery
 		},
-		select: {
-			name: true,
-			title: true,
-			contentWarning: true,
-			maturity: true,
-			assets: {
-				take: 1,
-				select: {
-					asset: {
-						select: {
-							name: true,
-							height: true,
-							width: true,
-							alt: true,
-							type: true
-						}
-					}
-				},
-				orderBy: { order: 'asc' }
-			},
-			tags: { select: { name: true } },
-			folders: { select: { name: true } }
-		},
 		orderBy: { creationDate: 'desc' }
 	};
-	if (!locals.admin) {
-		q.where!.visibility = 'PUBLIC';
-	}
-	const galleryPosts = await prisma.galleryPost.findMany(q);
+	const galleryPosts = await prisma.galleryPost.getPosts(q);
 	return {
 		galleryPosts: galleryPosts,
 		folder: folderObj,

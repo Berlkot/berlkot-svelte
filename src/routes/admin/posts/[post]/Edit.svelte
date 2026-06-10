@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Autocomplete from '$lib/components/Autocomplete.svelte';
+	import Autocomplete from '$lib/components/autocomplete/Autocomplete.svelte';
 
 	let { post = $bindable(), images } = $props();
 
@@ -16,7 +16,7 @@
 		return data;
 	}
 	async function searchImages(keyword: string) {
-		return images.filter((i) => i.name.includes(keyword));
+		return images.filter((i: any) => i.name.includes(keyword));
 	}
 	let formattedDate = $state(post.createdAt.toISOString().substring(0, 10));
 	$effect(() => {
@@ -25,13 +25,13 @@
 	let focused = $state(false);
 </script>
 
-{#snippet selectedItem(image)}
+{#snippet selectedItem(image: any)}
 	<div class="image-select-item" class:blur-item={focused}>
 		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
 	</div>
 {/snippet}
-{#snippet optionItem(image)}
+{#snippet optionItem(image: any)}
 	<div class="image-option-item">
 		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
@@ -53,8 +53,8 @@
 				multipule={false}
 				delay={200}
 				allowNew={false}
-				onChange={(value) => {
-					post.heroImage = images.find((i) => i.name === value);
+				onChange={(value: any) => {
+					post.heroImage = images.find((i: any) => i.name === value);
 				}}
 				onFocusChange={(val) => {
 					focused = val;

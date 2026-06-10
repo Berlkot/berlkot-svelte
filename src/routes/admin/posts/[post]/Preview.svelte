@@ -18,4 +18,4 @@
 	});
 </script>
 
-<PostPage data={{blogPost: { ...post, content: renderedPost }} } />
+<PostPage data={{ blogPost: { ...post, content: renderedPost }, meta: {} } as any} />

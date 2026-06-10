@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Autocomplete from '$lib/components/Autocomplete.svelte';
-	import { searchTags, searchFolders } from '$lib/client-helpers';
-	import GalleryCard from '$lib/components/GalleryCard.svelte';
+	import Autocomplete from '$lib/components/autocomplete/Autocomplete.svelte';
+	import { searchTags, searchFolders } from '$modules/gallery/utils/client-helpers';
+	import GalleryCard from '$modules/gallery/components/GalleryCard.svelte';
 	let { data } = $props();
 	import { page } from '$app/state';
 	import { goto, afterNavigate } from '$app/navigation';
@@ -44,11 +44,9 @@
 			}
 			tags.push(el);
 		});
-		let q = []
-		if (tags.length !== 0)
-		  q.push('tags=' + tags.join(','))
-		if (folder)
-		  q.push(folder)
+		let q = [];
+		if (tags.length !== 0) q.push('tags=' + tags.join(','));
+		if (folder) q.push(folder);
 		await goto('/gallery?' + q.join('&'));
 	}
 	async function searchAll(keyword: string) {
@@ -56,10 +54,12 @@
 			return await searchTags(keyword);
 		}
 		return (await searchTags(keyword)).concat(
-			(await searchFolders(keyword)).map((folder) => ({ name: '~' + folder.name }))
+			(await searchFolders(keyword)).map((folder: { name: string }) => ({
+				name: '~' + folder.name
+			}))
 		);
 	}
-	function getItemStyle(item: object) {
+	function getItemStyle(item: any) {
 		if (item.name.startsWith('~')) {
 			return '--color-accent: var(--color-meta-yellow);--color-accent-fill: var(--color-meta-yellow-fill); color: var(--color-meta-yellow)';
 		}
@@ -183,8 +183,8 @@
 		background-color: #81375c;
 		transition: mask-image 0.2s linear;
 		-webkit-mask-image:
-    		repeating-linear-gradient(-45deg, transparent 0, black 4px, transparent 8px),
-    		linear-gradient(to top, black 10%, transparent 50%);
+			repeating-linear-gradient(-45deg, transparent 0, black 4px, transparent 8px),
+			linear-gradient(to top, black 10%, transparent 50%);
 		mask-image:
 			repeating-linear-gradient(-45deg, transparent 0, black 4px, transparent 8px),
 			linear-gradient(to top, black 10%, transparent 50%);
@@ -237,8 +237,8 @@
 	.folder .title::after {
 		content: '';
 	}
-	.folder:hover .title::after{
-	    content: ' <';
+	.folder:hover .title::after {
+		content: ' <';
 		animation-name: blink;
 		animation-duration: 1.5s;
 		animation-timing-function: step-end;

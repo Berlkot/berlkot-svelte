@@ -1,12 +1,10 @@
-import prisma from '$lib/server/services/prisma';
+import prisma from '$modules/database/prisma.server';
 import type { RequestEvent } from './$types';
 
 export async function load({ params }: RequestEvent) {
+	const post = await prisma.blogPost.getPost(params.post);
 	return {
-		post: await prisma.blogPost.findUnique({
-			where: { name: params.post },
-			include: { tags: true, heroImage: { select: { name: true, id: true, alt: true } } }
-		}),
+		post: post ? { ...post, content: post.content?.markdown ?? '' } : null,
 		images: await prisma.asset.findMany({ select: { name: true, id: true } })
 	};
 }

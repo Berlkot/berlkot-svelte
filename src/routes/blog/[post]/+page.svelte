@@ -2,30 +2,34 @@
 	let { data } = $props();
 	import GoBack from '$lib/components/GoBack.svelte';
 	import { onMount } from 'svelte';
-	import { addToast } from '$lib/stores/toastStore';
+	import { addToast } from '$modules/toast/toastStore';
 	let options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'short',
 		day: 'numeric'
 	};
 	onMount(() => {
-	    document.querySelectorAll('.heading-anchor').forEach((element) => {
-	        element.addEventListener('click', (event) => {
-	            event.preventDefault();
+		document.querySelectorAll('.heading-anchor').forEach((element) => {
+			element.addEventListener('click', (event) => {
+				event.preventDefault();
 				const target = element.querySelector('a');
-				history.pushState(null, '', target.getAttribute('href'))
-				const url = new URL(window.location.href)
-				url.search = ''
-				navigator.clipboard.writeText(url).then(() => {
-    				addToast({
-     					type: 'success',
-     					message: 'Section link copied to clipboard',
-     					timeout: 2000
-    				});
-				});
-
-	        });
-	    });
+				if (target) {
+					const href = target.getAttribute('href');
+					if (href) {
+						history.pushState(null, '', href);
+						const url = new URL(window.location.href);
+						url.search = '';
+						navigator.clipboard.writeText(url.toString()).then(() => {
+							addToast({
+								type: 'success',
+								message: 'Section link copied to clipboard',
+								timeout: 2000
+							});
+						});
+					}
+				}
+			});
+		});
 	});
 </script>
 

@@ -1,8 +1,7 @@
-import prisma from '$lib/server/services/prisma';
-import type { Prisma } from '$prisma-generated/client';
+import prisma from '$modules/database/prisma.server';
 
-export async function GET({ locals }) {
-	const q: Prisma.BlogPostFindManyArgs = {
+export async function GET() {
+	const posts = await prisma.blogPost.findMany({
 		take: 10,
 		orderBy: { createdAt: 'desc' },
 		select: {
@@ -12,12 +11,7 @@ export async function GET({ locals }) {
 			createdAt: true,
 			updatedAt: true
 		}
-	};
-	if (!locals.admin) {
-		q.where = {};
-		q.where.visibility = 'PUBLIC';
-	}
-	const posts = await prisma.blogPost.findMany(q);
+	});
 	const body = `<?xml version="1.0" encoding="UTF-8"?>
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>

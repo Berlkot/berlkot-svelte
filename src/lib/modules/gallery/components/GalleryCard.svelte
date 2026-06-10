@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { goto, preloadData, pushState } from '$app/navigation';
 	import { page } from '$app/state';
-	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
+	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg';
-	import Modal from '$lib/components/Modal.svelte';
+	import Modal from '$modules/forms/Modal.svelte';
 	import AssetPage from '$routes/gallery/[name]/+page.svelte';
 	import { fade, scale } from 'svelte/transition';
-	import { confirmedMatureContent } from '$lib/stores/persistent';
+	import { confirmedMatureContent } from '$modules/gallery/utils/matureContentStore';
 	let { galleryPost } = $props();
 	let href = $state<string>('');
 	let confirm = $state(false);
@@ -14,7 +14,7 @@
 		const result = await preloadData(href);
 
 		if (result.type === 'loaded' && result.status === 200) {
-			pushState(href, { selected: result.data });
+			pushState(href, { selected: result.data } as any);
 		} else {
 			// something bad happened! try navigating
 			goto(href);
@@ -30,7 +30,7 @@
 		rejectText="No, Take me back!"
 		onreject={() => (confirm = false)}
 		onconfirm={async () => {
-			confirmedMatureContent.update((value) => true);
+			confirmedMatureContent.update(() => true);
 			localStorage.setItem('confirmedMatureContent', 'true');
 			confirm = false;
 			await navigate();
@@ -99,7 +99,7 @@
 				<img src={CloseImg} alt="" />
 			</button>
 			<div class="data">
-				<AssetPage data={page.state.selected} />
+				<AssetPage data={page.state.selected as any} />
 			</div>
 		</div>
 	</Modal>

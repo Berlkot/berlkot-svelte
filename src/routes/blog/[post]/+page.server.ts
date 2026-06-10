@@ -1,26 +1,18 @@
-import { renderMarkdown } from '$lib/server/services/markdown/render';
-import prisma from '$lib/server/services/prisma';
-import type { Prisma } from '$prisma-generated/client';
+import prisma from '$modules/database/prisma.server';
 import { error, type RequestEvent } from '@sveltejs/kit';
 
 const return_string = 'Blogpost not found!';
 
-export async function load({ params, locals }: RequestEvent) {
+export async function load({ params }: RequestEvent) {
 	try {
-		const q: Prisma.BlogPostFindUniqueArgs = {
-			where: { name: params.post },
-			include: {
-				tags: true,
-				heroImage: { select: { name: true, credit: true, alt: true } }
-			}
-		};
-		if (!locals.admin) {
-			q.where.visibility = 'PUBLIC';
+		// fuck me if im wrong about exclamation mark
+		const blogPost = await prisma.blogPost.getPost(params.post!);
+		if (!blogPost) {
+			throw error(404, return_string);
 		}
-		const blogPost = await prisma.blogPost.findUniqueOrThrow(q);
-		blogPost.content = blogPost.content
-			? await renderMarkdown(blogPost.content)
-			: 'Blogpost is empty';
+
+		const contentHtml = blogPost.content?.html ? blogPost.content.html : 'Blogpost is empty';
+
 		const meta = {
 			title: `${blogPost.title} | Berlkot`,
 			'og:title': `${blogPost.title} | Berlkot`,
@@ -32,7 +24,7 @@ export async function load({ params, locals }: RequestEvent) {
 		if (blogPost.heroImage) {
 			meta['og:image'] = `https://berlkot.com/asset/${blogPost.heroImage.name}.webp`;
 		}
-		return { blogPost, meta };
+		return { blogPost: { ...blogPost, content: contentHtml }, meta };
 	} catch {
 		throw error(404, return_string);
 	}

@@ -3,14 +3,14 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 
-	import type { GalleryPost } from '$prisma-generated/client';
-	import { addToast } from '$lib/stores/toastStore';
-	import Modal from '$lib/components/Modal.svelte';
-	import Autocomplete from '$lib/components/Autocomplete.svelte';
+	import type { GalleryPostWithRelations } from '$modules/gallery/extension.server';
+	import { addToast } from '$modules/toast/toastStore';
+	import Modal from '$modules/forms/Modal.svelte';
+	import Autocomplete from '$lib/components/autocomplete/Autocomplete.svelte';
 	import CloseImg from '$lib/assets/icons/close.svg';
-	import { searchFolders, searchTags } from '$lib/client-helpers';
-	import GalleryCard from '$lib/components/GalleryCard.svelte';
-	import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
+	import { searchFolders, searchTags } from '$modules/gallery/utils/client-helpers';
+	import GalleryCard from '$modules/gallery/components/GalleryCard.svelte';
+	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
 
 	interface Props {
 		data: PageData;
@@ -18,23 +18,23 @@
 	}
 
 	let { form, data }: Props = $props();
-	let images =  $derived(data.assets);
-	let galleryPosts: GalleryPost[] = $derived(data.galleryPosts);
+	let images = $derived(data.assets);
+	let galleryPosts: GalleryPostWithRelations[] = $derived(data.galleryPosts);
 	let modalIsOpen = $state(false);
-	let currentPost: GalleryPost | null = $state(null);
-	let editing = $state(false)
-	let showConfirm = $state(false)
-	
+	let currentPost: GalleryPostWithRelations | null = $state(null);
+	let editing = $state(false);
+	let showConfirm = $state(false);
+
 	function getRandomInt(max: number) {
 		return Math.floor(Math.random() * max);
 	}
-	
+
 	async function searchImages(keyword: string) {
 		return images.filter((i) => i.name.includes(keyword));
 	}
 </script>
 
-{#snippet optionItem(image)}
+{#snippet optionItem(image: any)}
 	<div>
 		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
@@ -75,32 +75,30 @@
 {/if}
 
 <section>
-    <ul class="gallery">
-    	{#each galleryPosts as galleryPost (galleryPost.id)}
-         <li data-image={galleryPost.id}>
-    		<GalleryCard
-    			{galleryPost}
-    		/>
-   			<div class="wrapper">
-				<button
-					onclick={() => {
-						currentPost = galleryPost;
-						modalIsOpen = true;
-						editing = true;
-					}}
-					class="button">Edit</button
-				>
-				<button
-					class="button button-danger"
-					onclick={() => {
-						currentPost = galleryPost;
-						showConfirm = true;
-					}}>Delete</button
-				>
-			</div>
-         </li>
-    	{/each}
-    </ul>
+	<ul class="gallery">
+		{#each galleryPosts as galleryPost (galleryPost.id)}
+			<li data-image={galleryPost.id}>
+				<GalleryCard {galleryPost} />
+				<div class="wrapper">
+					<button
+						onclick={() => {
+							currentPost = galleryPost;
+							modalIsOpen = true;
+							editing = true;
+						}}
+						class="button">Edit</button
+					>
+					<button
+						class="button button-danger"
+						onclick={() => {
+							currentPost = galleryPost;
+							showConfirm = true;
+						}}>Delete</button
+					>
+				</div>
+			</li>
+		{/each}
+	</ul>
 </section>
 <button onclick={() => (modalIsOpen = true)} class="button">Add</button>
 
@@ -108,13 +106,13 @@
 	<Modal>
 		<div class="form-container">
 			<div class="flex-wr">
-			    <h2>{editing ? 'Edit post' : 'Create new post'}</h2>
+				<h2>{editing ? 'Edit post' : 'Create new post'}</h2>
 				<button
 					class="close"
 					onclick={() => {
-       					modalIsOpen = false;
-       					editing = false;
-       					currentPost = null;
+						modalIsOpen = false;
+						editing = false;
+						currentPost = null;
 					}}
 				>
 					<img src={CloseImg} alt="" />
@@ -122,7 +120,7 @@
 			</div>
 
 			<form
-			    class="admin-form"
+				class="admin-form"
 				method="POST"
 				enctype="multipart/form-data"
 				action={editing ? '?/edit' : '?/create'}
@@ -132,15 +130,18 @@
 						(submitter as HTMLButtonElement).disabled = false;
 						if (result.type === 'success') {
 							if (editing) {
-								galleryPosts[galleryPosts.findIndex((post) => post.id === (result.data as GalleryPost).id)] =
-									result.data as GalleryPost;
+								galleryPosts[
+									galleryPosts.findIndex(
+										(post) => post.id === (result.data as GalleryPostWithRelations).id
+									)
+								] = result.data as GalleryPostWithRelations;
 							} else {
-								galleryPosts = [...galleryPosts, result.data as GalleryPost];
+								galleryPosts = [...galleryPosts, result.data as GalleryPostWithRelations];
 							}
 							const imageel = document.querySelector(
 								`[data-image="${result.data!.id}"] a`
 							) as HTMLAnchorElement;
-							imageel.href += `?${getRandomInt(1000)}` 
+							imageel.href += `?${getRandomInt(1000)}`;
 							addToast({
 								type: 'success',
 								message: 'Successfully updated!',
@@ -159,67 +160,96 @@
 					};
 				}}
 			>
-    			{#if editing}
-    				<input name="id" type="hidden" value={currentPost!.id} hidden />
-    			{/if}
+				{#if editing}
+					<input name="id" type="hidden" value={currentPost!.id} hidden />
+				{/if}
 				{#if form?.message}<p class="error">{form?.message}</p>{/if}
 				<div class="input-container">
-    				<label for="assets">Images</label>
-                    <div class="tags">
-        				<Autocomplete
-           					name="assets"
-           					optFunction={searchImages}
-           					{optionItem}
-           					key="name"
-           					defaultSelected={currentPost && currentPost.assets ? currentPost.assets.map((asset) => asset.asset) : []}
-           					multipule={true}
-           					delay={200}
-           					allowNew={false}
-                            required={true}
-        				/>
-                    </div>
+					<label for="assets">Images</label>
+					<div class="tags">
+						<Autocomplete
+							name="assets"
+							optFunction={searchImages}
+							{optionItem}
+							key="name"
+							defaultSelected={currentPost && currentPost.assets
+								? currentPost.assets.map((asset) => asset.asset)
+								: []}
+							multipule={true}
+							delay={200}
+							allowNew={false}
+							required={true}
+						/>
+					</div>
 				</div>
 				<div class="input-container">
-				    <label for="name">Name</label>
-					<input id="name" name="name" type="text" required value={currentPost?.name}/>
+					<label for="name">Name</label>
+					<input id="name" name="name" type="text" required value={currentPost?.name} />
 				</div>
 				<div class="input-container">
-				    <label for="title">Title</label>
-					<input id="title" name="title" type="text" value="{currentPost?.title}"/>
+					<label for="title">Title</label>
+					<input id="title" name="title" type="text" value={currentPost?.title} />
 				</div>
 				<div class="input-container">
-				    <label for="contentWarning">Content warning</label>
-					<input id="contentWarning" name="contentWarning" type="text" value={currentPost?.contentWarning} />
+					<label for="contentWarning">Content warning</label>
+					<input
+						id="contentWarning"
+						name="contentWarning"
+						type="text"
+						value={currentPost?.contentWarning}
+					/>
 				</div>
 				<div class="input-container">
-				    <label for="copyright">Copyright</label>
+					<label for="copyright">Copyright</label>
 					<input id="copyright" name="copyright" type="text" value={currentPost?.copyright} />
 				</div>
 				<div class="input-container">
-				    <label for="smallDescription">Small Description</label>
-					<textarea id="smallDescription" name="smallDescription" value={currentPost?.smallDescription}></textarea>
+					<label for="smallDescription">Small Description</label>
+					<textarea
+						id="smallDescription"
+						name="smallDescription"
+						value={currentPost?.smallDescription}
+					></textarea>
 				</div>
 				<div class="input-container">
-				    <label for="largeDescription">Large Description</label>
-					<textarea id="largeDescription" name="largeDescription" rows="10"  value={currentPost?.largeDescription}></textarea>
+					<label for="largeDescription">Large Description</label>
+					<textarea
+						id="largeDescription"
+						name="largeDescription"
+						rows="10"
+						value={currentPost?.largeDescription?.markdown}
+					></textarea>
 				</div>
 				<div class="input-container">
-				    <label for="creationDate">Creation Date</label>
-					<input id="creationDate" name="creationDate" type="date"  value="{currentPost?.creationDate.toISOString().substring(0, 10)}"/>
+					<label for="creationDate">Creation Date</label>
+					<input
+						id="creationDate"
+						name="creationDate"
+						type="date"
+						value={currentPost?.creationDate.toISOString().substring(0, 10)}
+					/>
 				</div>
 				<div class="input-container">
 					<label for="visibility"> Visibility </label>
 					<select id="visibility" name="visibility">
-						<option value="ADMIN" selected={currentPost?.visibility === 'ADMIN' || !currentPost}>admin</option>
+						<option value="ADMIN" selected={currentPost?.visibility === 'ADMIN' || !currentPost}
+							>admin</option
+						>
 						<option value="PUBLIC" selected={currentPost?.visibility === 'PUBLIC'}>public</option>
-						<option value="SUB_ONLY" selected={currentPost?.visibility === 'SUB_ONLY'}>for subs</option>
+						<option value="SUB_ONLY" selected={currentPost?.visibility === 'SUB_ONLY'}
+							>for subs</option
+						>
 					</select>
 				</div>
 				<div class="input-container">
 					<label for="maturity"> Maturity </label>
 					<select id="maturity" name="maturity">
-						<option value="SFW" selected={currentPost?.maturity === 'SFW' || !currentPost}>sfw</option>
-						<option value="QUESTIONABLE" selected={currentPost?.maturity === 'QUESTIONABLE'}>questionable</option>
+						<option value="SFW" selected={currentPost?.maturity === 'SFW' || !currentPost}
+							>sfw</option
+						>
+						<option value="QUESTIONABLE" selected={currentPost?.maturity === 'QUESTIONABLE'}
+							>questionable</option
+						>
 						<option value="NSFW" selected={currentPost?.maturity === 'NSFW'}>nsfw</option>
 					</select>
 				</div>
@@ -238,7 +268,7 @@
 					</div>
 				</div>
 				<div class="input-container">
-				<label for="folders">Folders</label>
+					<label for="folders">Folders</label>
 					<div class="tags">
 						<Autocomplete
 							name="folders"
@@ -257,16 +287,16 @@
 {/if}
 
 <style>
-   	@media (max-width: 712px) {
+	@media (max-width: 712px) {
 		ul.gallery {
 			grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
 			grid-template-rows: repeat(auto-fill, minmax(160px, 1fr));
 		}
 	}
 	ul.gallery li {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
 	.tags {
 		display: flex;

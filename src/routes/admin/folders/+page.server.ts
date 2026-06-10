@@ -1,12 +1,12 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
-import prisma from '$lib/server/services/prisma';
-import { Validator, type FieldConfig } from '$lib/form-validator';
-import type { Prisma } from '$prisma-generated/client';
+import prisma from '$modules/database/prisma.server';
+import { Validator, type FieldConfig } from '$modules/forms/form-validator';
 
 export async function load() {
+	const folders = await prisma.galleryFolder.getFolders();
 	return {
-		folders: await prisma.galleryFolder.findMany({ include: { heroImage: true } }),
+		folders,
 		images: await prisma.asset.findMany({ select: { name: true, id: true } })
 	};
 }
@@ -27,18 +27,8 @@ export const actions = {
 		if (!data) {
 			return fail(400, validator.status);
 		}
-		if (data.heroImage) {
-			const heroImage = (await prisma.asset.findUnique({
-				where: { name: String(data.heroImage) }
-			}))!;
-			data.heroImage = {};
-			data.heroImage.connect = { id: heroImage.id };
-		}
 
-		return await prisma.galleryFolder.create({
-			data: data as unknown as Prisma.GalleryFolderCreateInput,
-			include: { heroImage: true }
-		});
+		return await prisma.galleryFolder.createFolder(data as any);
 	},
 	edit: async ({ request }: RequestEvent) => {
 		const validator = new Validator(validatorConfig);
@@ -46,28 +36,13 @@ export const actions = {
 		if (!data) {
 			return fail(400, validator.status);
 		}
-		if (data.heroImage) {
-			const heroImage = (await prisma.asset.findUnique({
-				where: { name: String(data.heroImage) }
-			}))!;
-			data.heroImage = {};
-			data.heroImage.connect = { id: heroImage.id };
-		}
+		const { id, ...rest } = data;
 
-		const q: Prisma.GalleryFolderUpdateInput = {
-			...data
-		};
-		return await prisma.galleryFolder.update({
-			where: { id: String(data.id) },
-			data: q,
-			include: {
-				heroImage: true
-			}
-		});
+		return await prisma.galleryFolder.updateFolder(String(id), rest as any);
 	},
 	delete: async ({ request }: RequestEvent) => {
 		const data = await request.formData();
 		const name = data.get('name') as string;
-		await prisma.galleryFolder.delete({ where: { name: name } });
+		await prisma.galleryFolder.deleteFolder(name);
 	}
 };
