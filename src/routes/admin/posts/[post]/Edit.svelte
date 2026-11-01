@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Autocomplete from '$lib/components/autocomplete/Autocomplete.svelte';
+	import Autocomplete from '#lib/components/autocomplete/Autocomplete.svelte';
 
 	let { post = $bindable(), images } = $props();
 
@@ -27,13 +27,13 @@
 
 {#snippet selectedItem(image: any)}
 	<div class="image-select-item" class:blur-item={focused}>
-		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
+		<img src="/asset/{image.name}-{image.hash}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
 	</div>
 {/snippet}
 {#snippet optionItem(image: any)}
 	<div class="image-option-item">
-		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
+		<img src="/asset/{image.name}-{image.hash}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
 	</div>
 {/snippet}

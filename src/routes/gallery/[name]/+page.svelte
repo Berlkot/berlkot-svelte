@@ -9,8 +9,8 @@
 		day: 'numeric'
 	};
 	import Zoom from './Zoom.svelte';
-	import LeftArrow from '$lib/assets/icons/left-arrow.svg';
-	import RightArrow from '$lib/assets/icons/right-arrow.svg';
+	import LeftArrow from '#lib/assets/icons/left-arrow.svg';
+	import RightArrow from '#lib/assets/icons/right-arrow.svg';
 	let assets = $derived(data.galleryPost.assets.map((asset) => asset.asset));
 	let currentImage = $state(0);
 	let direction = $state(1);
@@ -52,10 +52,10 @@
 		<div class="layout-sizer">
 			{#if assets[currentImage].type == 'VIDEO'}
 				<!-- svelte-ignore a11y_media_has_caption -->
-				<video src="/asset/{assets[currentImage].name}.mp4"></video>
+				<video src="/asset/{assets[currentImage].name}-{assets[currentImage].hash}.mp4"></video>
 			{:else}
 				<img
-					src="/asset/{assets[currentImage].name}.webp"
+					src="/asset/{assets[currentImage].name}-{assets[currentImage].hash}.webp"
 					alt=""
 					width={assets[currentImage].width}
 					height={assets[currentImage].height}
@@ -67,11 +67,15 @@
 			<div class="media-wrapper" in:fly={{ x: direction * 400 }} out:fly={{ x: -direction * 400 }}>
 				{#if assets[currentImage].type == 'VIDEO'}
 					<!-- svelte-ignore a11y_media_has_caption -->
-					<video controls loop src="/asset/{assets[currentImage].name}.mp4"></video>
+					<video
+						controls
+						loop
+						src="/asset/{assets[currentImage].name}-{assets[currentImage].hash}.mp4"
+					></video>
 				{:else}
 					<Zoom>
 						<img
-							src="/asset/{assets[currentImage].name}.webp"
+							src="/asset/{assets[currentImage].name}-{assets[currentImage].hash}.webp"
 							alt={assets[currentImage].alt}
 							width={assets[currentImage].width}
 							height={assets[currentImage].height}
@@ -120,13 +124,13 @@
 		<p class="tag-list">
 			Tags:
 			{#each data.galleryPost.tags as tag (tag.name)}
-				<a class="tag" href="/gallery?tags={tag.name}">{tag.name}</a>
+				<a class="tag" href={'/gallery?tags=' + tag.name}>{tag.name}</a>
 			{/each}
 		</p>
 		<p class="tag-list">
 			Folders:
 			{#each data.galleryPost.folders as folder (folder.name)}
-				<a class="tag tag-yellow" href="/gallery?folder={folder.name}">{folder.name}</a>
+				<a class="tag tag-yellow" href={'/gallery?folder=' + folder.name}>{folder.name}</a>
 			{/each}
 		</p>
 		{#if data.galleryPost.contentWarning}

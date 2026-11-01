@@ -18,7 +18,7 @@ import {
 	getMediaType,
 	moveFolderMedia
 } from './service.server';
-import type { Flatten, Override } from '$lib/utils/type-helpers';
+import type { Flatten, Override } from '#lib/utils/type-helpers.js';
 import { STORED_FILE_TYPES } from './constants';
 
 const editableFields = ['name', 'alt', 'credit', 'visibility'] as const;
@@ -238,7 +238,7 @@ export class Asset implements Flatten<Override<AssetModel, { id?: string }>> {
 		if (params.id) {
 			assetModel = await prisma.asset.findUnique({ where: { id: params.id } });
 		} else if (params.name) {
-			assetModel = await prisma.asset.findUnique({ where: { id: params.name } });
+			assetModel = await prisma.asset.findUnique({ where: { name: params.name } });
 		}
 
 		if (!assetModel) throw new AssetNotFoundError();

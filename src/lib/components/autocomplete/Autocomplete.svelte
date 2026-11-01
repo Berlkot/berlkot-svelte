@@ -1,4 +1,5 @@
 <script lang="ts">
+	// FIXME (frontend refactor): There is state bug somethere
 	import type { Snippet } from 'svelte';
 
 	interface Props {

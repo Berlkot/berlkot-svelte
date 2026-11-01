@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import Toasts from '$modules/toast/toasts.svelte';
-	import AvatarImg from '$lib/assets/avatar.png';
+	import AvatarImg from '#lib/assets/avatar.png';
 	import NavLink from './NavLink.svelte';
-	import Instagram from '$lib/assets/icons/instagram.svg';
+	import Instagram from '#lib/assets/icons/instagram.svg';
 	import { page } from '$app/state';
 	import { beforeNavigate } from '$app/navigation';
 	interface Props {
@@ -12,9 +12,10 @@
 
 	let { children }: Props = $props();
 	beforeNavigate((navigation) => {
+		if (navigation.shallow && navigation.type === 'goto') return;
 		if (!navigation.from || !navigation.to) return;
 		if (navigation.to!.route.id === navigation.from!.route.id) return;
-		document.getElementById('menu')!.checked = false;
+		(document.getElementById('menu') as HTMLInputElement).checked = false;
 	});
 </script>
 
@@ -45,10 +46,11 @@
 				xml:space="preserve"
 				xmlns="http://www.w3.org/2000/svg"
 				xmlns:xlink="http://www.w3.org/1999/xlink"
-				><path
-					d="M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z"
-				/></svg
 			>
+				<path
+					d="M4,10h24c1.104,0,2-0.896,2-2s-0.896-2-2-2H4C2.896,6,2,6.896,2,8S2.896,10,4,10z M28,14H4c-1.104,0-2,0.896-2,2  s0.896,2,2,2h24c1.104,0,2-0.896,2-2S29.104,14,28,14z M28,22H4c-1.104,0-2,0.896-2,2s0.896,2,2,2h24c1.104,0,2-0.896,2-2  S29.104,22,28,22z"
+				></path>
+			</svg>
 		</label>
 		<input type="checkbox" id="menu" />
 		<nav>
@@ -56,11 +58,9 @@
 				<NavLink href="/blog">Blog</NavLink>
 				<NavLink href="/about">About</NavLink>
 			</div>
-			<div class="home">
-				<a href="/">
-					<img class="avatar" src={AvatarImg} alt="" />
-				</a>
-			</div>
+
+			<div class="home"><a href="/"><img class="avatar" src={AvatarImg} alt="" /></a></div>
+
 			<div class="right">
 				<NavLink href="/gallery">Gallery</NavLink>
 				<NavLink href="" class="disabled">Projects</NavLink>
@@ -87,23 +87,21 @@
 			</p>
 		</div>
 		<p>
-			<b>License</b><br />Each artwork has its own license (read specific description).
+			<b>License</b>
+			<br />
+			Each artwork has its own license (read specific description).
 			<br />
 			Reuse of website assets for commercial purposes is strictly prohibited.
 		</p>
 
-		<ul>
-			<li>
-				<a class="link" href="/rss/blog.rss">rss</a>
-			</li>
-		</ul>
+		<ul><li><a class="link" href="/rss/blog.rss">rss</a></li></ul>
 
 		<div class="real-footer">
 			<p>
-				&copy; Berlkot 2024-2026 &bull; Site sourse code can be found <a
-					class="link link-decor"
-					href="https://github.com/Berlkot/berlkot-svelte"
-					target="_blank">here</a
+				© Berlkot 2024-2026 • Site sourse code can be found
+
+				<a class="link link-decor" href="https://github.com/Berlkot/berlkot-svelte" target="_blank"
+					>here</a
 				>
 			</p>
 		</div>

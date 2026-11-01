@@ -56,9 +56,7 @@ export const markdownExtension = Prisma.defineExtension((client) => {
 					if (args.data.markdown) {
 						args.data.html = await renderMarkdown(args.data.markdown.toString());
 					}
-
 					const result = await query(args);
-
 					if (args.data.markdown) {
 						await syncAssets(args.data.markdown.toString(), result.id!);
 					}

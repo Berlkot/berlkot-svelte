@@ -11,7 +11,8 @@
 	let zoom = $state(1.0);
 	let translateX = $state(0);
 	let translateY = $state(0);
-
+	// HACK: come on im not using Map in rendering process here
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity
 	let activePointers = new Map<number, PointerEvent>();
 	let lastTap = 0;
 	let initialPinchDistance = 0;

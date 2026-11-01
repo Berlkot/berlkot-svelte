@@ -1,5 +1,5 @@
-import config from '$lib/config.server';
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
+import config from '#lib/config.server.js';
 import type { ServerErrorMiddleware } from './types';
 import { getAuthContext } from '../context/auth';
 
@@ -17,12 +17,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 	) {
 		return resolve(event);
 	}
-	// Since error() is not intended to be used in handle function,
-	// we use fetch on nonexistent page to redirect to the proper error page.
-	// ugh what the FUCK!
+	/* HACK: Since error() is not intended to be used in handle function,
+	         we use fetch on nonexistent page to redirect to the proper error page.
+					 ugh what the FUCK! */
 	const internalUrl = new URL(event.url);
 	internalUrl.pathname = '/__access_denied__';
-	// hack to not cause ConnectionRefused
+
+	// HACK: to not cause ConnectionRefused
 	internalUrl.protocol = 'http:';
 
 	const response = await event.fetch(internalUrl.href, {

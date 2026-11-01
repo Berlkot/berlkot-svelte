@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Head from '$lib/assets/images/head.webp';
-	import Instagram from '$lib/assets/icons/instagram.svg';
+	import Head from '#lib/assets/images/head.webp';
+	import Instagram from '#lib/assets/icons/instagram.svg';
 </script>
 
 <div class="content">
@@ -14,8 +14,8 @@
 			<strong>"berlian"</strong> as for <strong>"shiny"</strong> and word "cat" written in russian transliteration.
 		</p>
 		<p>
-			I'm also a <strong>CS student</strong> studying how to make machines do *beep-boop*. Made some
-			progress in image processing and game dev.
+			I'm also a <strong>CS student</strong> studying how to make machines do *beep-boop*. Made some progress
+			in image processing and game dev.
 		</p>
 		<p>
 			<strong>As an artist,</strong> I really like developing an overall style for a project. Have some

@@ -2,12 +2,13 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
 import prisma from '$modules/database/prisma.server';
 import { Validator, type FieldConfig } from '$modules/forms/form-validator';
+import type { GalleryFolderInput } from '$modules/gallery/extension.server.js';
 
 export async function load() {
 	const folders = await prisma.galleryFolder.getFolders();
 	return {
 		folders,
-		images: await prisma.asset.findMany({ select: { name: true, id: true } })
+		images: await prisma.asset.findMany({ select: { name: true, id: true, hash: true } })
 	};
 }
 
@@ -27,8 +28,7 @@ export const actions = {
 		if (!data) {
 			return fail(400, validator.status);
 		}
-
-		return await prisma.galleryFolder.createFolder(data as any);
+		return await prisma.galleryFolder.createFolder(data as GalleryFolderInput);
 	},
 	edit: async ({ request }: RequestEvent) => {
 		const validator = new Validator(validatorConfig);
@@ -38,7 +38,7 @@ export const actions = {
 		}
 		const { id, ...rest } = data;
 
-		return await prisma.galleryFolder.updateFolder(String(id), rest as any);
+		return await prisma.galleryFolder.updateFolder(String(id), rest);
 	},
 	delete: async ({ request }: RequestEvent) => {
 		const data = await request.formData();

@@ -1,4 +1,5 @@
 <script lang="ts">
+	// WIP (proof of concept): Dont care about erros here for now
 	import { onMount } from 'svelte';
 	let canvas = $state<HTMLCanvasElement>();
 	interface Props {

@@ -6,7 +6,8 @@ export default {
 		rateLimit: {},
 		logger: {
 			ignorePaths: [/^\/__access_denied__/]
-		}
+		},
+		redirect: {}
 	},
 	features: {}
 };

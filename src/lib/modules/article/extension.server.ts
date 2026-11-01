@@ -1,8 +1,8 @@
 import { Prisma, type BlogPost as BlogPostModel } from '$prisma-generated/client';
-import { assignPermissionQuery } from '$lib/server/context/auth';
+import { assignPermissionQuery } from '#lib/server/context/auth.js';
 import { Asset } from '$modules/asset/model.server';
 import { ARTICLE_HERO_RESOLUTION, ARTICLE_PREVIEW_RESOLUTION } from './constants';
-import type { Flatten, Override } from '$lib/utils/type-helpers';
+import type { Flatten, Override } from '#lib/utils/type-helpers.js';
 
 export type BlogPostWithRelations = Prisma.BlogPostGetPayload<{
 	include: {
@@ -18,9 +18,9 @@ export type BlogPostInput = Flatten<
 		{
 			name: string;
 			title: string;
-			content?: string; // markdown content
-			tags?: string[]; // array of tag names
-			heroImage?: string | null; // asset name string
+			content?: string;
+			tags?: string[];
+			heroImage?: string | null;
 		}
 	>
 >;
@@ -103,9 +103,6 @@ export const articleExtension = Prisma.defineExtension((client) => {
 		},
 		model: {
 			blogPost: {
-				/**
-				 * Fetch a single blog post by name with tags, heroImage, and content.
-				 */
 				async getPost(name: string): Promise<BlogPostWithRelations | null> {
 					return client.blogPost.findUnique({
 						where: { name },
@@ -117,9 +114,6 @@ export const articleExtension = Prisma.defineExtension((client) => {
 					}) as Promise<BlogPostWithRelations | null>;
 				},
 
-				/**
-				 * Fetch multiple blog posts with tags, heroImage, and content.
-				 */
 				async getPosts(
 					args: Omit<Prisma.BlogPostFindManyArgs, 'include'> = {}
 				): Promise<BlogPostWithRelations[]> {
@@ -133,18 +127,11 @@ export const articleExtension = Prisma.defineExtension((client) => {
 					}) as Promise<BlogPostWithRelations[]>;
 				},
 
-				/**
-				 * Creates a new BlogPost along with its Content, tags, and heroImage connection.
-				 */
 				async createPost(data: BlogPostInput) {
 					const { content, tags, heroImage, heroImageId, ...rest } = data;
-
-					// 1. Create content (required relation)
 					const contentRecord = await client.content.create({
 						data: { markdown: content || '' }
 					});
-
-					// 2. Resolve heroImage asset by name
 					let heroImageConnect: Prisma.AssetCreateNestedOneWithoutPostsInput | undefined =
 						undefined;
 					if (heroImage) {
@@ -155,8 +142,6 @@ export const articleExtension = Prisma.defineExtension((client) => {
 							heroImageConnect = { connect: { id: dbAsset.id } };
 						}
 					}
-
-					// 3. Create the post
 					const created = await client.blogPost.create({
 						data: {
 							...rest,
@@ -181,13 +166,8 @@ export const articleExtension = Prisma.defineExtension((client) => {
 					return created;
 				},
 
-				/**
-				 * Updates a BlogPost and diff-syncs its content, tags, and heroImage.
-				 */
 				async updatePost(id: string, data: Partial<BlogPostInput>) {
 					const { content, tags, heroImage, heroImageId, ...rest } = data;
-
-					// Fetch previous state to perform diffs
 					const prev = await client.blogPost.findUniqueOrThrow({
 						where: { id },
 						include: {
@@ -198,8 +178,6 @@ export const articleExtension = Prisma.defineExtension((client) => {
 					});
 
 					const updateData: Prisma.BlogPostUpdateInput = { ...rest };
-
-					// 1. Update content markdown if provided
 					if (content !== undefined) {
 						if (prev.content) {
 							await client.content.update({
@@ -215,8 +193,6 @@ export const articleExtension = Prisma.defineExtension((client) => {
 							});
 						}
 					}
-
-					// 2. Resolve and update heroImage
 					if (heroImage !== undefined) {
 						if (heroImage) {
 							const dbAsset = await client.asset.findUnique({
@@ -229,8 +205,6 @@ export const articleExtension = Prisma.defineExtension((client) => {
 							updateData.heroImage = { disconnect: true };
 						}
 					}
-
-					// 3. Diff and update tags
 					if (tags !== undefined) {
 						const toDisconnect = prev.tags
 							.filter((t) => !tags.includes(t.name))
@@ -243,7 +217,6 @@ export const articleExtension = Prisma.defineExtension((client) => {
 							disconnect: toDisconnect.length > 0 ? toDisconnect : undefined
 						};
 					}
-
 					const updated = await client.blogPost.update({
 						where: { id },
 						data: updateData,
@@ -253,33 +226,22 @@ export const articleExtension = Prisma.defineExtension((client) => {
 							content: true
 						}
 					});
-
-					// Cleanup orphan tags
 					await client.blogPostTag.deleteMany({
 						where: { posts: { none: {} } }
 					});
-
 					return updated;
 				},
 
-				/**
-				 * Deletes a BlogPost, its Content record, and cleans up orphan tags.
-				 */
 				async deletePost(name: string) {
 					const post = await client.blogPost.findUnique({
 						where: { name },
 						select: { id: true }
 					});
 					if (!post) return null;
-
-					// Delete the post
 					await client.blogPost.delete({ where: { id: post.id } });
-
-					// Cleanup orphan tags
 					await client.blogPostTag.deleteMany({
 						where: { posts: { none: {} } }
 					});
-
 					return post;
 				}
 			}

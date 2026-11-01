@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Autocomplete from '$lib/components/autocomplete/Autocomplete.svelte';
+	import Autocomplete from '#lib/components/autocomplete/Autocomplete.svelte';
 	import { searchTags, searchFolders } from '$modules/gallery/utils/client-helpers';
 	import GalleryCard from '$modules/gallery/components/GalleryCard.svelte';
 	let { data } = $props();
@@ -21,7 +21,10 @@
 
 	let initialValue = $state(getParams());
 	let currentVaule = '';
-	afterNavigate(() => {
+
+	afterNavigate(({ shallow, type }) => {
+		if (shallow && type === 'goto') return;
+
 		initialValue = getParams();
 	});
 	let skipedinit = false;
@@ -108,10 +111,14 @@
 					style:grid-column="span {folder.width}"
 					style:grid-row="span {folder.height}"
 				>
-					<a href="/gallery?folder={folder.name}">
+					<a href={'/gallery?folder=' + folder.name}>
 						<div class="folder">
 							{#if folder.heroImage}
-								<img src="/asset/{folder.heroImage.name}.webp?w=270&h=270" alt="" />
+								<img
+									src="/asset/{folder.heroImage.name}-{folder.heroImage.hash}.webp?w={folder.width *
+										270}&h={folder.height * 270}"
+									alt=""
+								/>
 							{/if}
 							<p class="title">{folder.name}</p>
 						</div>
@@ -122,9 +129,7 @@
 	{:else}
 		<ul class="gallery">
 			{#each data.galleryPosts as galleryPost (galleryPost.name)}
-				<li>
-					<GalleryCard {galleryPost} />
-				</li>
+				<li><GalleryCard {galleryPost} /></li>
 			{/each}
 		</ul>
 	{/if}

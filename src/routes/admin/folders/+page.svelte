@@ -2,14 +2,14 @@
 	// FIXME
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
+	import { addToast } from '$modules/toast/toastStore';
+	import Modal from '$modules/forms/Modal.svelte';
+	import Autocomplete from '#lib/components/autocomplete/Autocomplete.svelte';
+	import CloseImg from '#lib/assets/icons/close.svg';
+	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
 
 	import type { Prisma } from '$prisma-generated/client';
 	type GalleryFolderWithHero = Prisma.GalleryFolderGetPayload<{ include: { heroImage: true } }>;
-	import { addToast } from '$modules/toast/toastStore';
-	import Modal from '$modules/forms/Modal.svelte';
-	import Autocomplete from '$lib/components/autocomplete/Autocomplete.svelte';
-	import CloseImg from '$lib/assets/icons/close.svg';
-	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
 
 	interface Props {
 		data: PageData;
@@ -32,14 +32,14 @@
 
 {#snippet selectedItem(image: any)}
 	<div class="image-select-item" class:blur-item={focused}>
-		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
+		<img src="/asset/{image.name}-{image.hash}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
 	</div>
 {/snippet}
 
 {#snippet optionItem(image: any)}
 	<div class="image-option-item">
-		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
+		<img src="/asset/{image.name}-{image.hash}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
 	</div>
 {/snippet}
@@ -83,7 +83,11 @@
 			<li data-image={galleryFolder.id}>
 				<div class="folder">
 					{#if galleryFolder.heroImage}
-						<img src="/asset/{galleryFolder.heroImage.name}.webp?w=270&h=270" alt="" />
+						<img
+							src="/asset/{galleryFolder.heroImage.name}-{galleryFolder.heroImage
+								.hash}.webp?w=270&h=270"
+							alt=""
+						/>
 					{/if}
 					<p class="title">{galleryFolder.name}</p>
 				</div>
@@ -132,19 +136,17 @@
 				method="POST"
 				enctype="multipart/form-data"
 				action={editing ? '?/edit' : '?/create'}
-				use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+				use:enhance={({ submitter }) => {
 					(submitter as HTMLButtonElement).disabled = true;
-					return async ({ result, update }) => {
+					return async ({ result }) => {
 						(submitter as HTMLButtonElement).disabled = false;
 						if (result.type === 'success') {
 							if (editing) {
 								galleryFolders[
-									galleryFolders.findIndex(
-										(post) => post.id === (result.data as GalleryFolderWithHero).id
-									)
-								] = result.data as GalleryFolderWithHero;
+									galleryFolders.findIndex((post) => post.id === (result.data as any).id)
+								] = result.data as any;
 							} else {
-								galleryFolders = [...galleryFolders, result.data as GalleryFolderWithHero];
+								galleryFolders = [...galleryFolders, result.data as any];
 							}
 							addToast({
 								type: 'success',

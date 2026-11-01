@@ -13,7 +13,7 @@ export async function load({ params }: RequestEvent) {
 
 		const contentHtml = blogPost.content?.html ? blogPost.content.html : 'Blogpost is empty';
 
-		const meta = {
+		const meta: Record<string, string | null> = {
 			title: `${blogPost.title} | Berlkot`,
 			'og:title': `${blogPost.title} | Berlkot`,
 			description: blogPost.description,
@@ -22,7 +22,8 @@ export async function load({ params }: RequestEvent) {
 			'og:type': 'article'
 		};
 		if (blogPost.heroImage) {
-			meta['og:image'] = `https://berlkot.com/asset/${blogPost.heroImage.name}.webp`;
+			meta['og:image'] =
+				`https://berlkot.com/asset/${blogPost.heroImage.name}-${blogPost.heroImage.hash}.webp`;
 		}
 		return { blogPost: { ...blogPost, content: contentHtml }, meta };
 	} catch {

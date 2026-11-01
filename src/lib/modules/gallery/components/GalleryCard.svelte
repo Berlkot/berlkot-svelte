@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { goto, preloadData, pushState } from '$app/navigation';
+	import { goto, preloadData } from '$app/navigation';
 	import { page } from '$app/state';
 	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
-	import CloseImg from '$lib/assets/icons/close.svg';
+	import CloseImg from '#lib/assets/icons/close.svg';
 	import Modal from '$modules/forms/Modal.svelte';
 	import AssetPage from '$routes/gallery/[name]/+page.svelte';
 	import { fade, scale } from 'svelte/transition';
 	import { confirmedMatureContent } from '$modules/gallery/utils/matureContentStore';
+	import { GALLERY_CARD_RESOLUTION } from '../constants';
 	let { galleryPost } = $props();
 	let href = $state<string>('');
 	let confirm = $state(false);
@@ -14,7 +15,7 @@
 		const result = await preloadData(href);
 
 		if (result.type === 'loaded' && result.status === 200) {
-			pushState(href, { selected: result.data } as any);
+			goto(href, { shallow: true, state: { selected: result.data } as any });
 		} else {
 			// something bad happened! try navigating
 			goto(href);
@@ -23,7 +24,7 @@
 </script>
 
 {#if confirm}
-	<!-- this is stupid, but there are no other way? -->
+	<!-- FIXME: this is stupid, but there are no other way? -->
 	<ConfirmDialog
 		text={`This image contains ${galleryPost.maturity != 'SFW' ? '18+' : ''} ${galleryPost.maturity != 'SFW' && galleryPost.contentWarning ? 'and' : ''} ${galleryPost.contentWarning ? galleryPost.contentWarning : ''} content, do you want to proceed?`}
 		confirmText="Yes, I am"
@@ -39,14 +40,15 @@
 {/if}
 
 <a
-	href="/gallery/{galleryPost.name}"
+	href={'/gallery/' + galleryPost.name}
 	onclick={async (e) => {
 		if (
 			e.shiftKey || // or the link is opened in a new window
 			e.metaKey ||
-			e.ctrlKey // or a new tab (mac: metaKey, win/linux: ctrlKey)
-			// should also consider clicking with a mouse scroll wheel
-		) {
+			e.ctrlKey
+		) // or a new tab (mac: metaKey, win/linux: ctrlKey)
+		// should also consider clicking with a mouse scroll wheel
+		{
 			return;
 		}
 
@@ -69,13 +71,13 @@
 				>
 			</div>
 		{:else}
+			<!-- TODO (frontend refactor): seems more like incorrect behavior with empty string -->
 			<img
 				src="/asset/{galleryPost.assets[0]
-					? galleryPost.assets[0].asset.name
+					? galleryPost.assets[0].asset.name + '-' + galleryPost.assets[0].asset.hash
 					: ''}.webp?w=270&h=270"
 				alt={galleryPost.assets[0] ? galleryPost.assets[0].asset.alt : ''}
-				width="270"
-				height="270"
+				{...GALLERY_CARD_RESOLUTION}
 			/>
 		{/if}
 

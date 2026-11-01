@@ -10,7 +10,7 @@ export async function load() {
 			createdAt: true,
 			updatedAt: true,
 			tags: true,
-			heroImage: { select: { name: true, alt: true } }
+			heroImage: { select: { name: true, alt: true, hash: true } }
 		}
 	};
 	const blogPosts = (await prisma.blogPost.findMany(q)) as unknown as Prisma.BlogPostGetPayload<{
@@ -21,7 +21,7 @@ export async function load() {
 			createdAt: true;
 			updatedAt: true;
 			tags: true;
-			heroImage: { select: { name: true; alt: true } };
+			heroImage: { select: { name: true; alt: true; hash: true } };
 		};
 	}>[];
 	return {

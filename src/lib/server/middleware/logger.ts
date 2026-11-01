@@ -1,6 +1,6 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
 import type { ServerErrorMiddleware } from './types';
-import config from '$lib/config.server';
+import config from '#lib/config.server.js';
 
 const ignorePaths = config.middleware.logger.ignorePaths;
 

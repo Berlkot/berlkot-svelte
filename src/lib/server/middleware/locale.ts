@@ -1,4 +1,6 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
+
+// TODO
 import { localeContext } from '../context/locale';
 
 export const DEFAULT_LOCALE = 'en-US';

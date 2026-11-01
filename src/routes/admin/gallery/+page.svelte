@@ -6,8 +6,8 @@
 	import type { GalleryPostWithRelations } from '$modules/gallery/extension.server';
 	import { addToast } from '$modules/toast/toastStore';
 	import Modal from '$modules/forms/Modal.svelte';
-	import Autocomplete from '$lib/components/autocomplete/Autocomplete.svelte';
-	import CloseImg from '$lib/assets/icons/close.svg';
+	import Autocomplete from '#lib/components/autocomplete/Autocomplete.svelte';
+	import CloseImg from '#lib/assets/icons/close.svg';
 	import { searchFolders, searchTags } from '$modules/gallery/utils/client-helpers';
 	import GalleryCard from '$modules/gallery/components/GalleryCard.svelte';
 	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
@@ -36,7 +36,7 @@
 
 {#snippet optionItem(image: any)}
 	<div>
-		<img src="/asset/{image.name}.webp?w=270&h=270" alt="" width="50" height="50" />
+		<img src="/asset/{image.name}-{image.hash}.webp?w=270&h=270" alt="" width="50" height="50" />
 		<p>{image.name}</p>
 	</div>
 {/snippet}
@@ -124,9 +124,9 @@
 				method="POST"
 				enctype="multipart/form-data"
 				action={editing ? '?/edit' : '?/create'}
-				use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+				use:enhance={({ submitter }) => {
 					(submitter as HTMLButtonElement).disabled = true;
-					return async ({ result, update }) => {
+					return async ({ result }) => {
 						(submitter as HTMLButtonElement).disabled = false;
 						if (result.type === 'success') {
 							if (editing) {

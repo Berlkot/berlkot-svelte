@@ -5,7 +5,7 @@
 		description: string | null;
 		createdAt: Date;
 		tags: { name: string }[];
-		heroImage?: { name: string; alt?: string | null } | null;
+		heroImage?: { name: string; hash: string | null; alt?: string | null } | null;
 	}
 	let { post, params }: { post: BlogPostCardInput; params?: string } = $props();
 	const options: Intl.DateTimeFormatOptions = {
@@ -15,11 +15,11 @@
 	};
 </script>
 
-<a class="blog-card" href="/blog/{post.name}{params}">
+<a class="blog-card" href={`/blog/${post.name}${params || ''}`}>
 	<article>
 		{#if post.heroImage}
 			<img
-				src="/asset/{post.heroImage.name}.webp?w=465&h=260"
+				src="/asset/{post.heroImage.name}-{post.heroImage.hash}.webp?w=465&h=260"
 				alt={post.heroImage.alt}
 				width="465"
 				height="260"

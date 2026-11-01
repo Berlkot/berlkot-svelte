@@ -13,7 +13,8 @@ export async function load() {
 					asset: {
 						select: {
 							name: true,
-							alt: true
+							alt: true,
+							hash: true
 						}
 					}
 				},

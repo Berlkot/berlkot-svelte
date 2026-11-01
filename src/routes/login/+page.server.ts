@@ -1,4 +1,4 @@
-import { ADMIN_SECRET } from '$env/static/private';
+import { ADMIN_SECRET } from '$app/env/private';
 import { fail, redirect, type RequestEvent } from '@sveltejs/kit';
 
 export const actions = {

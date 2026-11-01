@@ -1,21 +1,24 @@
+// TODO: Add comments
 import {
 	Prisma,
 	type GalleryPost as GalleryPostModel,
 	type GalleryFolder as GalleryFolderModel
 } from '$prisma-generated/client';
-import { assignPermissionQuery } from '$lib/server/context/auth';
-import type { Flatten, Override } from '$lib/utils/type-helpers';
+import { assignPermissionQuery } from '#lib/server/context/auth.js';
+import type { Flatten, Override } from '#lib/utils/type-helpers.js';
+import { Asset } from '$modules/asset/model.server';
+import { GALLERY_CARD_RESOLUTION } from './constants';
 
 export type GalleryPostInput = Flatten<
 	Override<
 		Partial<Omit<GalleryPostModel, 'id' | 'creationDate' | 'updatedAt' | 'effects'>>,
 		{
 			name: string;
-			largeDescription?: string; // markdown content
+			largeDescription?: string;
 			tags?: string[];
 			folders?: string[];
-			assets?: string[]; // array of asset names in order
-			effects?: any;
+			assets?: string[];
+			effects?: object;
 		}
 	>
 >;
@@ -46,6 +49,54 @@ export type GalleryPostWithRelations = Prisma.GalleryPostGetPayload<{
 }>;
 
 export const galleryExtension = Prisma.defineExtension((client) => {
+	async function generateGalleryPostThumbnail(assetId: string) {
+		const asset = await Asset.newFrom({ id: assetId });
+		if (asset) {
+			await asset.generateThumbnail(GALLERY_CARD_RESOLUTION.width, GALLERY_CARD_RESOLUTION.height);
+		}
+	}
+	async function removeGalleryPostThumbnail(assetId: string, assetName: string) {
+		const usageCount = await client.galleryAsset.count({
+			where: {
+				assetId,
+				order: 0
+			}
+		});
+		if (usageCount === 0) {
+			const asset = await Asset.newFrom({ name: assetName });
+			if (asset) {
+				await asset.removeThumbnail(270, 270);
+			}
+		}
+	}
+
+	async function generateFolderThumbnail(assetId: string, width: number, height: number) {
+		const asset = await Asset.newFrom({ id: assetId });
+		if (asset) {
+			await asset.generateThumbnail(width * 270, height * 270);
+		}
+	}
+	async function removeFolderThumbnail(
+		assetId: string,
+		assetName: string,
+		width: number,
+		height: number
+	) {
+		const usageCount = await client.galleryFolder.count({
+			where: {
+				heroImageId: assetId,
+				width,
+				height
+			}
+		});
+		if (usageCount === 0) {
+			const asset = await Asset.newFrom({ name: assetName });
+			if (asset) {
+				await asset.removeThumbnail(width * 270, height * 270);
+			}
+		}
+	}
+
 	return client.$extends({
 		query: {
 			galleryPost: {
@@ -65,9 +116,6 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 		},
 		model: {
 			galleryPost: {
-				/**
-				 * Fetch a single gallery post by name with tags, folders, largeDescription, and ordered assets.
-				 */
 				async getPost(name: string): Promise<GalleryPostWithRelations | null> {
 					return client.galleryPost.findUnique({
 						where: { name },
@@ -83,9 +131,6 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 					}) as Promise<GalleryPostWithRelations | null>;
 				},
 
-				/**
-				 * Fetch multiple gallery posts with tags, folders, and ordered assets.
-				 */
 				async getPosts(
 					args: Omit<Prisma.GalleryPostFindManyArgs, 'include'> = {}
 				): Promise<GalleryPostWithRelations[]> {
@@ -103,18 +148,11 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 					}) as Promise<GalleryPostWithRelations[]>;
 				},
 
-				/**
-				 * Creates a new GalleryPost along with its Content, tag connections, folder connections, and ordered assets.
-				 */
 				async createPost(data: GalleryPostInput) {
 					const { assets, tags, folders, largeDescription, ...rest } = data;
-
-					// 1. Create content for largeDescription (required relation)
 					const content = await client.content.create({
 						data: { markdown: largeDescription || '' }
 					});
-
-					// 2. Resolve asset names to IDs and prepare GalleryAsset connections
 					let galleryAssetData: Prisma.GalleryAssetCreateWithoutGalleryPostInput[] = [];
 					if (assets && assets.length > 0) {
 						const dbAssets = await client.asset.findMany({
@@ -129,8 +167,6 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 							})
 							.filter(Boolean) as Prisma.GalleryAssetCreateWithoutGalleryPostInput[];
 					}
-
-					// 3. Create the post
 					const created = await client.galleryPost.create({
 						data: {
 							...rest,
@@ -160,16 +196,16 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 						}
 					});
 
+					const firstAsset = created.assets.find((ga) => ga.order === 0);
+					if (firstAsset) {
+						await generateGalleryPostThumbnail(firstAsset.assetId);
+					}
+
 					return created;
 				},
 
-				/**
-				 * Updates a GalleryPost and diff-syncs its relations (tags, folders, assets and order) and Content.
-				 */
 				async updatePost(id: string, data: Partial<GalleryPostInput>) {
 					const { assets, tags, folders, largeDescription, ...rest } = data;
-
-					// Fetch previous state to perform diffs
 					const prev = await client.galleryPost.findUniqueOrThrow({
 						where: { id },
 						include: {
@@ -180,9 +216,9 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 						}
 					});
 
-					const updateData: Prisma.GalleryPostUpdateInput = { ...rest };
+					const oldFirstAsset = prev.assets.find((ga) => ga.order === 0);
 
-					// 1. Update largeDescription content if provided
+					const updateData: Prisma.GalleryPostUpdateInput = { ...rest };
 					if (largeDescription !== undefined) {
 						if (prev.largeDescription) {
 							await client.content.update({
@@ -198,8 +234,6 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 							});
 						}
 					}
-
-					// 2. Diff and update tags
 					if (tags !== undefined) {
 						const toDisconnect = prev.tags
 							.filter((t) => !tags.includes(t.name))
@@ -212,8 +246,6 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 							disconnect: toDisconnect.length > 0 ? toDisconnect : undefined
 						};
 					}
-
-					// 3. Diff and update folders
 					if (folders !== undefined) {
 						const toDisconnect = prev.folders
 							.filter((f) => !folders.includes(f.name))
@@ -226,15 +258,12 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 							disconnect: toDisconnect.length > 0 ? toDisconnect : undefined
 						};
 					}
-
-					// 4. Diff and update assets (GalleryAsset relations)
 					if (assets !== undefined) {
 						const dbAssets = await client.asset.findMany({
 							where: { name: { in: assets } },
 							select: { id: true, name: true }
 						});
 						const assetNameToId = new Map(dbAssets.map((a) => [a.name, a.id]));
-
 						const operations: Prisma.GalleryAssetUpdateManyWithoutGalleryPostNestedInput = {};
 						const createOps: Prisma.GalleryAssetCreateWithoutGalleryPostInput[] = [];
 						const updateOps: {
@@ -270,7 +299,6 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 								assetId: { in: remaingIds }
 							};
 						}
-
 						updateData.assets = operations;
 					}
 
@@ -283,40 +311,41 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 							assets: { include: { asset: true }, orderBy: { order: 'asc' } }
 						}
 					});
-
-					// Cleanup orphan gallery tags
 					await client.galleryTag.deleteMany({
 						where: { galleryPosts: { none: {} } }
 					});
-
+					const newFirstAsset = updated.assets.find((ga) => ga.order === 0);
+					if (newFirstAsset?.assetId !== oldFirstAsset?.assetId) {
+						if (newFirstAsset) {
+							await generateGalleryPostThumbnail(newFirstAsset.assetId);
+						}
+						if (oldFirstAsset) {
+							await removeGalleryPostThumbnail(oldFirstAsset.assetId, oldFirstAsset.asset.name);
+						}
+					} else if (newFirstAsset && assets !== undefined) {
+						await generateGalleryPostThumbnail(newFirstAsset.assetId);
+					}
 					return updated;
 				},
 
-				/**
-				 * Deletes a GalleryPost, cascading to its associated Content and cleaning up tags.
-				 */
 				async deletePost(name: string) {
 					const post = await client.galleryPost.findUnique({
 						where: { name },
-						select: { id: true }
+						include: { assets: { include: { asset: true }, orderBy: { order: 'asc' } } }
 					});
 					if (!post) return null;
-
-					// Delete the post
+					const firstAsset = post.assets.find((ga) => ga.order === 0);
 					await client.galleryPost.delete({ where: { id: post.id } });
-
-					// Cleanup orphan tags
 					await client.galleryTag.deleteMany({
 						where: { galleryPosts: { none: {} } }
 					});
-
+					if (firstAsset) {
+						await removeGalleryPostThumbnail(firstAsset.assetId, firstAsset.asset.name);
+					}
 					return post;
 				}
 			},
 			galleryFolder: {
-				/**
-				 * Fetch a single gallery folder by name with hero image.
-				 */
 				async getFolder(name: string): Promise<GalleryFolderWithHero | null> {
 					return client.galleryFolder.findUnique({
 						where: { name },
@@ -324,9 +353,6 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 					}) as Promise<GalleryFolderWithHero | null>;
 				},
 
-				/**
-				 * Fetch all gallery folders with hero images.
-				 */
 				async getFolders(
 					args: Omit<Prisma.GalleryFolderFindManyArgs, 'include'> = {}
 				): Promise<GalleryFolderWithHero[]> {
@@ -336,9 +362,6 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 					}) as unknown as Promise<GalleryFolderWithHero[]>;
 				},
 
-				/**
-				 * Create a gallery folder.
-				 */
 				async createFolder(data: GalleryFolderInput): Promise<GalleryFolderWithHero> {
 					const { heroImage, ...rest } = data;
 					let heroImageConnect: Prisma.AssetCreateNestedOneWithoutHeroInFolderInput | undefined =
@@ -351,22 +374,26 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 							heroImageConnect = { connect: { id: dbAsset.id } };
 						}
 					}
-					return client.galleryFolder.create({
+					const created = (await client.galleryFolder.create({
 						data: {
 							...rest,
 							heroImage: heroImageConnect
 						},
 						include: { heroImage: true }
-					}) as unknown as Promise<GalleryFolderWithHero>;
+					})) as unknown as GalleryFolderWithHero;
+					await generateFolderThumbnail(created.heroImage!.id, created.width, created.height);
+					return created;
 				},
 
-				/**
-				 * Update a gallery folder.
-				 */
 				async updateFolder(
 					id: string,
 					data: Partial<GalleryFolderInput>
 				): Promise<GalleryFolderWithHero> {
+					const prev = await client.galleryFolder.findUniqueOrThrow({
+						where: { id },
+						include: { heroImage: true }
+					});
+
 					const { heroImage, ...rest } = data;
 					let heroImageUpdate: Prisma.AssetUpdateOneWithoutHeroInFolderNestedInput | undefined =
 						undefined;
@@ -382,23 +409,56 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 							heroImageUpdate = { disconnect: true };
 						}
 					}
-					return client.galleryFolder.update({
+					const updated = (await client.galleryFolder.update({
 						where: { id },
 						data: {
 							...rest,
 							heroImage: heroImageUpdate
 						},
 						include: { heroImage: true }
-					}) as unknown as Promise<GalleryFolderWithHero>;
+					})) as unknown as GalleryFolderWithHero;
+
+					const heroChanged = updated.heroImageId !== prev.heroImageId;
+					const sizeChanged = updated.width !== prev.width || updated.height !== prev.height;
+
+					if (heroChanged || sizeChanged) {
+						if (updated.heroImage) {
+							await generateFolderThumbnail(updated.heroImage.id, updated.width, updated.height);
+						}
+						if (prev.heroImage) {
+							await removeFolderThumbnail(
+								prev.heroImageId!,
+								prev.heroImage.name,
+								prev.width,
+								prev.height
+							);
+						}
+					}
+
+					return updated;
 				},
 
-				/**
-				 * Delete a gallery folder.
-				 */
 				async deleteFolder(name: string) {
-					return client.galleryFolder.delete({
+					const folder = await client.galleryFolder.findUnique({
+						where: { name },
+						include: { heroImage: true }
+					});
+					if (!folder) return null;
+
+					const result = await client.galleryFolder.delete({
 						where: { name }
 					});
+
+					if (folder.heroImage) {
+						await removeFolderThumbnail(
+							folder.heroImageId!,
+							folder.heroImage.name,
+							folder.width,
+							folder.height
+						);
+					}
+
+					return result;
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	let { data } = $props();
-	import GoBack from '$lib/components/GoBack.svelte';
+	import GoBack from '#lib/components/GoBack.svelte';
 	import { onMount } from 'svelte';
 	import { addToast } from '$modules/toast/toastStore';
 	let options: Intl.DateTimeFormatOptions = {
@@ -17,6 +17,8 @@
 					const href = target.getAttribute('href');
 					if (href) {
 						history.pushState(null, '', href);
+						// again, how the fuck clipboard connected with rendering
+						// eslint-disable-next-line svelte/prefer-svelte-reactivity
 						const url = new URL(window.location.href);
 						url.search = '';
 						navigator.clipboard.writeText(url.toString()).then(() => {
@@ -41,7 +43,8 @@
 		{#if data.blogPost.heroImage}
 			<figure>
 				<img
-					src="/asset/{data.blogPost.heroImage.name}.webp?w=1280&h=720"
+					src="/asset/{data.blogPost.heroImage.name}-{data.blogPost.heroImage
+						.hash}.webp?w=1280&h=720"
 					alt={data.blogPost.heroImage.alt}
 					width="1280"
 					height="720"

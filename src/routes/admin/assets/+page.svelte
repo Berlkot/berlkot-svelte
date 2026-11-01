@@ -5,7 +5,7 @@
 	import { addToast } from '$modules/toast/toastStore';
 	import Modal from '$modules/forms/Modal.svelte';
 	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
-	import CloseImg from '$lib/assets/icons/close.svg';
+	import CloseImg from '#lib/assets/icons/close.svg';
 
 	interface Props {
 		data: PageData;
@@ -17,9 +17,6 @@
 	let modalIsOpen = $state(false);
 	let editing = $state(false);
 	let showConfirm = $state(false);
-	function getRandomInt(max: number) {
-		return Math.floor(Math.random() * max);
-	}
 	let currentImage: Asset | null = $state(null);
 </script>
 
@@ -27,9 +24,9 @@
 	{#each images as image (image.id)}
 		<div class="imageContainer" data-image={image.id}>
 			<div>
-				<a href="/asset/{image.name}{image.type == 'VIDEO' ? '.mp4' : '.webp'}">
+				<a href="/asset/{image.name}-{image.hash}{image.type == 'VIDEO' ? '.mp4' : '.webp'}">
 					<img
-						src="/asset/{image.name}.webp?w=270&h=270"
+						src="/asset/{image.name}-{image.hash}.webp?w=270&h=270"
 						alt={image.alt}
 						width="270"
 						height="270"
@@ -113,9 +110,9 @@
 				method="POST"
 				enctype="multipart/form-data"
 				action={editing ? '?/edit' : '?/create'}
-				use:enhance={({ formElement, formData, action, cancel, submitter }) => {
+				use:enhance={({ submitter }) => {
 					(submitter as HTMLButtonElement).disabled = true;
-					return async ({ result, update }) => {
+					return async ({ result }) => {
 						(submitter as HTMLButtonElement).disabled = false;
 						if (result.type === 'success') {
 							if (editing) {
@@ -124,7 +121,7 @@
 								const imageel = document.querySelector(
 									`[data-image="${result.data!.id}"] img`
 								) as HTMLImageElement;
-								imageel.src = `/asset/${result.data!.name}.webp?w=270&h=270&${getRandomInt(1000)}`;
+								imageel.src = `/asset/${result.data!.name}-${result.data!.hash}.webp?w=270&h=270&`;
 							} else {
 								images = [...images, result.data as Asset];
 							}

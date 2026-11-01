@@ -1,7 +1,9 @@
 import prisma from '$modules/database/prisma.server';
-import { error, redirect, type RequestEvent } from '@sveltejs/kit';
+import { error, isRedirect, redirect } from '@sveltejs/kit';
+
 import { basename, extname } from 'path';
 import { MEDIA_BASE_PATH } from '$modules/asset/service.server';
+import type { RequestEvent } from './$types';
 
 export async function GET({ params, url }: RequestEvent) {
 	// and this prevents any sort of path injection because NaN equals to false lol
@@ -24,17 +26,17 @@ export async function GET({ params, url }: RequestEvent) {
 	try {
 		const asset = await prisma.asset.findFirstOrThrow({ where: { name: name } });
 		if (asset.hash && (!hash || hash !== asset.hash)) {
-			return redirect(
+			throw redirect(
 				308,
 				hasParams
-					? `/asset/${asset.name}-${asset.hash}?w=${width}&h=${height}`
-					: `/asset/${asset.name}-${asset.hash}`
+					? `/asset/${asset.name}-${asset.hash}.webp?w=${width}&h=${height}`
+					: `/asset/${asset.name}-${asset.hash}.${asset.type === 'VIDEO' ? 'mp4' : 'webp'}`
 			);
 		}
 		const file = Bun.file(
 			hasParams
-				? `${MEDIA_BASE_PATH}/${asset.name}/${width}_${height}_${asset.name}`
-				: `${MEDIA_BASE_PATH}/${asset.name}/${asset.name}`
+				? `${MEDIA_BASE_PATH}/${asset.name}/${width}_${height}_${asset.name}.webp`
+				: `${MEDIA_BASE_PATH}/${asset.name}/${asset.name}.${asset.type === 'VIDEO' ? 'mp4' : 'webp'}`
 		);
 		//   161 |
 		//   162 | 	const reader = response.body.getReader();
@@ -47,7 +49,9 @@ export async function GET({ params, url }: RequestEvent) {
 		const response = new Response(file);
 		response.headers.set('Cache-Control', 'max-age=315360000, public, immutable');
 		return response;
-	} catch {
+	} catch (e) {
+		console.log(e);
+		if (isRedirect(e)) throw e;
 		throw error(404, { message: 'Image not found' });
 	}
 }

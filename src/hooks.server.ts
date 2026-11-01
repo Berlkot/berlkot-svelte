@@ -1,5 +1,5 @@
 import { sequence } from '@sveltejs/kit/hooks';
-import { handleOrder, handleErrorOrder } from '$lib/server/middleware';
+import { handleOrder, handleErrorOrder } from '#lib/server/middleware/index.js';
 
 export const handle = sequence(...handleOrder);
 

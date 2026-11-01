@@ -13,7 +13,7 @@
 
 <div class="flex-we">
 	<ArticleCard {post} />
-	<a class="button" href="posts/{post.name}">Edit</a>
+	<a class="button" href={'/admin/posts/' + post.name}>Edit</a>
 	<button class="button button-danger" onclick={() => (showConfirm = true)}>Delete</button>
 </div>
 {#if showConfirm}

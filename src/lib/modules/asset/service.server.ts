@@ -1,4 +1,5 @@
-import { basename, parse } from 'path';
+// TODO: Subject for a full replacement
+import { basename, dirname, parse } from 'path';
 import sharp from 'sharp';
 import { unlink, readdir, rename, rm } from 'fs/promises';
 
@@ -13,21 +14,19 @@ export async function getDimensions(imgPath: string) {
 }
 export async function getMediaHash(imgPath: string) {
 	const file = Bun.file(imgPath);
-	const hasher = new Bun.CryptoHasher('sha256');
-	hasher.update(file);
-	return hasher.digest('base64');
+	return Bun.hash.crc32(await file.arrayBuffer()).toString(16);
 }
 
 export async function generateThumbnail(imagePath: string, width: number, height: number) {
 	const parsedImagePath = parse(imagePath);
 	const out_path = `${parsedImagePath.dir}/${width}_${height}_${parsedImagePath.name}.webp`;
-	await Bun.$`magick "${imagePath}"[0] -resize "${width}x${height}^" -gravity center -crop "${width}x${height}+0+0" +repage "${out_path}"`;
+	await Bun.$`magick "${imagePath}"[0] -resize "${width}x${height}^" -gravity center -crop "${width}x${height}+0+0" +repage -quality 80 -define webp:lossless=false "${out_path}"`;
 }
 
 export async function regenerateThumbnails(imagePath: string) {
 	const name = parse(imagePath).name;
-	const thumbnails = (await readdir(imagePath, { withFileTypes: true })).filter(
-		(f) => f.name !== `${name}.webp` && f.name !== `${name}.mp4`
+	const thumbnails = (await readdir(dirname(imagePath), { withFileTypes: true })).filter(
+		(f) => f.isFile() && /^\d+_\d+_/.test(f.name) && f.name.endsWith(`_${name}.webp`)
 	);
 	for (const thumbnail of thumbnails) {
 		await generateThumbnail(
@@ -59,24 +58,34 @@ export async function getMediaType(mediaPath: string) {
 	const [format] = file.type.split('/');
 	return format;
 }
-
+// TODO: Consider JXL migration when it becomes baseline https://caniuse.com/jpegxl
+// currently at around 60%
 export async function normalizeMedia(mediaPath: string) {
 	try {
 		const parsedMediaPath = parse(mediaPath);
-		const mediaPathNoExt = `${parsedMediaPath.dir}/${parsedMediaPath.name}`;
-		switch (await getMediaType(mediaPath)) {
+		// inplace may collide in case of webp and mp4
+		const mediaSourcePath = `${parsedMediaPath.dir}/${parsedMediaPath.name}-source${parsedMediaPath.ext}`;
+		await rename(mediaPath, mediaSourcePath);
+		const mediaDestPath = `${parsedMediaPath.dir}/${parsedMediaPath.name}`;
+		switch (await getMediaType(mediaSourcePath)) {
 			case 'image': {
-				const sharpStream = sharp(mediaPath, { pages: -1 })
+				const sharpStream = sharp(mediaSourcePath, { pages: -1 })
+					/* INFO: it's fine doing resizing here because
+            1. realistically there is no webasset that requires fidelity over 1600 by 1600 (yeah even comic page)
+            2. storing source image on server is unrealistic in my scenario
+            3. doing opposite will require to make a bypass function
+               which will act differently from other pipeline for no straightforward reason
+               which is confusing af */
 					.resize(1600, 1600, { fit: 'inside', withoutEnlargement: true })
-					.webp({ effort: 6, lossless: true });
-				await sharpStream.toFile(`${mediaPathNoExt}.webp`);
-				unlink(mediaPath);
-				return `${mediaPathNoExt}.webp`;
+					.webp({ effort: 6, quality: 95, lossless: false });
+				await sharpStream.toFile(`${mediaDestPath}.webp`);
+				await unlink(mediaSourcePath);
+				return `${mediaDestPath}.webp`;
 			}
 			case 'video': {
-				await Bun.$`ffmpeg -v error -i "${mediaPath}" -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k -movflags +faststart "${mediaPathNoExt}.mp4"`;
-				unlink(mediaPath);
-				return `${mediaPathNoExt}.mp4`;
+				await Bun.$`ffmpeg -v error -i "${mediaSourcePath}" -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -crf 23 -preset medium -c:a aac -b:a 128k -movflags +faststart "${mediaDestPath}.mp4"`;
+				await unlink(mediaSourcePath);
+				return `${mediaDestPath}.mp4`;
 			}
 		}
 	} catch (err) {

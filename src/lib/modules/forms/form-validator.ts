@@ -1,3 +1,4 @@
+// TODO: https://valibot.dev/
 type FieldType = 'date' | 'string' | 'bool' | 'int' | 'file';
 type Modifier = 'reqired' | string;
 export type FieldConfig = [FieldType, ...Array<Modifier>];

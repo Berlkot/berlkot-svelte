@@ -1,9 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
-import prisma from '$lib/modules/database/prisma.server';
+import prisma from '#lib/modules/database/prisma.server.js';
 import { Asset, setAssetData } from '$modules/asset/model.server';
-import { Validator, type FieldConfig } from '$lib/modules/forms/form-validator';
+import { Validator, type FieldConfig } from '#lib/modules/forms/form-validator.js';
 
 const validatorConfig: { [key: string]: FieldConfig } = {
 	id: ['string', 'reqired'],
@@ -55,6 +55,7 @@ export const actions = {
 		}
 		const asset = await Asset.new({ name: String(name), ...rest });
 		asset.save();
+		asset.generateThumbnail(270, 270);
 		return asset.deconstruct();
 	},
 	delete: async ({ request }: RequestEvent) => {

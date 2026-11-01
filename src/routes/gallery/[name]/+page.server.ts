@@ -23,7 +23,7 @@ export async function load({ params }: RequestEvent) {
 			'og:type': 'image',
 			'og:title': `${galleryPost.title} | Berlkot`,
 			'og:image': galleryPost.assets[0]
-				? `https://berlkot.com/asset/${galleryPost.assets[0].asset.name}.webp`
+				? `https://berlkot.com/asset/${galleryPost.assets[0].asset.name}-${galleryPost.assets[0].asset.hash}.webp`
 				: undefined,
 			description: galleryPost.smallDescription,
 			'og:description': galleryPost.smallDescription
