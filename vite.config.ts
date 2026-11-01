@@ -1,7 +1,3 @@
-// Currently svelte-adapter-bun is completely borked both in repo and npm
-// And more over ade87929c3f4f4a2ba8f89c2cd4a3907e7637289 commit also has issues with compiling sveltekit code
-// Node adapter proved to work fine, but whoever knows when it will fall short
-// Should consider evaluating forking svelte-adapter-bun when it eventially does
 import adapter from '@sveltejs/adapter-bun';
 
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';

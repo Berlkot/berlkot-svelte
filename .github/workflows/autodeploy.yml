@@ -3,6 +3,11 @@ name: bun.sh CD
 on:
   push:
     branches: [main]
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,27 +20,36 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
           script: |
+            set -e
+
             export BUN_INSTALL="$HOME/.bun"
             export PATH="$BUN_INSTALL/bin:$PATH"
             export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            cd ~
-            git clone https://github.com/Berlkot/berlkot-svelte.git
-            cd ~/berlkot-svelte
-            cp ~/site-build/.env .env
-            bun install
-            bunx prisma generate
+            if [ -s "$NVM_DIR/nvm.sh" ]; then
+              . "$NVM_DIR/nvm.sh"
+            fi
+
+            deploy_target="$HOME/site-build"
+            deploy_source=$(mktemp -d "$HOME/berlkot-deploy.XXXXXX")
+            trap 'rm -rf "$deploy_source"' EXIT
+
+            git clone --no-checkout https://github.com/Berlkot/berlkot-svelte.git "$deploy_source"
+            cd "$deploy_source"
+            git checkout --detach "${{ github.sha }}"
+            cp "$deploy_target/.env" .env
+            bun install --frozen-lockfile
+            ./node_modules/.bin/prisma generate
             bun run build
-            rm -rf ~/site-build/client ~/site-build/server/
-            cp -rf build/. ~/site-build/
-            cp -rf prisma/. ~/site-build/prisma/
-            cp -rf prisma.config.ts ~/site-build/
-            cp -rf package.json ~/site-build/
-            rm -rf ~/berlkot-svelte
-            cd ~/site-build
-            bun install --omit dev
-            bunx prisma generate
-            bunx prisma migrate deploy
-            cd ~
+
+            rm -rf "$deploy_target/client" "$deploy_target/server" "$deploy_target/prerendered"
+            rm -f "$deploy_target/index.js" "$deploy_target/adapter-bun.js"
+            cp -R build/. "$deploy_target/"
+            mkdir -p "$deploy_target/prisma"
+            cp -R prisma/. "$deploy_target/prisma/"
+            cp prisma.config.ts package.json bun.lock "$deploy_target/"
+
+            cd "$deploy_target"
+            bun install --frozen-lockfile
+            ./node_modules/.bin/prisma migrate deploy
+            bun install --production --frozen-lockfile
             pm2 restart index

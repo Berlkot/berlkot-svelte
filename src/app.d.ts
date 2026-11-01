@@ -5,6 +5,7 @@ declare global {
 		// interface Error {}
 		// interface Locals {}
 		// interface PageData {}
+		// TODO: Look into better state managment
 		interface PageState {
 			selected: {
 				meta: { [name: string]: string };
