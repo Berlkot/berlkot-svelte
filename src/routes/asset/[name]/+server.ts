@@ -38,19 +38,12 @@ export async function GET({ params, url }: RequestEvent) {
 				? `${MEDIA_BASE_PATH}/${asset.name}/${width}_${height}_${asset.name}.webp`
 				: `${MEDIA_BASE_PATH}/${asset.name}/${asset.name}.${asset.type === 'VIDEO' ? 'mp4' : 'webp'}`
 		);
-		//   161 |
-		//   162 | 	const reader = response.body.getReader();
-		//               ^
-		//       ENOENT: No such file or directory
-		//  wo this check sveltekit crashes grasefully
-		if (!(await file.exists())) {
-			throw Error();
-		}
-		const response = new Response(file);
-		response.headers.set('Cache-Control', 'max-age=315360000, public, immutable');
-		return response;
+		return new Response(file, {
+			headers: {
+				'Cache-Control': 'max-age=315360000, public, immutable'
+			}
+		});
 	} catch (e) {
-		console.log(e);
 		if (isRedirect(e)) throw e;
 		throw error(404, 'Image not found');
 	}
