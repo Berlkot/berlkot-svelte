@@ -3,14 +3,14 @@
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 
-	import type { GalleryPostWithRelations } from '$modules/gallery/extension.server';
-	import { addToast } from '$modules/toast/toastStore';
-	import Modal from '$modules/forms/Modal.svelte';
+	import type { GalleryPostWithRelations } from '#modules/gallery/extension.server.js';
+	import { addToast } from '#modules/toast/toastStore.js';
+	import Modal from '#modules/forms/Modal.svelte';
 	import Autocomplete from '#lib/components/autocomplete/Autocomplete.svelte';
 	import CloseImg from '#lib/assets/icons/close.svg';
-	import { searchFolders, searchTags } from '$modules/gallery/utils/client-helpers';
-	import GalleryCard from '$modules/gallery/components/GalleryCard.svelte';
-	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
+	import { searchFolders, searchTags } from '#modules/gallery/utils/client-helpers.js';
+	import GalleryCard from '#modules/gallery/components/GalleryCard.svelte';
+	import ConfirmDialog from '#modules/forms/ConfirmDialog.svelte';
 
 	interface Props {
 		data: PageData;

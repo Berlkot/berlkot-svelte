@@ -1,9 +1,9 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
-import prisma from '$modules/database/prisma.server';
-import { Validator, type FieldConfig } from '$modules/forms/form-validator';
-import type { GalleryPostInput } from '$modules/gallery/extension.server';
+import prisma from '#modules/database/prisma.server.js';
+import { Validator, type FieldConfig } from '#modules/forms/form-validator.js';
+import type { GalleryPostInput } from '#modules/gallery/extension.server.js';
 
 const validatorConfig: { [key: string]: FieldConfig } = {
 	id: ['string', 'reqired'],

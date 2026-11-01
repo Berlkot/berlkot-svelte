@@ -1,4 +1,4 @@
-import { Prisma } from '$prisma-generated/client';
+import { Prisma } from '#prisma-generated/client.js';
 import { renderMarkdown } from './render.server';
 import { marked } from 'marked';
 import { basename, extname } from 'path';

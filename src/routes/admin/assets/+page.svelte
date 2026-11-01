@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
-	import type { Asset } from '$prisma-generated/client';
-	import { addToast } from '$modules/toast/toastStore';
-	import Modal from '$modules/forms/Modal.svelte';
-	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
+	import type { Asset } from '#prisma-generated/client.js';
+	import { addToast } from '#modules/toast/toastStore.js';
+	import Modal from '#modules/forms/Modal.svelte';
+	import ConfirmDialog from '#modules/forms/ConfirmDialog.svelte';
 	import CloseImg from '#lib/assets/icons/close.svg';
 
 	interface Props {

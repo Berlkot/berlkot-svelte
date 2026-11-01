@@ -1,5 +1,5 @@
 <script lang="ts">
-	import PostPage from '$routes/blog/[post]/+page.svelte';
+	import PostPage from '#routes/blog/[post]/+page.svelte';
 	let { post } = $props();
 	let renderedPost = $state('');
 	$effect(() => {

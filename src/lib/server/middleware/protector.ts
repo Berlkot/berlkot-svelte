@@ -44,8 +44,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 	});
 };
 
-export const handleError: ServerErrorMiddleware = async ({ event, status }) => {
-	if (event.locals.violated_protected_route_access && status !== 500) {
+export const handleError: ServerErrorMiddleware = async (input) => {
+	const { event } = input;
+	if (
+		event.locals.violated_protected_route_access &&
+		input.kind === 'framework' &&
+		input.error.status === 404
+	) {
 		console.log(
 			`INFO: ${event.getClientAddress()} tried to access ${event.locals.violated_protected_route_access} protected route without login`
 		);

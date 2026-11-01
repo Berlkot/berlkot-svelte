@@ -2,7 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { fail } from '@sveltejs/kit';
 import prisma from '#lib/modules/database/prisma.server.js';
-import { Asset, setAssetData } from '$modules/asset/model.server';
+import { Asset, setAssetData } from '#modules/asset/model.server.js';
 import { Validator, type FieldConfig } from '#lib/modules/forms/form-validator.js';
 
 const validatorConfig: { [key: string]: FieldConfig } = {

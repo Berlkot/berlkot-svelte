@@ -2,7 +2,7 @@
 	let { data } = $props();
 	import GoBack from '#lib/components/GoBack.svelte';
 	import { onMount } from 'svelte';
-	import { addToast } from '$modules/toast/toastStore';
+	import { addToast } from '#modules/toast/toastStore.js';
 	let options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'short',

@@ -1,5 +1,5 @@
 import { DATABASE_URL } from '$app/env/private';
-import { MEDIA_BASE_PATH } from '$modules/asset/service.server';
+import { MEDIA_BASE_PATH } from '#modules/asset/service.server.js';
 import { Archive, Glob } from 'bun';
 const DATABASE_PATH = DATABASE_URL.split(':')[1];
 export async function GET() {

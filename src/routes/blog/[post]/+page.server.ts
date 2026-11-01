@@ -1,4 +1,4 @@
-import prisma from '$modules/database/prisma.server';
+import prisma from '#modules/database/prisma.server.js';
 import { error, type RequestEvent } from '@sveltejs/kit';
 
 const return_string = 'Blogpost not found!';

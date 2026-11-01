@@ -1,8 +1,8 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
-import prisma from '$modules/database/prisma.server';
-import { Validator, type FieldConfig } from '$modules/forms/form-validator';
-import type { GalleryFolderInput } from '$modules/gallery/extension.server.js';
+import prisma from '#modules/database/prisma.server.js';
+import { Validator, type FieldConfig } from '#modules/forms/form-validator.js';
+import type { GalleryFolderInput } from '#modules/gallery/extension.server.js';
 
 export async function load() {
 	const folders = await prisma.galleryFolder.getFolders();

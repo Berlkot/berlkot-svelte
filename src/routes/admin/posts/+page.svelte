@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Modal from '$modules/forms/Modal.svelte';
+	import Modal from '#modules/forms/Modal.svelte';
 	import type { ActionData, PageData } from './$types';
 	import PostContainer from './PostContainer.svelte';
 

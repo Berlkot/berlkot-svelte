@@ -1,24 +1,33 @@
 <script lang="ts">
 	import { goto, preloadData } from '$app/navigation';
 	import { page } from '$app/state';
-	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
+	import ConfirmDialog from '#modules/forms/ConfirmDialog.svelte';
 	import CloseImg from '#lib/assets/icons/close.svg';
-	import Modal from '$modules/forms/Modal.svelte';
-	import AssetPage from '$routes/gallery/[name]/+page.svelte';
+	import Modal from '#modules/forms/Modal.svelte';
+	import AssetPage from '#routes/gallery/[name]/+page.svelte';
 	import { fade, scale } from 'svelte/transition';
-	import { confirmedMatureContent } from '$modules/gallery/utils/matureContentStore';
+	import { confirmedMatureContent } from '#modules/gallery/utils/matureContentStore.js';
 	import { GALLERY_CARD_RESOLUTION } from '../constants';
+	import { addToast } from '#modules/toast/toastStore.js';
 	let { galleryPost } = $props();
 	let href = $state<string>('');
 	let confirm = $state(false);
 	async function navigate() {
-		const result = await preloadData(href);
-
-		if (result.type === 'loaded' && result.status === 200) {
-			goto(href, { shallow: true, state: { selected: result.data } as any });
-		} else {
-			// something bad happened! try navigating
-			goto(href);
+		try {
+			const result = await preloadData(href);
+			if (result.type === 'error') {
+				addToast({ type: 'error', message: result.error.message, timeout: 3000 });
+				return;
+			}
+			if (result.type === 'loaded' && result.status === 200) {
+				await goto(href, { shallow: true, state: { selected: result.data } as any });
+			} else {
+				// Let normal navigation follow redirects and handle other response statuses.
+				await goto(href);
+			}
+		} catch {
+			// Fall back to browser navigation if the destination cannot be resolved by the router.
+			window.location.href = href;
 		}
 	}
 </script>

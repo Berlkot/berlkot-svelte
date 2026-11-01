@@ -2,7 +2,7 @@
 	import { fly } from 'svelte/transition';
 	let { data } = $props();
 	import { onMount } from 'svelte';
-	import { addToast } from '$modules/toast/toastStore';
+	import { addToast } from '#modules/toast/toastStore.js';
 	const options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: 'short',

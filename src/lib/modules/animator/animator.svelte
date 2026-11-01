@@ -1,17 +1,37 @@
 <script lang="ts">
 	// WIP (proof of concept): Dont care about erros here for now
 	import { onMount } from 'svelte';
-	let canvas = $state<HTMLCanvasElement>();
+	let canvas = $state<HTMLCanvasElement & { offscreenCanvas?: HTMLCanvasElement }>();
+	interface FrameRect {
+		x: number;
+		y: number;
+		w: number;
+		h: number;
+	}
 	interface Props {
 		animationend?: Function;
-		framedata: object;
+		framedata: {
+			animations: Record<
+				string,
+				{
+					frame_rate: number;
+					length: number;
+					frames: {
+						duration: number;
+						clear_rect: FrameRect;
+						location: FrameRect;
+						position: { x: number; y: number };
+					}[];
+				}
+			>;
+		};
 		atlas: string;
 	}
 	let { animationend, framedata, atlas }: Props = $props();
-	let currentAnimation = null;
+	let currentAnimation: { cancel: () => void } | null = null;
 	function resizeCanvas() {
-		canvas.width = window.innerWidth;
-		canvas.height = document.documentElement.scrollHeight;
+		canvas!.width = window.innerWidth;
+		canvas!.height = document.documentElement.scrollHeight;
 	}
 	onMount(async () => {
 		window.addEventListener('resize', resizeCanvas);
@@ -22,7 +42,7 @@
 		canvas!.offscreenCanvas = document.createElement('canvas');
 		canvas!.offscreenCanvas.width = img.width;
 		canvas!.offscreenCanvas.height = img.height;
-		canvas!.offscreenCanvas.getContext('2d').drawImage(img, 0, 0);
+		canvas!.offscreenCanvas.getContext('2d')!.drawImage(img, 0, 0);
 		document.addEventListener('click', function () {
 			onclick();
 		});
@@ -71,12 +91,12 @@
 						}
 						if (framedata.animations[animation].frames[currentPos].clear_rect) {
 							const { x, y, w, h } = framedata.animations[animation].frames[currentPos].clear_rect;
-							canvas.getContext('2d').clearRect(x + Math.round(window.innerWidth / 2), y, w, h);
+							canvas!.getContext('2d')!.clearRect(x + Math.round(window.innerWidth / 2), y, w, h);
 						}
-						canvas
-							.getContext('2d')
+						canvas!
+							.getContext('2d')!
 							.drawImage(
-								canvas.offscreenCanvas,
+								canvas!.offscreenCanvas!,
 								framedata.animations[animation].frames[currentPos].location.x,
 								framedata.animations[animation].frames[currentPos].location.y,
 								framedata.animations[animation].frames[currentPos].location.w,

@@ -1,5 +1,5 @@
-import prisma from '$modules/database/prisma.server';
-import type { Prisma } from '$prisma-generated/client';
+import prisma from '#modules/database/prisma.server.js';
+import type { Prisma } from '#prisma-generated/client.js';
 
 export async function load() {
 	const q: Prisma.GalleryPostFindManyArgs = {

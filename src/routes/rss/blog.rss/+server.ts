@@ -1,4 +1,4 @@
-import prisma from '$modules/database/prisma.server';
+import prisma from '#modules/database/prisma.server.js';
 
 export async function GET() {
 	const posts = await prisma.blogPost.findMany({

@@ -8,6 +8,7 @@ Modifications: Berlkot <contact@berlkot.com>
 Description: Programming language for Godot Engine
 */
 
+/** @param {import('highlight.js').HLJSApi} hljs */
 function gdscript(hljs) {
 	var KEYWORDS = {
 		keyword:

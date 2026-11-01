@@ -1,8 +1,8 @@
-import prisma from '$modules/database/prisma.server';
+import prisma from '#modules/database/prisma.server.js';
 import { error, isRedirect, redirect } from '@sveltejs/kit';
 
 import { basename, extname } from 'path';
-import { MEDIA_BASE_PATH } from '$modules/asset/service.server';
+import { MEDIA_BASE_PATH } from '#modules/asset/service.server.js';
 import type { RequestEvent } from './$types';
 
 export async function GET({ params, url }: RequestEvent) {
@@ -52,6 +52,6 @@ export async function GET({ params, url }: RequestEvent) {
 	} catch (e) {
 		console.log(e);
 		if (isRedirect(e)) throw e;
-		throw error(404, { message: 'Image not found' });
+		throw error(404, 'Image not found');
 	}
 }

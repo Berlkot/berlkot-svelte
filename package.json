@@ -65,6 +65,9 @@
 	],
 	"imports": {
 		"#lib": "./src/lib/index.js",
-		"#lib/*": "./src/lib/*"
+		"#lib/*": "./src/lib/*",
+		"#modules/*": "./src/lib/modules/*",
+		"#routes/*": "./src/routes/*",
+		"#prisma-generated/*": "./generated/prisma/*"
 	}
 }

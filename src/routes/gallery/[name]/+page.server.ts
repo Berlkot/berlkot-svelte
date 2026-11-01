@@ -1,4 +1,4 @@
-import prisma from '$modules/database/prisma.server';
+import prisma from '#modules/database/prisma.server.js';
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 

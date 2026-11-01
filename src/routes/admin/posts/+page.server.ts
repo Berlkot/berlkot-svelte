@@ -1,7 +1,7 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { fail } from '@sveltejs/kit';
-import prisma from '$modules/database/prisma.server';
-import { Validator, type FieldConfig } from '$modules/forms/form-validator';
+import prisma from '#modules/database/prisma.server.js';
+import { Validator, type FieldConfig } from '#modules/forms/form-validator.js';
 
 export async function load() {
 	const posts = await prisma.blogPost.getPosts();

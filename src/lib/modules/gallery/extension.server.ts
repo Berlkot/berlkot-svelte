@@ -3,10 +3,10 @@ import {
 	Prisma,
 	type GalleryPost as GalleryPostModel,
 	type GalleryFolder as GalleryFolderModel
-} from '$prisma-generated/client';
+} from '#prisma-generated/client.js';
 import { assignPermissionQuery } from '#lib/server/context/auth.js';
 import type { Flatten, Override } from '#lib/utils/type-helpers.js';
-import { Asset } from '$modules/asset/model.server';
+import { Asset } from '#modules/asset/model.server.js';
 import { GALLERY_CARD_RESOLUTION } from './constants';
 
 export type GalleryPostInput = Flatten<

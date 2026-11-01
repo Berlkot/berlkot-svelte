@@ -3,8 +3,8 @@
  * The main purpose is to take out most of the need to keep up with state outside of this class or directly call to service
  * Outside of that interaction and fetching still goes throuh prisma
  */
-import prisma from '$modules/database/prisma.server';
-import type { Asset as AssetModel, Visibility, ContentType } from '$prisma-generated/client';
+import prisma from '#modules/database/prisma.server.js';
+import type { Asset as AssetModel, Visibility, ContentType } from '#prisma-generated/client.js';
 import { mkdir, rm } from 'fs/promises';
 import { extname } from 'path';
 import {

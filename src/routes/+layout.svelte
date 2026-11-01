@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import Toasts from '$modules/toast/toasts.svelte';
+	import Toasts from '#modules/toast/toasts.svelte';
 	import AvatarImg from '#lib/assets/avatar.png';
 	import NavLink from './NavLink.svelte';
 	import Instagram from '#lib/assets/icons/instagram.svg';

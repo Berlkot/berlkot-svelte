@@ -1,5 +1,4 @@
-import prisma from '$modules/database/prisma.server';
-import { json } from '@sveltejs/kit';
+import prisma from '#modules/database/prisma.server.js';
 
 export async function POST({ request }) {
 	const { text } = await request.json();
@@ -11,5 +10,5 @@ export async function POST({ request }) {
 			}
 		}
 	});
-	return json(tags);
+	return Response.json(tags);
 }

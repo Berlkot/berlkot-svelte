@@ -18,11 +18,6 @@ export default defineConfig({
 			preprocess: vitePreprocess(),
 			adapter: adapter(),
 
-			alias: {
-				'$routes/*': 'src/routes/*',
-				'$prisma-generated': 'generated/prisma',
-				'$modules/*': 'src/lib/modules/*'
-			},
 			paths: { relative: false /* sure, why this is a thing anyway */ }
 		}),
 		devtoolsJson()

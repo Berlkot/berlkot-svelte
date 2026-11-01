@@ -75,7 +75,7 @@
 		selection = [...defaultSelected];
 		value = defaultSelected.map((t) => t[key as keyof typeof t]).join(',');
 	});
-	let options = $state<{ [key: string]: unknown }[]>([]);
+	let options = $state<object[]>([]);
 	$effect(() => {
 		if (onChange) onChange(value);
 	});
@@ -214,7 +214,7 @@
 						{@render optionItem(option)}
 					{:else}
 						<li>
-							<p>{option[key]}</p>
+							<p>{option[key as keyof typeof option]}</p>
 						</li>
 					{/if}
 				</div>

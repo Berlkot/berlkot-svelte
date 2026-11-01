@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ArticleCard from '$modules/article/components/ArticleCard.svelte';
+	import ArticleCard from '#modules/article/components/ArticleCard.svelte';
 	let { data } = $props();
 </script>
 

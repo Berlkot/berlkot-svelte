@@ -2,13 +2,13 @@
 	// FIXME
 	import { enhance } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
-	import { addToast } from '$modules/toast/toastStore';
-	import Modal from '$modules/forms/Modal.svelte';
+	import { addToast } from '#modules/toast/toastStore.js';
+	import Modal from '#modules/forms/Modal.svelte';
 	import Autocomplete from '#lib/components/autocomplete/Autocomplete.svelte';
 	import CloseImg from '#lib/assets/icons/close.svg';
-	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
+	import ConfirmDialog from '#modules/forms/ConfirmDialog.svelte';
 
-	import type { Prisma } from '$prisma-generated/client';
+	import type { Prisma } from '#prisma-generated/client.js';
 	type GalleryFolderWithHero = Prisma.GalleryFolderGetPayload<{ include: { heroImage: true } }>;
 
 	interface Props {

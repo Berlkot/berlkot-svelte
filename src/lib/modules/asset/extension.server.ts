@@ -1,5 +1,5 @@
 import { assignPermissionQuery } from '#lib/server/context/auth.js';
-import { Prisma } from '$prisma-generated/client';
+import { Prisma } from '#prisma-generated/client.js';
 
 export const assetExtension = Prisma.defineExtension((client) => {
 	return client.$extends({

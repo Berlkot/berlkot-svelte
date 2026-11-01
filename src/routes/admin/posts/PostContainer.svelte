@@ -1,7 +1,7 @@
 <script lang="ts">
-	import ConfirmDialog from '$modules/forms/ConfirmDialog.svelte';
-	import { addToast } from '$modules/toast/toastStore';
-	import ArticleCard from '$modules/article/components/ArticleCard.svelte';
+	import ConfirmDialog from '#modules/forms/ConfirmDialog.svelte';
+	import { addToast } from '#modules/toast/toastStore.js';
+	import ArticleCard from '#modules/article/components/ArticleCard.svelte';
 
 	interface Props {
 		post: any;

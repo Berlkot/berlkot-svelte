@@ -1,5 +1,5 @@
-import prisma from '$modules/database/prisma.server';
-import { Prisma } from '$prisma-generated/client';
+import prisma from '#modules/database/prisma.server.js';
+import { Prisma } from '#prisma-generated/client.js';
 import { type RequestEvent } from '@sveltejs/kit';
 
 export async function load({ url }: RequestEvent) {

@@ -1,6 +1,6 @@
-import { Prisma, type BlogPost as BlogPostModel } from '$prisma-generated/client';
+import { Prisma, type BlogPost as BlogPostModel } from '#prisma-generated/client.js';
 import { assignPermissionQuery } from '#lib/server/context/auth.js';
-import { Asset } from '$modules/asset/model.server';
+import { Asset } from '#modules/asset/model.server.js';
 import { ARTICLE_HERO_RESOLUTION, ARTICLE_PREVIEW_RESOLUTION } from './constants';
 import type { Flatten, Override } from '#lib/utils/type-helpers.js';
 
