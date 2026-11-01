@@ -1,12 +1,12 @@
 import type { Handle } from '@sveltejs/kit/hooks';
 import type { ServerErrorMiddleware } from './types';
 import config from '#lib/config.server.js';
-import { building } from '$app/env';
+import { building, dev } from '$app/env';
 
 const ignorePaths = config.middleware.logger.ignorePaths;
 
 export const handle: Handle = async ({ event, resolve }) => {
-	if (building || ignorePaths.some((pattern) => event.url.pathname.match(pattern))) {
+	if (building || dev || ignorePaths.some((pattern) => event.url.pathname.match(pattern))) {
 		return resolve(event);
 	}
 	console.log(
@@ -17,6 +17,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 export const handleError: ServerErrorMiddleware = async (input) => {
 	const { error, event } = input;
+	if (
+		input.kind === 'framework' &&
+		input.error.status === 404 &&
+		ignorePaths.some((pattern) => event.url.pathname.match(pattern))
+	) {
+		return false;
+	}
 	const status = input.kind === 'unknown' ? 500 : input.error.status;
 	const message = input.kind === 'unknown' ? 'Internal Error' : input.error.message;
 	const address = building ? 'prerender' : event.getClientAddress();

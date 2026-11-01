@@ -1,22 +1,19 @@
 import type { Handle } from '@sveltejs/kit/hooks';
 import config from '#lib/config.server.js';
-import type { ServerErrorMiddleware } from './types';
 import { getAuthContext } from '../context/auth';
 
 const protectedRoutePatterns = config.middleware.protector.protectedRoutePatterns;
 
 export const handle: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname === '/__access_denied__') {
-		event.locals.violated_protected_route_access = event.request.headers.get('x-violated-path');
-		return resolve(event);
-	}
-	// change to locals if context fails
 	if (
 		getAuthContext()?.isAdmin ||
 		!protectedRoutePatterns.some((pattern) => event.url.pathname.match(pattern))
 	) {
 		return resolve(event);
 	}
+	console.log(
+		`INFO: ${event.getClientAddress()} tried to access ${event.url.pathname} protected route without login`
+	);
 	/* HACK: Since error() is not intended to be used in handle function,
 	         we use fetch on nonexistent page to redirect to the proper error page.
 					 ugh what the FUCK! */
@@ -29,7 +26,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const response = await event.fetch(internalUrl.href, {
 		method: 'GET',
 		headers: {
-			'x-violated-path': event.url.pathname,
 			Accept: event.request.headers.get('Accept') || 'text/html'
 		}
 	});
@@ -42,19 +38,4 @@ export const handle: Handle = async ({ event, resolve }) => {
 			'Content-Type': response.headers.get('Content-Type') || 'text/html'
 		}
 	});
-};
-
-export const handleError: ServerErrorMiddleware = async (input) => {
-	const { event } = input;
-	if (
-		event.locals.violated_protected_route_access &&
-		input.kind === 'framework' &&
-		input.error.status === 404
-	) {
-		console.log(
-			`INFO: ${event.getClientAddress()} tried to access ${event.locals.violated_protected_route_access} protected route without login`
-		);
-		return true;
-	}
-	return false;
 };

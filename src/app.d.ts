@@ -3,9 +3,7 @@
 declare global {
 	namespace App {
 		// interface Error {}
-		interface Locals {
-			violated_protected_route_access: string?;
-		}
+		// interface Locals {}
 		// interface PageData {}
 		interface PageState {
 			selected: {
