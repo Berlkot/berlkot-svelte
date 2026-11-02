@@ -6,7 +6,7 @@ import { playwright } from '@vitest/browser-playwright';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { sveltekit } from '@sveltejs/kit/vite';
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
 	plugins: [
 		sveltekit({
 			// Consult https://kit.svelte.dev/docs/integrations#preprocessors
@@ -14,7 +14,10 @@ export default defineConfig({
 			preprocess: vitePreprocess(),
 			adapter: adapter(),
 
-			paths: { relative: false /* sure, why this is a thing anyway */ }
+			paths: {
+				origin: command === 'build' ? 'https://berlkot.com' : undefined,
+				relative: false /* sure, why this is a thing anyway */
+			}
 		}),
 		devtoolsJson()
 	],
@@ -46,4 +49,4 @@ export default defineConfig({
 			}
 		]
 	}
-});
+}));
