@@ -103,6 +103,9 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 				async findUnique({ args, query }) {
 					return query(assignPermissionQuery(args));
 				},
+				async findUniqueOrThrow({ args, query }) {
+					return query(assignPermissionQuery(args));
+				},
 				async findFirst({ args, query }) {
 					return query(assignPermissionQuery(args));
 				},
@@ -117,7 +120,7 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 		model: {
 			galleryPost: {
 				async getPost(name: string): Promise<GalleryPostWithRelations | null> {
-					return client.galleryPost.findUnique({
+					return Prisma.getExtensionContext(this).findUnique({
 						where: { name },
 						include: {
 							tags: true,
@@ -134,7 +137,7 @@ export const galleryExtension = Prisma.defineExtension((client) => {
 				async getPosts(
 					args: Omit<Prisma.GalleryPostFindManyArgs, 'include'> = {}
 				): Promise<GalleryPostWithRelations[]> {
-					return client.galleryPost.findMany({
+					return Prisma.getExtensionContext(this).findMany({
 						...args,
 						include: {
 							tags: true,

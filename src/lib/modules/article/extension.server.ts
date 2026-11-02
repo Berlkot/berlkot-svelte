@@ -60,6 +60,9 @@ export const articleExtension = Prisma.defineExtension((client) => {
 				async findUnique({ args, query }) {
 					return query(assignPermissionQuery(args));
 				},
+				async findUniqueOrThrow({ args, query }) {
+					return query(assignPermissionQuery(args));
+				},
 				async findFirst({ args, query }) {
 					return query(assignPermissionQuery(args));
 				},
@@ -104,7 +107,7 @@ export const articleExtension = Prisma.defineExtension((client) => {
 		model: {
 			blogPost: {
 				async getPost(name: string): Promise<BlogPostWithRelations | null> {
-					return client.blogPost.findUnique({
+					return Prisma.getExtensionContext(this).findUnique({
 						where: { name },
 						include: {
 							tags: true,
@@ -117,7 +120,7 @@ export const articleExtension = Prisma.defineExtension((client) => {
 				async getPosts(
 					args: Omit<Prisma.BlogPostFindManyArgs, 'include'> = {}
 				): Promise<BlogPostWithRelations[]> {
-					return client.blogPost.findMany({
+					return Prisma.getExtensionContext(this).findMany({
 						...args,
 						include: {
 							tags: true,

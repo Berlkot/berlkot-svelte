@@ -8,6 +8,9 @@ export const assetExtension = Prisma.defineExtension((client) => {
 				async findUnique({ args, query }) {
 					return query(assignPermissionQuery(args));
 				},
+				async findUniqueOrThrow({ args, query }) {
+					return query(assignPermissionQuery(args));
+				},
 				async findFirst({ args, query }) {
 					return query(assignPermissionQuery(args));
 				},
