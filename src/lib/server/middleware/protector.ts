@@ -1,5 +1,4 @@
 import type { Handle } from '@sveltejs/kit/hooks';
-import { error } from '@sveltejs/kit';
 import config from '#lib/config.server.js';
 import { getAuthContext } from '../context/auth';
 
